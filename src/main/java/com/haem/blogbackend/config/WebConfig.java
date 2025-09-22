@@ -1,4 +1,4 @@
-package com.haemin.blogbackend.config;
+package com.haem.blogbackend.config;
 
 public class WebConfig {
 //    test
