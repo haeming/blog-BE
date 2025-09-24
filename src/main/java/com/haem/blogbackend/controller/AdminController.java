@@ -9,13 +9,14 @@ import com.haem.blogbackend.dto.request.AdminLoginRequestDto;
 import com.haem.blogbackend.dto.response.AdminLoginResponseDto;
 import com.haem.blogbackend.service.AdminService;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/admin")
 public class AdminController {
     private final AdminService adminService;
+
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     @PostMapping("/login")
     public AdminLoginResponseDto adminLogin(@RequestBody AdminLoginRequestDto requestDto){

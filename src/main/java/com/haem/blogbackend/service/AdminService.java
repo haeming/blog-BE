@@ -9,14 +9,17 @@ import com.haem.blogbackend.dto.request.AdminLoginRequestDto;
 import com.haem.blogbackend.dto.response.AdminLoginResponseDto;
 import com.haem.blogbackend.repository.AdminRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class AdminService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+
+    public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+        this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtProvider = jwtProvider;
+    }
 
     public AdminLoginResponseDto adminLogin(AdminLoginRequestDto requestDto){
         String accountName = requestDto.getAccountName();
