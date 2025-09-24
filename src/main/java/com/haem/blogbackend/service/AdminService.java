@@ -26,10 +26,10 @@ public class AdminService {
         String tempPassword = requestDto.getPassword();
 
         Admin admin = adminRepository.findByAccountName(accountName)
-            .orElseThrow(() -> new RuntimeException("존재하지 않는 계정입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
 
         if(!passwordEncoder.matches(tempPassword, admin.getPassword())){
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
         String token = jwtProvider.generateToken(admin);
