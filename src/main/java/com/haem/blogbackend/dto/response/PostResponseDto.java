@@ -6,8 +6,8 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-public class PostSummaryResponseDto {
-    private long id;
+public class PostResponseDto {
+    private Long id;
     private String title;
     private String content;
     private Long categoryId;
@@ -15,12 +15,12 @@ public class PostSummaryResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public PostSummaryResponseDto(Post post) {
+    public PostResponseDto(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.categoryId = post.getCategory() != null ? post.getCategory().getId() : null;
-        this.categoryName = post.getCategory()!= null ? post.getCategory().getCategoryName() : null;
+        this.categoryName = post.getCategory() != null ? post.getCategory().getCategoryName() : null;
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
     }
