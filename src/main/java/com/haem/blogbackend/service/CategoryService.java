@@ -1,5 +1,6 @@
 package com.haem.blogbackend.service;
 
+import com.haem.blogbackend.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,7 @@ public class CategoryService {
     public void deleteCategory(long id){
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new CategoryNotFoundException(id));
-        
+
         categoryRepository.delete(category);
     }
 
