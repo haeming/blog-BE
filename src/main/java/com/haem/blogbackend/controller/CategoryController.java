@@ -47,4 +47,9 @@ public class CategoryController {
     public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateRequestDto requestDto){
         return categoryService.createCategory(requestDto);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
+    }
 }
