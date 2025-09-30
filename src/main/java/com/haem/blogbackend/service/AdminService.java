@@ -29,7 +29,7 @@ public class AdminService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
 
         if(!passwordEncoder.matches(tempPassword, admin.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
         }
 
         String token = jwtProvider.generateToken(admin);
