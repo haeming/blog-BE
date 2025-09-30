@@ -10,6 +10,8 @@ import com.haem.blogbackend.dto.request.CategoryUpdateRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.exception.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 @Service
@@ -20,6 +22,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional(readOnly = true)
     public long getCategoryCount(){
         return categoryRepository.count();
     }
