@@ -7,6 +7,7 @@ import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.repository.AdminRepository;
+import com.haem.blogbackend.repository.CategoryRepository;
 import com.haem.blogbackend.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
     private final PostRepository postRepository;
     private final AdminRepository adminRepository;
+    private final CategoryRepository categoryRepository;
 
-    public PostService(PostRepository postRepository, AdminRepository adminRepository) {
+    public PostService(PostRepository postRepository, AdminRepository adminRepository, CategoryRepository categoryRepository) {
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public long getPostCount(){
@@ -32,10 +35,10 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto createPost (PostCreateRequestDto requestDto, String accountName){
+    public PostResponseDto createPost (String accountName, PostCreateRequestDto requestDto){
         Admin admin = adminRepository.findByAccountName(accountName).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
-//        Category category =
-        Post post = new Post(admin, requestDto.getTitle(), requestDto.getContent());
+        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+        Post post = new Post(category, admin, requestDto.getTitle(), requestDto.getContent());
         Post saved = postRepository.save(post);
         return new PostResponseDto(saved);
     }
