@@ -1,15 +1,16 @@
 package com.haem.blogbackend.controller;
 
+import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.service.CategoryService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin/category")
+@RequestMapping("/api/admin/categories")
 public class CategoryController {
     private final CategoryService categoryService;
 
@@ -20,5 +21,10 @@ public class CategoryController {
         Map<String, Object> map = new HashMap<>();
         map.put("result", categoryService.getCategoryCount());
         return map;
+    }
+
+    @PostMapping
+    public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateRequestDto requestDto){
+        return categoryService.createCategory(requestDto);
     }
 }
