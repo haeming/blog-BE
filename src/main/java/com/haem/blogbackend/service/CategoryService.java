@@ -15,6 +15,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+    @Transactional(readOnly = true)
     public long getCategoryCount(){
         return categoryRepository.count();
     }
@@ -24,6 +25,14 @@ public class CategoryService {
         Category category = new Category(requestDto.getCategoryName());
         Category saved = categoryRepository.save(category);
         return new CategoryResponseDto(saved);
+    }
+
+    @Transactional
+    public void deleteCategory(long id){
+        if (!categoryRepository.existsById(id)) {
+            throw new IllegalArgumentException("존재하지 않는 카테고리입니다.");
+        }
+        categoryRepository.deleteById(id);
     }
 
 }
