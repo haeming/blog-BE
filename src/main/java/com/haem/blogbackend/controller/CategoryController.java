@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.dto.response.CategoryResponseDto;
+import com.haem.blogbackend.service.CategoryService;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.*;
 
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateRequestDto;
@@ -36,5 +41,10 @@ public class CategoryController {
     @PutMapping("/{id}")
     public CategoryResponseDto updateCategory(@PathVariable("id") Long id, @Valid @RequestBody CategoryUpdateRequestDto requestDto){
         return categoryService.updateCategory(id, requestDto);
+    }
+
+    @PostMapping
+    public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateRequestDto requestDto){
+        return categoryService.createCategory(requestDto);
     }
 }
