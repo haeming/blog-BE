@@ -22,14 +22,6 @@ import jakarta.validation.Valid;
 public class CategoryController {
     private final CategoryService categoryService;
 
-public CategoryController(CategoryService categoryService) { 
-    this.categoryService = categoryService; 
-}
-
-    @GetMapping("/count")
-    public CategoryCountResponseDto getCategoryCount(){
-        return new CategoryCountResponseDto(categoryService.getCategoryCount());
-    }
 
     @PostMapping
     public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateRequestDto requestDto){
