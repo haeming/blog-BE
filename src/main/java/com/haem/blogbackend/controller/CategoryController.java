@@ -45,4 +45,9 @@ public CategoryController(CategoryService categoryService) {
     public void deleteCategory(@PathVariable("id") Long id){
         categoryService.deleteCategory(id);
     }
+
+    @PutMapping("/{id}")
+    public CategoryResponseDto updateCategory(@PathVariable("id") Long id, @Valid @RequestBody CategoryUpdateRequestDto requestDto){
+        return categoryService.updateCategory(id, requestDto);
+    }
 }
