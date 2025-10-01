@@ -20,6 +20,12 @@ public class Category {
     @Column(name = "category_name", nullable = false, unique = true, length = 255)
     private String categoryName;
 
+    @Column(name = "image_url", nullable = true, columnDefinition = "TEXT")
+    private String imageUrl;
+
+    @Column(name = "original_name", nullable = true, length = 500)
+    private String originalName;
+
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
@@ -28,6 +34,12 @@ public class Category {
 
     public Category(String categoryName){
         this.categoryName = categoryName;
+    }
+
+    public Category(String categoryName, String imageUrl, String originalName){
+        this.categoryName = categoryName;
+        this.imageUrl = imageUrl;
+        this.originalName = originalName;
     }
 
     // getter, setter
@@ -39,6 +51,14 @@ public class Category {
         return categoryName;
     }
 
+    public String getImageUrl(){
+        return imageUrl;
+    }
+
+    public String getOriginalName(){
+        return originalName;
+    }
+
     public LocalDateTime getCreatedAt(){
         return createdAt;
     }
@@ -47,7 +67,17 @@ public class Category {
         this.categoryName = categoryName;
     }
 
+    public void updateImage(String newUrl, String newOriginalName) {
+        this.imageUrl = newUrl;
+        this.originalName = newOriginalName;
+    }
+
     public static Category create(String categoryName){
         return new Category(categoryName);
     }
+
+    public static Category create(String categoryName, String imageUrl, String originalName){
+        return new Category(categoryName, imageUrl, originalName);
+    }
+    
 }
