@@ -1,12 +1,10 @@
 package com.haem.blogbackend.service;
 
-import com.haem.blogbackend.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
-import com.haem.blogbackend.dto.request.CategoryUpdateRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.exception.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
@@ -22,7 +20,6 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @Transactional(readOnly = true)
     public long getCategoryCount(){
         return categoryRepository.count();
     }
@@ -36,6 +33,10 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(long id){
+        if (!categoryRepository.existsById(id)) {
+            throw new CategoryNotFoundException(id);
+        }
+        categoryRepository.deleteById(id);
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new CategoryNotFoundException(id));
 
