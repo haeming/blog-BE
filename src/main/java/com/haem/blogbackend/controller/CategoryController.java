@@ -27,20 +27,13 @@ import jakarta.validation.Valid;
 public class CategoryController {
     private final CategoryService categoryService;
 
+public CategoryController(CategoryService categoryService) {
+    this.categoryService = categoryService;
+}
 
-    @PostMapping
-    public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateRequestDto requestDto){
-        return categoryService.createCategory(requestDto);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable("id") Long id){
-        categoryService.deleteCategory(id);
-    }
-
-    @PutMapping("/{id}")
-    public CategoryResponseDto updateCategory(@PathVariable("id") Long id, @Valid @RequestBody CategoryUpdateRequestDto requestDto){
-        return categoryService.updateCategory(id, requestDto);
+    @GetMapping("/count")
+    public CategoryCountResponseDto getCategoryCount(){
+        return new CategoryCountResponseDto(categoryService.getCategoryCount());
     }
 
     @PostMapping
