@@ -1,11 +1,13 @@
 package com.haem.blogbackend.service;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
+import com.haem.blogbackend.exception.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 @Service
@@ -22,7 +24,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto){
-        Category category = new Category(requestDto.getCategoryName());
+        Category category = Category.create(requestDto.getCategoryName());
         Category saved = categoryRepository.save(category);
         return new CategoryResponseDto(saved);
     }
@@ -30,7 +32,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(long id){
         if (!categoryRepository.existsById(id)) {
-            throw new IllegalArgumentException("존재하지 않는 카테고리입니다.");
+            throw new CategoryNotFoundException(id);
         }
         categoryRepository.deleteById(id);
     }
