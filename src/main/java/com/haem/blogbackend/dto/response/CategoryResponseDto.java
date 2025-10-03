@@ -13,11 +13,15 @@ public class CategoryResponseDto {
     private String originalName;
     private LocalDateTime createdAt;
 
-    public CategoryResponseDto(Category category) {
+    private CategoryResponseDto(Category category) {
         this.id = category.getId();
         this.categoryName = category.getCategoryName();
         this.imageUrl = category.getImageUrl();
         this.originalName = category.getOriginalName();
         this.createdAt = category.getCreatedAt();
+    }
+
+    public static CategoryResponseDto from(Category category){
+        return new CategoryResponseDto(category);
     }
 }
