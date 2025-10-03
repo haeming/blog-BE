@@ -1,5 +1,6 @@
 package com.haem.blogbackend.controller;
 
+import com.haem.blogbackend.domain.Category;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,8 @@ import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.service.CategoryService;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/categories")
@@ -49,5 +52,10 @@ public CategoryController(CategoryService categoryService) {
     @PutMapping("/{id}")
     public CategoryResponseDto updateCategory(@PathVariable("id") Long id, @Valid @RequestBody CategoryUpdateRequestDto requestDto){
         return categoryService.updateCategory(id, requestDto);
+    }
+
+    @GetMapping
+    public List<CategoryResponseDto> getCategories(){
+        return categoryService.getCategories();
     }
 }

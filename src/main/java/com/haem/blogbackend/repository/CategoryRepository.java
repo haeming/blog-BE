@@ -14,7 +14,4 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findByCategoryName(String categoryName);
 
-    @Query("select new com.haem.blogbackend.dto.response.CategoryResponseDto(c) from Category c")
-    List<CategoryResponseDto> findAllCategories();
-
 }

@@ -9,8 +9,6 @@ import com.haem.blogbackend.dto.request.CategoryUpdateRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.exception.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,7 +29,7 @@ public class CategoryService {
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto){
         Category category = Category.create(requestDto.getCategoryName());
         Category saved = categoryRepository.save(category);
-        return new CategoryResponseDto(saved);
+        return CategoryResponseDto.from(saved);
     }
 
     @Transactional
@@ -49,11 +47,14 @@ public class CategoryService {
 
         category.setCategoryName(requestDto.getCategoryName());
 
-        return new CategoryResponseDto(category);
+        return CategoryResponseDto.from(category);
     }
 
-    public List<CategoryResponseDto> getAllCategories(){
-        return categoryRepository.findAllCategories();
+    public List<CategoryResponseDto> getCategories(){
+        return categoryRepository.findAll()
+                .stream()
+                .map(CategoryResponseDto::from)
+                .toList();
     }
 
 }
