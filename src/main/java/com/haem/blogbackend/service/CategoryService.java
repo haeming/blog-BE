@@ -12,6 +12,8 @@ import com.haem.blogbackend.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Transactional(readOnly = true)
 @Service
 public class CategoryService {
@@ -48,6 +50,10 @@ public class CategoryService {
         category.setCategoryName(requestDto.getCategoryName());
 
         return new CategoryResponseDto(category);
+    }
+
+    public List<CategoryResponseDto> getAllCategories(){
+        return categoryRepository.findAllCategories();
     }
 
 }
