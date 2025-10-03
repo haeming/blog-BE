@@ -9,11 +9,15 @@ import java.time.LocalDateTime;
 public class CategoryResponseDto {
     private Long id;
     private String categoryName;
+    private String imageUrl;
+    private String originalName;
     private LocalDateTime createdAt;
 
     public CategoryResponseDto(Category category) {
         this.id = category.getId();
         this.categoryName = category.getCategoryName();
+        this.imageUrl = category.getImageUrl();
+        this.originalName = category.getOriginalName();
         this.createdAt = category.getCreatedAt();
     }
 }
