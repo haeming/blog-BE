@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateRequestDto;
-import com.haem.blogbackend.dto.response.CategoryCountResponseDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.service.CategoryService;
 
