@@ -35,8 +35,8 @@ public CategoryController(CategoryService categoryService) {
 }
 
     @GetMapping("/count")
-    public CategoryCountResponseDto getCategoryCount(){
-        return new CategoryCountResponseDto(categoryService.getCategoryCount());
+    public long getCategoryCount(){
+        return categoryService.getCategoryCount();
     }
 
     @PostMapping
