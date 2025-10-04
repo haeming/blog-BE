@@ -1,23 +1,22 @@
 package com.haem.blogbackend.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.service.PostService;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/post")
 public class PostController {
     private final PostService postService;
 
-    public PostController(PostService postService) { 
+    public PostController(PostService postService) {
         this.postService = postService;
     }
 

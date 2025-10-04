@@ -9,8 +9,4 @@ public class PostCountResponseDto {
     public PostCountResponseDto(long count){
         this.count = count;
     }
-
-    public long getCount(){
-        return count;
-    }
 }

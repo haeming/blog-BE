@@ -1,13 +1,25 @@
 package com.haem.blogbackend.dto.request;
 
+import com.haem.blogbackend.domain.Category;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Getter;
 
+@Builder
 @Getter
 public class CategoryUpdateRequestDto {
 
-    @NotBlank(message = "카테고리명은 필수 입력 값입니다.")
     private String categoryName;
+    private String imageUrl;
+    private String originalName;
 
     public CategoryUpdateRequestDto() {}
+
+    public static CategoryUpdateRequestDto from(Category category) {
+        return CategoryUpdateRequestDto.builder()
+                .categoryName(category.getCategoryName())
+                .imageUrl(category.getImageUrl())
+                .originalName(category.getOriginalName())
+                .build();
+    }
 }

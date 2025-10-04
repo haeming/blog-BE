@@ -10,6 +10,8 @@ import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.exception.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
 
+import java.util.List;
+
 @Transactional(readOnly = true)
 @Service
 public class CategoryService {
@@ -27,14 +29,14 @@ public class CategoryService {
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto){
         Category category = Category.create(requestDto.getCategoryName());
         Category saved = categoryRepository.save(category);
-        return new CategoryResponseDto(saved);
+        return CategoryResponseDto.from(saved);
     }
 
     @Transactional
     public void deleteCategory(long id){
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new CategoryNotFoundException(id));
-        
+
         categoryRepository.delete(category);
     }
 
@@ -42,10 +44,21 @@ public class CategoryService {
     public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto requestDto){
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new CategoryNotFoundException(id));
+        if(requestDto.getCategoryName() != null){
+            category.updateName(requestDto.getCategoryName());
+        }
+        if(requestDto.getImageUrl() != null || requestDto.getOriginalName() != null){
+            category.updateImage(requestDto.getImageUrl(), requestDto.getOriginalName());
+        }
 
-        category.setCategoryName(requestDto.getCategoryName());
+        return CategoryResponseDto.from(category);
+    }
 
-        return new CategoryResponseDto(category);
+    public List<CategoryResponseDto> getCategories(){
+        return categoryRepository.findAll()
+                .stream()
+                .map(CategoryResponseDto::from)
+                .toList();
     }
 
 }
