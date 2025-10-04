@@ -44,8 +44,12 @@ public class CategoryService {
     public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto requestDto){
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new CategoryNotFoundException(id));
-
-        category.setCategoryName(requestDto.getCategoryName());
+        if(requestDto.getCategoryName() != null){
+            category.updateName(requestDto.getCategoryName());
+        }
+        if(requestDto.getImageUrl() != null || requestDto.getOriginalName() != null){
+            category.updateImage(requestDto.getImageUrl(), requestDto.getOriginalName());
+        }
 
         return CategoryResponseDto.from(category);
     }

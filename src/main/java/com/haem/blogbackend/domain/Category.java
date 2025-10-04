@@ -67,14 +67,19 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-    public void updateImage(String newUrl, String newOriginalName) {
-        this.imageUrl = newUrl;
-        this.originalName = newOriginalName;
-    }
-
     public static Category create(String categoryName){
         return new Category(categoryName);
     }
+
+    public void updateName(String name) {
+        this.categoryName = name;
+    }
+
+    public void updateImage(String imageUrl, String originalName) {
+        this.imageUrl = imageUrl;
+        this.originalName = originalName;
+    }
+
 
     public static Category create(String categoryName, String imageUrl, String originalName){
         return new Category(categoryName, imageUrl, originalName);
