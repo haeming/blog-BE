@@ -1,5 +1,7 @@
 package com.haem.blogbackend.service;
 
+import com.haem.blogbackend.dto.request.CategoryUpdateImageRequestDto;
+import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,16 +43,22 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponseDto updateCategory(Long id, CategoryUpdateRequestDto requestDto){
+    public CategoryResponseDto updateCategoryName(Long id, CategoryUpdateNameRequestDto requestDto){
         Category category = categoryRepository.findById(id)
-            .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
         if(requestDto.getCategoryName() != null){
             category.updateName(requestDto.getCategoryName());
         }
+        return CategoryResponseDto.from(category);
+    }
+
+    @Transactional
+    public CategoryResponseDto updateCategoryImage(Long id, CategoryUpdateImageRequestDto requestDto){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
         if(requestDto.getImageUrl() != null || requestDto.getOriginalName() != null){
             category.updateImage(requestDto.getImageUrl(), requestDto.getOriginalName());
         }
-
         return CategoryResponseDto.from(category);
     }
 
