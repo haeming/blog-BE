@@ -1,6 +1,5 @@
 package com.haem.blogbackend.controller;
 
-import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
