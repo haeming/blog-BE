@@ -9,11 +9,25 @@ import java.time.LocalDateTime;
 public class CategoryResponseDto {
     private Long id;
     private String categoryName;
+    private String imageUrl;
+    private String originalName;
     private LocalDateTime createdAt;
 
-    public CategoryResponseDto(Category category) {
-        this.id = category.getId();
-        this.categoryName = category.getCategoryName();
-        this.createdAt = category.getCreatedAt();
+    private CategoryResponseDto(Long id, String categoryName, String imageUrl, String originalName, LocalDateTime createdAt) {
+        this.id = id;
+        this.categoryName = categoryName;
+        this.imageUrl = imageUrl;
+        this.originalName = originalName;
+        this.createdAt = createdAt;
+    }
+
+    public static CategoryResponseDto from(Category category){
+        return new CategoryResponseDto(
+            category.getId(),
+            category.getCategoryName(),
+            category.getImageUrl(),
+            category.getOriginalName(),
+            category.getCreatedAt()
+        );
     }
 }
