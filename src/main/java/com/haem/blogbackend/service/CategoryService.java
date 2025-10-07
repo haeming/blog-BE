@@ -3,6 +3,7 @@ package com.haem.blogbackend.service;
 import com.haem.blogbackend.dto.request.CategoryUpdateImageRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.exception.FileStorageException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Transactional(readOnly = true)
 @Service
 public class CategoryService {
@@ -37,6 +39,22 @@ public class CategoryService {
 
     public long getCategoryCount(){
         return categoryRepository.count();
+    }
+
+    private void cleanUpEmptyDirectories(Path dir) {
+        try {
+            while (dir != null && dir.startsWith(Paths.get(uploadDir, "category"))) {
+                if (Files.exists(dir) && Files.isDirectory(dir) &&
+                        Files.list(dir).findAny().isEmpty()) {
+                    Files.delete(dir);
+                    dir = dir.getParent();
+                } else {
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            log.warn("폴더 정리 실패: {}", e.getMessage());
+        }
     }
 
     @Transactional
@@ -69,10 +87,21 @@ public class CategoryService {
     }
 
     @Transactional
-    public void deleteCategory(long id){
+    public void deleteCategory(long id) {
         Category category = categoryRepository.findById(id)
-            .orElseThrow(() -> new CategoryNotFoundException(id));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
 
+        if (category.getImageUrl() != null) {
+            try {
+                String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
+                Path filePath = Paths.get(uploadDir, relativePath);
+
+                Files.deleteIfExists(filePath);
+                cleanUpEmptyDirectories(filePath.getParent());
+            } catch (IOException e) {
+                throw new FileStorageException("카테고리 이미지 삭제 중 오류가 발생했습니다.", e);
+            }
+        }
         categoryRepository.delete(category);
     }
 
@@ -90,6 +119,10 @@ public class CategoryService {
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        if (file == null || file.isEmpty()) {
+            return CategoryResponseDto.from(category);
+        }
 
         if (category.getImageUrl() != null) {
             try {
