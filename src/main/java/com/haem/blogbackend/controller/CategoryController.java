@@ -14,7 +14,9 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -32,8 +34,12 @@ public CategoryController(CategoryService categoryService) {
     }
 
     @PostMapping
-    public CategoryResponseDto createCategory(@Valid @RequestBody CategoryCreateRequestDto requestDto){
-        return categoryService.createCategory(requestDto);
+    public CategoryResponseDto createCategory(
+            @RequestPart("data") CategoryCreateRequestDto requestDto,
+            @RequestPart(value = "file", required = false)MultipartFile file)throws IOException {
+
+    CategoryResponseDto responseDto = categoryService.createCategory(requestDto,file);
+        return responseDto;
     }
 
     @DeleteMapping("/{id}")
@@ -47,9 +53,12 @@ public CategoryController(CategoryService categoryService) {
     }
 
     @PatchMapping("/{id}/image")
-    public CategoryResponseDto updateCategoryImage(@PathVariable("id") Long id, @Valid @RequestBody CategoryUpdateImageRequestDto requestDto){
-        return categoryService.updateCategoryImage(id, requestDto);
+    public CategoryResponseDto updateCategoryImage(
+            @PathVariable Long id,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        return categoryService.updateCategoryImage(id, file);
     }
+
 
     @GetMapping
     public List<CategoryResponseDto> getCategories(){
