@@ -87,12 +87,41 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponseDto updateCategoryImage(Long id, CategoryUpdateImageRequestDto requestDto){
+    public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-        if(requestDto.getImageUrl() != null && requestDto.getOriginalName() != null){
-            category.updateImage(requestDto.getImageUrl(), requestDto.getOriginalName());
+
+        if (category.getImageUrl() != null) {
+            try {
+                String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
+                Path oldFilePath = Paths.get(uploadDir, relativePath);
+                Files.deleteIfExists(oldFilePath);
+            } catch (IOException e) {
+                throw new FileStorageException("기존 이미지 파일 삭제 중 오류가 발생했습니다.", e);
+            }
         }
+
+        String imageUrl = null;
+        String originalName = null;
+
+        if (file != null && !file.isEmpty()) {
+            originalName = file.getOriginalFilename();
+
+            LocalDate now = LocalDate.now();
+            String datePath = String.format("category/%d/%02d/%02d",
+                    now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+            Path savePath = Paths.get(uploadDir, datePath);
+            try {
+                Files.createDirectories(savePath);
+                String saveName = UUID.randomUUID() + "_" + originalName;
+                Path newFilePath = savePath.resolve(saveName);
+                file.transferTo(newFilePath.toFile());
+                imageUrl = "/uploadFiles/" + datePath + "/" + saveName;
+            } catch (IOException e) {
+                throw new FileStorageException("새 이미지 파일 저장 중 오류가 발생했습니다.", e);
+            }
+        }
+        category.updateImage(imageUrl, originalName);
         return CategoryResponseDto.from(category);
     }
 

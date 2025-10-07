@@ -53,9 +53,12 @@ public CategoryController(CategoryService categoryService) {
     }
 
     @PatchMapping("/{id}/image")
-    public CategoryResponseDto updateCategoryImage(@PathVariable("id") Long id, @Valid @RequestBody CategoryUpdateImageRequestDto requestDto){
-        return categoryService.updateCategoryImage(id, requestDto);
+    public CategoryResponseDto updateCategoryImage(
+            @PathVariable Long id,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        return categoryService.updateCategoryImage(id, file);
     }
+
 
     @GetMapping
     public List<CategoryResponseDto> getCategories(){
