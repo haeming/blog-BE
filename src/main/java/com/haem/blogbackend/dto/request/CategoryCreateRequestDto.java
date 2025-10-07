@@ -17,7 +17,13 @@ public class CategoryCreateRequestDto {
     private String imageUrl;
     private String originalName;
 
-    public CategoryCreateRequestDto() {}
+    protected CategoryCreateRequestDto() {}
+
+    private CategoryCreateRequestDto(String categoryName, String imageUrl, String originalName) {
+        this.categoryName = categoryName;
+        this.imageUrl = imageUrl;
+        this.originalName = originalName;
+    }
 
     public static CategoryCreateRequestDto from(Category category){
         return CategoryCreateRequestDto.builder()
