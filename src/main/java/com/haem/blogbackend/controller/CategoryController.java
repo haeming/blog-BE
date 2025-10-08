@@ -30,9 +30,21 @@ public CategoryController(CategoryService categoryService) {
     this.categoryService = categoryService;
 }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> getCategories(){
+        List<CategoryResponseDto> categoryResponseDtoList = categoryService.getCategories();
+        return ResponseEntity.ok(ApiResponse.ok(categoryResponseDtoList));
+    }
+
     @GetMapping("/count")
     public ResponseEntity<ApiResponse<Long>> getCategoryCount(){
         long count = categoryService.getCategoryCount();
+        return ResponseEntity.ok(ApiResponse.ok(count));
+    }
+
+    @GetMapping("/{categoryId}/post-count")
+    public ResponseEntity<ApiResponse<Long>> getPostCountByCategoryId(@PathVariable("categoryId") Long categoryId){
+        long count = categoryService.getPostCountByCategoryId(categoryId);
         return ResponseEntity.ok(ApiResponse.ok(count));
     }
 
@@ -66,11 +78,5 @@ public CategoryController(CategoryService categoryService) {
             @RequestPart(value = "file", required = false) MultipartFile file) {
         CategoryResponseDto responseDto = categoryService.updateCategoryImage(id, file);
         return ResponseEntity.ok(ApiResponse.ok(responseDto));
-    }
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> getCategories(){
-        List<CategoryResponseDto> categoryResponseDtoList = categoryService.getCategories();
-        return ResponseEntity.ok(ApiResponse.ok(categoryResponseDtoList));
     }
 }

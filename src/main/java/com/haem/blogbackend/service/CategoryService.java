@@ -3,6 +3,7 @@ package com.haem.blogbackend.service;
 import com.haem.blogbackend.dto.request.CategoryUpdateImageRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.exception.FileStorageException;
+import com.haem.blogbackend.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,11 @@ public class CategoryService {
     private String uploadDir;
 
     private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, PostRepository postRepository) {
         this.categoryRepository = categoryRepository;
+        this.postRepository = postRepository;
     }
 
     public long getCategoryCount(){
@@ -163,6 +166,10 @@ public class CategoryService {
                 .stream()
                 .map(CategoryResponseDto::from)
                 .toList();
+    }
+
+    public long getPostCountByCategoryId(Long categoryId){
+        return postRepository.countByCategoryId(categoryId);
     }
 
 }
