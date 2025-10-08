@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class PostSummaryResponseDto {
-    private long id;
+    private Long id;
     private String title;
     private String content;
     private Long categoryId;
