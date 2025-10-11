@@ -1,5 +1,6 @@
 package com.haem.blogbackend.service;
 
+import com.haem.blogbackend.dto.response.TokenVerifyResponseDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,4 +38,8 @@ public class AdminService {
         return AdminLoginResponseDto.from(admin, token);
     }
 
+    public Admin findByAccountName(String accountName){
+        return adminRepository.findByAccountName(accountName)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
+    }
 }
