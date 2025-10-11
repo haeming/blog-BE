@@ -41,4 +41,11 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ApiResponse<String>> handleTokenException(TokenException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()));
+    }
+
 }
