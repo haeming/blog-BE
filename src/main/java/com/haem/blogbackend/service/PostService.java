@@ -1,5 +1,10 @@
 package com.haem.blogbackend.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.domain.Post;
@@ -9,11 +14,11 @@ import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.repository.AdminRepository;
 import com.haem.blogbackend.repository.CategoryRepository;
 import com.haem.blogbackend.repository.PostRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Transactional(readOnly = true)
 @Service
 public class PostService {
     private final PostRepository postRepository;
