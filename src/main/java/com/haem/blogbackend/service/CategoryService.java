@@ -2,7 +2,6 @@ package com.haem.blogbackend.service;
 
 import com.haem.blogbackend.dto.request.CategoryUpdateImageRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
-import com.haem.blogbackend.exception.FileStorageException;
 import com.haem.blogbackend.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
-import com.haem.blogbackend.exception.CategoryNotFoundException;
+import com.haem.blogbackend.exception.base.FileStorageException;
+import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
 import org.springframework.web.multipart.MultipartFile;
 

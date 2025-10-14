@@ -1,4 +1,6 @@
-package com.haem.blogbackend.exception;
+package com.haem.blogbackend.exception.notfound;
+
+import com.haem.blogbackend.exception.base.NotFoundException;
 
 public class PostNotFoundException extends NotFoundException{
     public PostNotFoundException(Long id) {

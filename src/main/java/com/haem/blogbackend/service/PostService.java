@@ -11,6 +11,8 @@ import com.haem.blogbackend.domain.Post;
 import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
+import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
 import com.haem.blogbackend.repository.AdminRepository;
 import com.haem.blogbackend.repository.CategoryRepository;
 import com.haem.blogbackend.repository.PostRepository;
@@ -41,8 +43,12 @@ public class PostService {
 
     @Transactional
     public PostResponseDto createPost (String accountName, PostCreateRequestDto requestDto){
-        Admin admin = adminRepository.findByAccountName(accountName).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
-        Category category = categoryRepository.findById(requestDto.getCategoryId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+        Admin admin = adminRepository.findByAccountName(accountName)
+                .orElseThrow(() -> new AdminNotFoundException(accountName));
+                
+        Category category = categoryRepository.findById(requestDto.getCategoryId())
+                .orElseThrow(() -> new CategoryNotFoundException(requestDto.getCategoryId()));
+
         Post post = new Post(category, admin, requestDto.getTitle(), requestDto.getContent());
         Post saved = postRepository.save(post);
         return new PostResponseDto(saved);

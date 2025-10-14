@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.haem.blogbackend.dto.response.ApiResponse;
+import com.haem.blogbackend.exception.base.FileStorageException;
+import com.haem.blogbackend.exception.base.NotFoundException;
+import com.haem.blogbackend.exception.base.TokenException;
 
 import lombok.extern.slf4j.Slf4j;
 

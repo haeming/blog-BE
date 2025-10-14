@@ -1,4 +1,6 @@
-package com.haem.blogbackend.exception;
+package com.haem.blogbackend.exception.token;
+
+import com.haem.blogbackend.exception.base.TokenException;
 
 public class ExpiredTokenException extends TokenException{
     public ExpiredTokenException() {
