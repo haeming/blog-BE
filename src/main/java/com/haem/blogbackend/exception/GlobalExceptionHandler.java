@@ -1,10 +1,11 @@
 package com.haem.blogbackend.exception;
 
-import com.haem.blogbackend.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.haem.blogbackend.dto.response.ApiResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFound(NotFoundException ex) {
+        log.warn("[NotFoundException] {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
@@ -43,6 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<ApiResponse<String>> handleTokenException(TokenException ex) {
+        log.warn("[TokenException] {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.error(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()));
