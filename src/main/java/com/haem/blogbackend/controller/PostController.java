@@ -12,7 +12,7 @@ import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.service.PostService;
 
 @RestController
-@RequestMapping("/api/admin/post")
+@RequestMapping("/api/admin/posts")
 public class PostController {
     private final PostService postService;
 
