@@ -1,6 +1,8 @@
 package com.haem.blogbackend.service;
 
 import com.haem.blogbackend.dto.response.TokenVerifyResponseDto;
+import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class AdminService {
         String tempPassword = requestDto.getPassword();
 
         Admin admin = adminRepository.findByAccountName(accountName)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
+            .orElseThrow(() -> new AdminNotFoundException(accountName));
 
         if(!passwordEncoder.matches(tempPassword, admin.getPassword())){
             throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
@@ -40,6 +42,6 @@ public class AdminService {
 
     public Admin findByAccountName(String accountName){
         return adminRepository.findByAccountName(accountName)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 계정입니다."));
+                .orElseThrow(() -> new AdminNotFoundException(accountName));
     }
 }
