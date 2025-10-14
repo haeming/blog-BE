@@ -4,10 +4,11 @@ import com.haem.blogbackend.config.JwtProvider;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.dto.response.ApiResponse;
 import com.haem.blogbackend.dto.response.TokenVerifyResponseDto;
-import com.haem.blogbackend.exception.ExpiredTokenException;
 import com.haem.blogbackend.exception.GlobalExceptionHandler;
-import com.haem.blogbackend.exception.InvalidTokenException;
-import com.haem.blogbackend.exception.TokenException;
+import com.haem.blogbackend.exception.base.TokenException;
+import com.haem.blogbackend.exception.token.ExpiredTokenException;
+import com.haem.blogbackend.exception.token.InvalidTokenException;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.haem.blogbackend.dto.request.AdminLoginRequestDto;

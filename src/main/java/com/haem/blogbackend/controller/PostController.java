@@ -1,15 +1,15 @@
 package com.haem.blogbackend.controller;
 
-import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.service.PostService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.haem.blogbackend.dto.response.ApiResponse;
+import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.service.PostService;
 
 @RestController
 @RequestMapping("/api/admin/post")
@@ -20,15 +20,15 @@ public class PostController {
         this.postService = postService;
     }
 
-    @GetMapping("/allCount")
-    public Map<String, Object> allCount(){
-        Map<String, Object> map = new HashMap();
-        map.put("result", postService.getPostCount());
-        return map;
+    @GetMapping
+    public ResponseEntity<ApiResponse<Page<PostSummaryResponseDto>>> getPosts(Pageable pageable){
+        Page<PostSummaryResponseDto> postSummaryResponseDtoList = postService.getPosts(pageable);
+        return ResponseEntity.ok(ApiResponse.ok(postSummaryResponseDtoList));
     }
 
-    @GetMapping("/list")
-    public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
-        return postService.getPosts(pageable);
+    @GetMapping("/count")
+    public ResponseEntity<ApiResponse<Long>> getPostCount(){
+        long count = postService.getPostCount();
+        return ResponseEntity.ok(ApiResponse.ok(count));
     }
 }

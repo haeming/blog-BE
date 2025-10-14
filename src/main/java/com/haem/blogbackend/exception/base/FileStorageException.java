@@ -1,4 +1,4 @@
-package com.haem.blogbackend.exception;
+package com.haem.blogbackend.exception.base;
 
 public class FileStorageException extends RuntimeException{
     public FileStorageException(String message) {
