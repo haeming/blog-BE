@@ -38,30 +38,31 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, String subDir) throws IOException {
+    public String storeFile(MultipartFile file, String subDir) {
         if(file == null || file.isEmpty()){
             return null;
         }
 
-        String originalName = file.getOriginalFilename();
-        LocalDate now = LocalDate.now();
-        String datePath = String.format("%s/%d/%02d/%02d", subDir, now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-
-        Path savePath = Paths.get(uploadDir, datePath);
-        Files.createDirectories(savePath);
-
-        String saveName = UUID.randomUUID() + "_" + originalName;
-        Path filePath = savePath.resolve(saveName);
-
         try {
+            String originalName = file.getOriginalFilename();
+            LocalDate now = LocalDate.now();
+            String datePath = String.format("%s/%d/%02d/%02d", subDir, now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+
+            Path savePath = Paths.get(uploadDir, datePath);
+            Files.createDirectories(savePath);
+
+            String saveName = UUID.randomUUID() + "_" + originalName;
+            Path filePath = savePath.resolve(saveName);
+
             file.transferTo(filePath.toFile());
+
+            return "/uploadFiles/" + datePath + "/" + saveName;
         } catch (IOException e){
             throw new FileStorageException("파일 저장 중 오류가 발생했습니다.", e);
         }
-        return "/uploadFiles/" + datePath + "/" + saveName;
     }
 
-    public void deleteFile(String imageUrl, String basePath) throws IOException {
+    public void deleteFile(String imageUrl, String basePath) {
         if(imageUrl != null){
             try {
                 String relativePath = imageUrl.replace("/uploadFiles/", "");
@@ -69,7 +70,7 @@ public class FileStorageService {
 
                 Files.deleteIfExists(filePath);
 
-                cleanUpEmptyDirectory(filePath, basePath);
+                cleanUpEmptyDirectory(filePath.getParent(), basePath);
             } catch (IOException e){
                 log.warn("파일 삭제 실패: {} (URL: {})", e.getMessage(), imageUrl);
             }
