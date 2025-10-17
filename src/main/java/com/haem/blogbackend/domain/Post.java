@@ -4,18 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "post")
@@ -25,11 +14,11 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Admin admin;
 
@@ -74,6 +63,9 @@ public class Post {
     public String getContent(){
         return content;
     }
+    public List<Image> getImages(){
+        return images;
+    }
     public LocalDateTime getUpdatedAt(){
         return updatedAt;
     }
@@ -93,6 +85,9 @@ public class Post {
     public void setContent(String content){
         this.content = content;
     }
+    public void setImages(List<Image> images){
+        this.images = images;
+    }
 
     public void addImage(Image image) {
         images.add(image);
@@ -103,5 +98,4 @@ public class Post {
         images.remove(image);
         image.setPost(null);
     }
-
 }
