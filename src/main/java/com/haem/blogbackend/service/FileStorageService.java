@@ -1,6 +1,7 @@
 package com.haem.blogbackend.service;
 
 import com.haem.blogbackend.exception.base.FileStorageException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,13 +13,36 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class FileStorageService {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    private void cleanUpEmptyDirectory(Path dir, String basePath){
+        try {
+            Path baseDir = Paths.get(uploadDir, basePath);
+            Path currentDir = dir;
+
+            while (currentDir != null && currentDir.startsWith(baseDir)){
+                if(Files.exists(currentDir) && Files.isDirectory(currentDir) && Files.list(currentDir).findAny().isEmpty()){
+                    Files.delete(currentDir);
+                    currentDir = currentDir.getParent();
+                } else {
+                    break;
+                }
+            }
+        } catch (IOException e){
+            log.warn("폴더 정리 실패: {}", e.getMessage());
+        }
+    }
+
     public String storeFile(MultipartFile file, String subDir) throws IOException {
+        if(file == null || file.isEmpty()){
+            return null;
+        }
+
         String originalName = file.getOriginalFilename();
         LocalDate now = LocalDate.now();
         String datePath = String.format("%s/%d/%02d/%02d", subDir, now.getYear(), now.getMonthValue(), now.getDayOfMonth());
@@ -37,11 +61,18 @@ public class FileStorageService {
         return "/uploadFiles/" + datePath + "/" + saveName;
     }
 
-    public void deleteFile(String imageUrl) throws IOException {
+    public void deleteFile(String imageUrl, String basePath) throws IOException {
         if(imageUrl != null){
-            String relativePath = imageUrl.replace("/uploadFiles/", "");
-            Path filePath = Paths.get(uploadDir, relativePath);
-            Files.deleteIfExists(filePath);
+            try {
+                String relativePath = imageUrl.replace("/uploadFiles/", "");
+                Path filePath = Paths.get(uploadDir, relativePath);
+
+                Files.deleteIfExists(filePath);
+
+                cleanUpEmptyDirectory(filePath, basePath);
+            } catch (IOException e){
+                log.warn("파일 삭제 실패: {} (URL: {})", e.getMessage(), imageUrl);
+            }
         }
     }
 }
