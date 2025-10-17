@@ -1,6 +1,5 @@
 package com.haem.blogbackend.service;
 
-import com.haem.blogbackend.dto.request.CategoryUpdateImageRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,18 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
-import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -32,57 +24,26 @@ public class CategoryService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    private static final String CATEGORY_BASE_PATH = "blog/category";
+
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
+    private final FileStorageService fileStorageService;
 
-    public CategoryService(CategoryRepository categoryRepository, PostRepository postRepository) {
+    public CategoryService(CategoryRepository categoryRepository, PostRepository postRepository, FileStorageService fileStorageService) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public long getCategoryCount(){
         return categoryRepository.count();
     }
 
-    private void cleanUpEmptyDirectories(Path dir) {
-        try {
-            while (dir != null && dir.startsWith(Paths.get(uploadDir, "blog", "category"))) {
-                if (Files.exists(dir) && Files.isDirectory(dir) &&
-                        Files.list(dir).findAny().isEmpty()) {
-                    Files.delete(dir);
-                    dir = dir.getParent();
-                } else {
-                    break;
-                }
-            }
-        } catch (IOException e) {
-            log.warn("폴더 정리 실패: {}", e.getMessage());
-        }
-    }
-
     @Transactional
-    public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) throws IOException {
-        String imageUrl = null;
-        String originalName = null;
-
-        if(file != null && !file.isEmpty()){
-            originalName = file.getOriginalFilename();
-
-            LocalDate now = LocalDate.now();
-            String datePath = String.format("blog/category/%d/%02d/%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-            Path savePath = Paths.get(uploadDir, datePath);
-            Files.createDirectories(savePath);
-
-            String saveName = UUID.randomUUID() + "_" + originalName;
-            Path filePath = savePath.resolve(saveName);
-
-            try{
-                file.transferTo(filePath.toFile());
-            } catch (IOException e){
-                throw new FileStorageException("파일 저장 중 오류가 발생했습니다.", e);
-            }
-            imageUrl = "/uploadFiles/" + datePath + "/" + saveName;
-        }
+    public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
+        String originalName = (file != null && !file.isEmpty()) ? file.getOriginalFilename() : null;
+        String imageUrl = fileStorageService.storeFile(file, CATEGORY_BASE_PATH);
 
         Category category = Category.create(requestDto.getCategoryName(), imageUrl, originalName);
         Category saved = categoryRepository.save(category);
@@ -93,18 +54,7 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-
-        if (category.getImageUrl() != null) {
-            try {
-                String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
-                Path filePath = Paths.get(uploadDir, relativePath);
-
-                Files.deleteIfExists(filePath);
-                cleanUpEmptyDirectories(filePath.getParent());
-            } catch (IOException e) {
-                throw new FileStorageException("카테고리 이미지 삭제 중 오류가 발생했습니다.", e);
-            }
-        }
+        fileStorageService.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
         categoryRepository.delete(category);
     }
 
@@ -127,36 +77,11 @@ public class CategoryService {
             return CategoryResponseDto.from(category);
         }
 
-        if (category.getImageUrl() != null) {
-            try {
-                String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
-                Path oldFilePath = Paths.get(uploadDir, relativePath);
-                Files.deleteIfExists(oldFilePath);
-            } catch (IOException e) {
-                throw new FileStorageException("기존 이미지 파일 삭제 중 오류가 발생했습니다.", e);
-            }
-        }
+        fileStorageService.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
 
-        String imageUrl = null;
-        String originalName = null;
+        String originalName = file.getOriginalFilename();
+        String imageUrl = fileStorageService.storeFile(file, CATEGORY_BASE_PATH);
 
-        if (file != null && !file.isEmpty()) {
-            originalName = file.getOriginalFilename();
-
-            LocalDate now = LocalDate.now();
-            String datePath = String.format("blog/category/%d/%02d/%02d",
-                    now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-            Path savePath = Paths.get(uploadDir, datePath);
-            try {
-                Files.createDirectories(savePath);
-                String saveName = UUID.randomUUID() + "_" + originalName;
-                Path newFilePath = savePath.resolve(saveName);
-                file.transferTo(newFilePath.toFile());
-                imageUrl = "/uploadFiles/" + datePath + "/" + saveName;
-            } catch (IOException e) {
-                throw new FileStorageException("새 이미지 파일 저장 중 오류가 발생했습니다.", e);
-            }
-        }
         category.updateImage(imageUrl, originalName);
         return CategoryResponseDto.from(category);
     }
@@ -171,5 +96,4 @@ public class CategoryService {
     public long getPostCountByCategoryId(Long categoryId){
         return postRepository.countByCategoryId(categoryId);
     }
-
 }
