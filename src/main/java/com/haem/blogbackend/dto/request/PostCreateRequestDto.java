@@ -1,9 +1,6 @@
 package com.haem.blogbackend.dto.request;
 
-import com.haem.blogbackend.domain.Category;
-import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.dto.ImageRequestDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
