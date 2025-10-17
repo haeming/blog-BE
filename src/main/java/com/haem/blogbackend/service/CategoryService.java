@@ -46,7 +46,7 @@ public class CategoryService {
 
     private void cleanUpEmptyDirectories(Path dir) {
         try {
-            while (dir != null && dir.startsWith(Paths.get(uploadDir, "category"))) {
+            while (dir != null && dir.startsWith(Paths.get(uploadDir, "blog", "category"))) {
                 if (Files.exists(dir) && Files.isDirectory(dir) &&
                         Files.list(dir).findAny().isEmpty()) {
                     Files.delete(dir);
@@ -69,7 +69,7 @@ public class CategoryService {
             originalName = file.getOriginalFilename();
 
             LocalDate now = LocalDate.now();
-            String datePath = String.format("category/%d/%02d/%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
+            String datePath = String.format("blog/category/%d/%02d/%02d", now.getYear(), now.getMonthValue(), now.getDayOfMonth());
             Path savePath = Paths.get(uploadDir, datePath);
             Files.createDirectories(savePath);
 
@@ -144,7 +144,7 @@ public class CategoryService {
             originalName = file.getOriginalFilename();
 
             LocalDate now = LocalDate.now();
-            String datePath = String.format("category/%d/%02d/%02d",
+            String datePath = String.format("blog/category/%d/%02d/%02d",
                     now.getYear(), now.getMonthValue(), now.getDayOfMonth());
             Path savePath = Paths.get(uploadDir, datePath);
             try {
