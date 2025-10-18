@@ -1,6 +1,7 @@
 package com.haem.blogbackend.service;
 
 import com.haem.blogbackend.domain.Image;
+import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.exception.notfound.PostNotFoundException;
 import org.springframework.data.domain.Page;
@@ -69,7 +70,7 @@ public class PostService {
                 imageService.saveImage(saved, file, "blog/post");
             }
         }
-        return new PostResponseDto(saved);
+        return PostResponseDto.from(saved);
     }
 
     @Transactional
@@ -85,5 +86,15 @@ public class PostService {
             }
         }
         postRepository.delete(post);
+    }
+
+    @Transactional
+    public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
+        if(requestDto.getTitle() != null && requestDto.getContent() != null){
+            post.updateInfo(requestDto.getTitle(), requestDto.getContent());
+        }
+        return PostResponseDto.from(post);
     }
 }
