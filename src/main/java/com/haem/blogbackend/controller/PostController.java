@@ -47,4 +47,10 @@ public class PostController {
         PostResponseDto postResponseDto = postService.createPost(accountName, requestDto, files);
         return ResponseEntity.ok(ApiResponse.ok(postResponseDto));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable("id") Long id){
+        postService.deletePost(id);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
 }
