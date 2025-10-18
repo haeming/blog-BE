@@ -19,20 +19,32 @@ public class PostResponseDto {
 
     private List<ImageResponseDto> images;
 
-    public PostResponseDto(Post post) {
-        this.id = post.getId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.categoryId = post.getCategory() != null ? post.getCategory().getId() : null;
-        this.categoryName = post.getCategory() != null ? post.getCategory().getCategoryName() : null;
-        this.createdAt = post.getCreatedAt();
-        this.updatedAt = post.getUpdatedAt();
+    private PostResponseDto(Long id, String title, String content, Long categoryId, String categoryName,
+                            LocalDateTime createdAt, LocalDateTime updatedAt, List<ImageResponseDto> images) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.images = images;
+    }
 
-        this.images = post.getImages() != null ?
-                post.getImages().stream()
-                        .map(ImageResponseDto::from)
-                        .toList()
-                :
-                new ArrayList<>();
+    public static PostResponseDto from(Post post) {
+        List<ImageResponseDto> images = post.getImages() != null
+                ? post.getImages().stream().map(ImageResponseDto::from).toList()
+                : new ArrayList<>();
+
+        return new PostResponseDto(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getCategory() != null ? post.getCategory().getId() : null,
+                post.getCategory() != null ? post.getCategory().getCategoryName() : null,
+                post.getCreatedAt(),
+                post.getUpdatedAt(),
+                images
+        );
     }
 }

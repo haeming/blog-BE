@@ -116,4 +116,9 @@ public class Post {
         }
         return new Post(category, admin, title, content);
     }
+
+    public void updateInfo(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
 }

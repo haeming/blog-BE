@@ -1,7 +1,9 @@
 package com.haem.blogbackend.controller;
 
 import com.haem.blogbackend.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -46,5 +48,20 @@ public class PostController {
         String accountName = user.getUsername();
         PostResponseDto postResponseDto = postService.createPost(accountName, requestDto, files);
         return ResponseEntity.ok(ApiResponse.ok(postResponseDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable("id") Long id){
+        postService.deletePost(id);
+        return ResponseEntity.ok(ApiResponse.ok(null));
+    }
+
+    @PatchMapping("/{id}/info")
+    public ResponseEntity<ApiResponse<PostResponseDto>> updatePostInfo(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody PostUpdateInfoRequestDto requestDto
+    ){
+        PostResponseDto responseDto = postService.updatePostInfo(id, requestDto);
+        return ResponseEntity.ok(ApiResponse.ok(responseDto));
     }
 }
