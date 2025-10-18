@@ -57,11 +57,11 @@ public class PostService {
     public PostResponseDto createPost (String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) throws IOException {
         Admin admin = adminRepository.findByAccountName(accountName)
                 .orElseThrow(() -> new AdminNotFoundException(accountName));
-                
+
         Category category = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new CategoryNotFoundException(requestDto.getCategoryId()));
 
-        Post post = new Post(category, admin, requestDto.getTitle(), requestDto.getContent());
+        Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         Post saved = postRepository.save(post);
 
         if(files != null && files.length > 0){
