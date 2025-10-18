@@ -1,15 +1,20 @@
 package com.haem.blogbackend.controller;
 
+import com.haem.blogbackend.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.dto.response.PostResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import com.haem.blogbackend.dto.response.ApiResponse;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.service.PostService;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/admin/posts")
@@ -30,5 +35,16 @@ public class PostController {
     public ResponseEntity<ApiResponse<Long>> getPostCount(){
         long count = postService.getPostCount();
         return ResponseEntity.ok(ApiResponse.ok(count));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
+            @AuthenticationPrincipal UserDetails user,
+            @RequestPart("data")PostCreateRequestDto requestDto,
+            @RequestPart(value = "file", required=false) MultipartFile[] files
+    ) throws IOException {
+        String accountName = user.getUsername();
+        PostResponseDto postResponseDto = postService.createPost(accountName, requestDto, files);
+        return ResponseEntity.ok(ApiResponse.ok(postResponseDto));
     }
 }

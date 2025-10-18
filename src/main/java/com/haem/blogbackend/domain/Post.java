@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
+import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
 import jakarta.persistence.*;
 
 @Entity
@@ -97,5 +99,21 @@ public class Post {
     public void removeImage(Image image) {
         images.remove(image);
         image.setPost(null);
+    }
+
+    public static Post create(Category category, Admin admin, String title, String content){
+        if(category == null){
+            throw new CategoryNotFoundException(category.getId());
+        }
+        if(admin == null){
+            throw new AdminNotFoundException(admin.getAccountName());
+        }
+        if(title == null || title.length() == 0){
+            throw new IllegalArgumentException("제목 입력은 필수입니다.");
+        }
+        if(content == null || content.length() == 0){
+            throw new IllegalArgumentException("내용을 입력해 주세요.");
+        }
+        return new Post(category, admin, title, content);
     }
 }
