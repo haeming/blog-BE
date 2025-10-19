@@ -27,6 +27,13 @@ public class ImageService {
         post.addImage(image);
     }
 
+    public String uploadTempImage(MultipartFile file, String subDir) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("빈 파일은 업로드할 수 없습니다.");
+        }
+        return fileStorageService.storeFile(file, subDir);
+    }
+
     public void deleteImage(Image image, String basePath) throws IOException {
         if(image == null || image.getImageUrl() == null){
             return;
