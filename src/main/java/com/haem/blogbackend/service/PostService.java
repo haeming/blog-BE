@@ -54,6 +54,12 @@ public class PostService {
         return postRepository.findAll(pageable).map(PostSummaryResponseDto::new);
     }
 
+    public PostResponseDto getPost (Long id){
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
+        return PostResponseDto.from(post);
+    }
+
     @Transactional
     public PostResponseDto createPost (String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) throws IOException {
         Admin admin = adminRepository.findByAccountName(accountName)
