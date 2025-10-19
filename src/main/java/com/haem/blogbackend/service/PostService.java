@@ -4,6 +4,7 @@ import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.exception.notfound.PostNotFoundException;
+import com.haem.blogbackend.repository.ImageRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -33,16 +37,19 @@ public class PostService {
     private final PostRepository postRepository;
     private final AdminRepository adminRepository;
     private final CategoryRepository categoryRepository;
+    private final ImageRepository imageRepository;
     private final ImageService imageService;
 
     public PostService(
             PostRepository postRepository,
             AdminRepository adminRepository,
             CategoryRepository categoryRepository,
+            ImageRepository imageRepository,
             ImageService imageService) {
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.categoryRepository = categoryRepository;
+        this.imageRepository = imageRepository;
         this.imageService = imageService;
     }
 
@@ -61,7 +68,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto createPost (String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) throws IOException {
+    public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) throws IOException {
         Admin admin = adminRepository.findByAccountName(accountName)
                 .orElseThrow(() -> new AdminNotFoundException(accountName));
 
@@ -72,17 +79,19 @@ public class PostService {
             category = categoryRepository.findById(requestDto.getCategoryId())
                     .orElseThrow(() -> new CategoryNotFoundException(requestDto.getCategoryId()));
         }
-
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
-        Post saved = postRepository.save(post);
+        postRepository.save(post);
 
-        if(files != null && files.length > 0){
-            for(MultipartFile file : files){
-                imageService.saveImage(saved, file, "blog/post");
-            }
+        Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(requestDto.getContent());
+        while (matcher.find()) {
+            String path = matcher.group().replace("(", "").replace(")", "");
+            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
+            imageRepository.save(image);
         }
-        return PostResponseDto.from(saved);
+
+        return PostResponseDto.from(post);
     }
+
 
     @Transactional
     public void deletePost (Long id){
