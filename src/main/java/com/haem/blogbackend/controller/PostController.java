@@ -39,6 +39,12 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.ok(count));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<PostResponseDto>> getPost(@PathVariable("id") Long id){
+        PostResponseDto responseDto = postService.getPost(id);
+        return ResponseEntity.ok(ApiResponse.ok(responseDto));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
             @AuthenticationPrincipal UserDetails user,
