@@ -17,7 +17,7 @@ public class Post {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
+    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT), nullable = true)
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -102,9 +102,6 @@ public class Post {
     }
 
     public static Post create(Category category, Admin admin, String title, String content){
-        if(category == null){
-            throw new CategoryNotFoundException(category.getId());
-        }
         if(admin == null){
             throw new AdminNotFoundException(admin.getAccountName());
         }

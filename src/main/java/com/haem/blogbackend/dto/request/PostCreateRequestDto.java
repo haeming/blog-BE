@@ -44,10 +44,16 @@ public class PostCreateRequestDto {
 //        :
 //                new ArrayList<>();
         List<MultipartFile> files = new ArrayList<>();
+
+        Long categoryId = null;
+        if(post.getCategory() != null){
+            categoryId = post.getCategory().getId();
+        }
+
         return PostCreateRequestDto.builder()
                 .title(post.getTitle())
                 .content(post.getContent())
-                .categoryId(post.getCategory().getId())
+                .categoryId(categoryId)
                 .files(files)
                 .build();
     }
