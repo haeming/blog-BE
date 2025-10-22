@@ -1,25 +1,27 @@
 package com.haem.blogbackend.controller;
 
-import com.haem.blogbackend.dto.request.*;
-import com.haem.blogbackend.dto.response.ApiResponse;
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import com.haem.blogbackend.dto.response.CategoryResponseDto;
-import com.haem.blogbackend.service.CategoryService;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
-
-import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
+import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
+import com.haem.blogbackend.dto.response.ApiResponse;
+import com.haem.blogbackend.dto.response.CategoryResponseDto;
+import com.haem.blogbackend.service.CategoryService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/admin/categories")
@@ -50,7 +52,7 @@ public CategoryController(CategoryService categoryService) {
 
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryResponseDto>> createCategory(
-            @RequestPart("data") CategoryCreateRequestDto requestDto,
+            @Valid @RequestPart("data") CategoryCreateRequestDto requestDto,
             @RequestPart(value = "file", required = false) MultipartFile file
     )throws IOException{
         CategoryResponseDto responseDto = categoryService.createCategory(requestDto, file);
