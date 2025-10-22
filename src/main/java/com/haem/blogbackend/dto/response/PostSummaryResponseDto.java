@@ -1,9 +1,10 @@
 package com.haem.blogbackend.dto.response;
 
-import com.haem.blogbackend.domain.Post;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import com.haem.blogbackend.domain.Post;
+
+import lombok.Getter;
 
 @Getter
 public class PostSummaryResponseDto {
@@ -15,13 +16,25 @@ public class PostSummaryResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public PostSummaryResponseDto(Post post) {
-        this.id = post.getId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.categoryId = post.getCategory() != null ? post.getCategory().getId() : null;
-        this.categoryName = post.getCategory()!= null ? post.getCategory().getCategoryName() : null;
-        this.createdAt = post.getCreatedAt();
-        this.updatedAt = post.getUpdatedAt();
+    private PostSummaryResponseDto(Long id, String title, String content, Long categoryId, String categoryName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static PostSummaryResponseDto from(Post post){
+        return new PostSummaryResponseDto(
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getCategory().getId(),
+                post.getCategory().getCategoryName(),
+                post.getCreatedAt(),
+                post.getUpdatedAt()
+        );
     }
 }
