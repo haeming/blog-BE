@@ -1,34 +1,34 @@
 package com.haem.blogbackend.service;
 
-import com.haem.blogbackend.domain.Image;
-import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.exception.base.FileStorageException;
-import com.haem.blogbackend.exception.notfound.PostNotFoundException;
-import com.haem.blogbackend.repository.ImageRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.haem.blogbackend.domain.Admin;
-import com.haem.blogbackend.domain.Category;
-import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.dto.request.PostCreateRequestDto;
-import com.haem.blogbackend.dto.response.PostResponseDto;
-import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
-import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
-import com.haem.blogbackend.repository.AdminRepository;
-import com.haem.blogbackend.repository.CategoryRepository;
-import com.haem.blogbackend.repository.PostRepository;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.haem.blogbackend.domain.Admin;
+import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.domain.Image;
+import com.haem.blogbackend.domain.Post;
+import com.haem.blogbackend.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
+import com.haem.blogbackend.dto.response.PostResponseDto;
+import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.exception.base.FileStorageException;
+import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
+import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
+import com.haem.blogbackend.exception.notfound.PostNotFoundException;
+import com.haem.blogbackend.repository.AdminRepository;
+import com.haem.blogbackend.repository.CategoryRepository;
+import com.haem.blogbackend.repository.ImageRepository;
+import com.haem.blogbackend.repository.PostRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -58,7 +58,7 @@ public class PostService {
     }
 
     public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
-        return postRepository.findAll(pageable).map(PostSummaryResponseDto::new);
+        return postRepository.findAll(pageable).map(PostSummaryResponseDto::from);
     }
 
     public PostResponseDto getPost (Long id){
