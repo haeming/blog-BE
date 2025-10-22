@@ -1,22 +1,31 @@
 package com.haem.blogbackend.controller;
 
-import com.haem.blogbackend.dto.request.PostCreateRequestDto;
-import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.dto.response.PostResponseDto;
-import jakarta.validation.Valid;
+import java.io.IOException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
-import com.haem.blogbackend.dto.response.ApiResponse;
-import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.service.PostService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import com.haem.blogbackend.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
+import com.haem.blogbackend.dto.response.ApiResponse;
+import com.haem.blogbackend.dto.response.PostResponseDto;
+import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.service.PostService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/admin/posts")
@@ -48,7 +57,7 @@ public class PostController {
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
             @AuthenticationPrincipal UserDetails user,
-            @RequestPart("data")PostCreateRequestDto requestDto,
+            @Valid @RequestPart("data")PostCreateRequestDto requestDto,
             @RequestPart(value = "file", required=false) MultipartFile[] files
     ) throws IOException {
         String accountName = user.getUsername();
