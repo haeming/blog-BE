@@ -2,6 +2,7 @@ package com.haem.blogbackend.service;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +59,12 @@ public class PostService {
     }
 
     public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
-        return postRepository.findAll(pageable).map(PostSummaryResponseDto::from);
+        return postRepository.findAll(pageable).map(post -> {
+            String categoryName = Optional.ofNullable(post.getCategory())
+                    .map(Category::getCategoryName)
+                    .orElse("미분류");
+            return PostSummaryResponseDto.from(post, categoryName);
+        });
     }
 
     public PostResponseDto getPost (Long id){
