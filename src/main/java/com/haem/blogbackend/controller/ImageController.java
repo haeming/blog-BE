@@ -22,11 +22,11 @@ public class ImageController {
     }
 
     @PostMapping("/temp-image")
-    public ResponseEntity<ApiResponse<List<String>>> uploadTempImages(
+    public List<String> uploadTempImages(
             @RequestPart("file") MultipartFile file
     ) throws IOException {
         String url = imageService.uploadTempImage(file, "blog/post");
-        return ResponseEntity.ok(ApiResponse.ok(List.of(url)));
+        return List.of(url);
     }
 
 }
