@@ -37,46 +37,45 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<PostSummaryResponseDto>>> getPosts(Pageable pageable){
+    public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
         Page<PostSummaryResponseDto> postSummaryResponseDtoList = postService.getPosts(pageable);
-        return ResponseEntity.ok(ApiResponse.ok(postSummaryResponseDtoList));
+        return postSummaryResponseDtoList;
     }
 
     @GetMapping("/count")
-    public ResponseEntity<ApiResponse<Long>> getPostCount(){
+    public Long getPostCount(){
         long count = postService.getPostCount();
-        return ResponseEntity.ok(ApiResponse.ok(count));
+        return count;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponseDto>> getPost(@PathVariable("id") Long id){
+    public PostResponseDto getPost(@PathVariable("id") Long id){
         PostResponseDto responseDto = postService.getPost(id);
-        return ResponseEntity.ok(ApiResponse.ok(responseDto));
+        return responseDto;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
+    public PostResponseDto createPost(
             @AuthenticationPrincipal UserDetails user,
             @Valid @RequestPart("data")PostCreateRequestDto requestDto,
             @RequestPart(value = "file", required=false) MultipartFile[] files
     ) throws IOException {
         String accountName = user.getUsername();
         PostResponseDto postResponseDto = postService.createPost(accountName, requestDto, files);
-        return ResponseEntity.ok(ApiResponse.ok(postResponseDto));
+        return postResponseDto;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable("id") Long id){
+    public void deletePost(@PathVariable("id") Long id){
         postService.deletePost(id);
-        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
     @PatchMapping("/{id}/info")
-    public ResponseEntity<ApiResponse<PostResponseDto>> updatePostInfo(
+    public PostResponseDto updatePostInfo(
             @PathVariable("id") Long id,
             @Valid @RequestBody PostUpdateInfoRequestDto requestDto
     ){
         PostResponseDto responseDto = postService.updatePostInfo(id, requestDto);
-        return ResponseEntity.ok(ApiResponse.ok(responseDto));
+        return responseDto;
     }
 }
