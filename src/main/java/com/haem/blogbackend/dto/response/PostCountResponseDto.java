@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class PostCountResponseDto {
-    private long count;
+    private final long count;
 
     public PostCountResponseDto(long count){
         this.count = count;

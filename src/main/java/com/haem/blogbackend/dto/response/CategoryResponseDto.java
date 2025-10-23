@@ -1,17 +1,18 @@
 package com.haem.blogbackend.dto.response;
 
-import com.haem.blogbackend.domain.Category;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+
+import com.haem.blogbackend.domain.Category;
+
+import lombok.Getter;
 
 @Getter
 public class CategoryResponseDto {
-    private Long id;
-    private String categoryName;
-    private String imageUrl;
-    private String originalName;
-    private LocalDateTime createdAt;
+    private final Long id;
+    private final String categoryName;
+    private final String imageUrl;
+    private final String originalName;
+    private final LocalDateTime createdAt;
 
     private CategoryResponseDto(Long id, String categoryName, String imageUrl, String originalName, LocalDateTime createdAt) {
         this.id = id;

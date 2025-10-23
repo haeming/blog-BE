@@ -1,16 +1,15 @@
 package com.haem.blogbackend.controller;
 
-import com.haem.blogbackend.dto.response.ApiResponse;
-import com.haem.blogbackend.service.ImageService;
-import org.springframework.http.ResponseEntity;
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.List;
+import com.haem.blogbackend.service.ImageService;
 
 @RestController
 @RequestMapping("/api/admin/images")

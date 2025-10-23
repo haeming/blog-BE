@@ -3,7 +3,6 @@ package com.haem.blogbackend.controller;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
-import com.haem.blogbackend.dto.response.ApiResponse;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.service.CategoryService;
 

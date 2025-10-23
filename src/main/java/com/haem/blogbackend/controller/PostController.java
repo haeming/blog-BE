@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.dto.response.ApiResponse;
 import com.haem.blogbackend.dto.response.PostResponseDto;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.service.PostService;
