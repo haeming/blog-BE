@@ -33,52 +33,51 @@ public CategoryController(CategoryService categoryService) {
 }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CategoryResponseDto>>> getCategories(){
+    public List<CategoryResponseDto> getCategories(){
         List<CategoryResponseDto> categoryResponseDtoList = categoryService.getCategories();
-        return ResponseEntity.ok(ApiResponse.ok(categoryResponseDtoList));
+        return categoryResponseDtoList;
     }
 
     @GetMapping("/count")
-    public ResponseEntity<ApiResponse<Long>> getCategoryCount(){
+    public long getCategoryCount(){
         long count = categoryService.getCategoryCount();
-        return ResponseEntity.ok(ApiResponse.ok(count));
+        return count;
     }
 
     @GetMapping("/{categoryId}/post-count")
-    public ResponseEntity<ApiResponse<Long>> getPostCountByCategoryId(@PathVariable("categoryId") Long categoryId){
+    public long getPostCountByCategoryId(@PathVariable("categoryId") Long categoryId){
         long count = categoryService.getPostCountByCategoryId(categoryId);
-        return ResponseEntity.ok(ApiResponse.ok(count));
+        return count;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CategoryResponseDto>> createCategory(
+    public CategoryResponseDto createCategory(
             @Valid @RequestPart("data") CategoryCreateRequestDto requestDto,
             @RequestPart(value = "file", required = false) MultipartFile file
     )throws IOException{
         CategoryResponseDto responseDto = categoryService.createCategory(requestDto, file);
-        return ResponseEntity.ok(ApiResponse.ok(responseDto));
+        return responseDto;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable("id") Long id){
+    public void deleteCategory(@PathVariable("id") Long id){
         categoryService.deleteCategory(id);
-        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
     @PatchMapping("/{id}/name")
-    public ResponseEntity<ApiResponse<CategoryResponseDto>> updateCategoryName(
+    public CategoryResponseDto updateCategoryName(
             @PathVariable("id") Long id,
             @Valid @RequestBody CategoryUpdateNameRequestDto requestDto
     ){
         CategoryResponseDto responseDto = categoryService.updateCategoryName(id, requestDto);
-        return ResponseEntity.ok(ApiResponse.ok(responseDto));
+        return responseDto;
     }
 
     @PatchMapping("/{id}/image")
-    public ResponseEntity<ApiResponse<CategoryResponseDto>> updateCategoryImage(
+    public CategoryResponseDto updateCategoryImage(
             @PathVariable("id") Long id,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         CategoryResponseDto responseDto = categoryService.updateCategoryImage(id, file);
-        return ResponseEntity.ok(ApiResponse.ok(responseDto));
+        return responseDto;
     }
 }
