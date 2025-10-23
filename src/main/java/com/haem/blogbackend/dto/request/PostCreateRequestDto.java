@@ -34,15 +34,6 @@ public class PostCreateRequestDto {
     }
 
     public static PostCreateRequestDto from(Post post){
-//        List<ImageRequestDto> images = post.getImages() != null ?
-//                post.getImages().stream()
-//                .map(image -> ImageRequestDto.builder()
-//                        .imageUrl(image.getImageUrl())
-//                        .originalName(image.getOriginalName())
-//                        .build())
-//                .toList()
-//        :
-//                new ArrayList<>();
         List<MultipartFile> files = new ArrayList<>();
 
         Long categoryId = null;
