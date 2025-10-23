@@ -1,8 +1,5 @@
 package com.haem.blogbackend.service;
 
-import com.haem.blogbackend.dto.response.TokenVerifyResponseDto;
-import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +7,7 @@ import com.haem.blogbackend.config.JwtProvider;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.dto.request.AdminLoginRequestDto;
 import com.haem.blogbackend.dto.response.AdminLoginResponseDto;
+import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.repository.AdminRepository;
 
 @Service

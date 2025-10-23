@@ -8,12 +8,12 @@ import lombok.Getter;
 
 @Getter
 public class PostSummaryResponseDto {
-    private Long id;
-    private String title;
-    private String content;
-    private String categoryName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private final Long id;
+    private final String title;
+    private final String content;
+    private final String categoryName;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     private PostSummaryResponseDto(Long id, String title, String content, String categoryName, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;

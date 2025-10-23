@@ -1,23 +1,24 @@
 package com.haem.blogbackend.dto.response;
 
-import com.haem.blogbackend.domain.Post;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.haem.blogbackend.domain.Post;
+
+import lombok.Getter;
+
 @Getter
 public class PostResponseDto {
-    private Long id;
-    private String title;
-    private String content;
-    private Long categoryId;
-    private String categoryName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private final Long id;
+    private final String title;
+    private final String content;
+    private final Long categoryId;
+    private final String categoryName;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
-    private List<ImageResponseDto> images;
+    private final List<ImageResponseDto> images;
 
     private PostResponseDto(Long id, String title, String content, Long categoryId, String categoryName,
                             LocalDateTime createdAt, LocalDateTime updatedAt, List<ImageResponseDto> images) {
