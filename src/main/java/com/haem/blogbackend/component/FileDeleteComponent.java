@@ -24,7 +24,7 @@ public class FileDeleteComponent {
 
                 Files.deleteIfExists(filePath);
 
-                DirectoryCleanUpUtil.cleanUpEmptyDirectory(filePath.getParent(), Paths.get(uploadDir, relativePath));
+                DirectoryCleanUpUtil.cleanUpEmptyDirectory(filePath.getParent(), Paths.get(uploadDir, basePath));
             } catch (IOException e){
                 log.warn("파일 삭제 실패 (URL: {})", imageUrl, e);
             }
