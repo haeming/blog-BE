@@ -7,7 +7,7 @@ import java.io.File;
 public class FileValidator {
     private FileValidator() {}
 
-    public static boolean isValid(MultipartFile file) {
+    public static boolean isInValid(MultipartFile file) {
         return file == null || file.isEmpty();
     }
 }

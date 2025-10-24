@@ -1,10 +1,7 @@
 package com.haem.blogbackend.component;
 
 import com.haem.blogbackend.exception.base.FileStorageException;
-import com.haem.blogbackend.util.DirectoryCreator;
-import com.haem.blogbackend.util.FileNameGenerator;
-import com.haem.blogbackend.util.FilePathGenerator;
-import com.haem.blogbackend.util.FileValidator;
+import com.haem.blogbackend.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,7 +19,7 @@ public class FileUploadComponent {
     private String uploadDir;
 
     public String uploadFile(MultipartFile file, String subDir) {
-        if(FileValidator.isValid(file)){
+        if(FileValidator.isInValid(file)){
             return null;
         }
 
@@ -35,9 +32,9 @@ public class FileUploadComponent {
             String saveFileName = FileNameGenerator.generate(originalName);
             Path filePath = saveFilePath.resolve(saveFileName);
 
-            file.transferTo(filePath.toFile());
+            FileStorage.saveFile(file, filePath);
 
-            return "/uploadFiles/" + saveFilePath + "/" + saveFileName;
+            return PathConverter.pathToUrl(saveFilePath, saveFileName);
         } catch (IOException e){
             throw new FileStorageException("파일 저장 중 오류가 발생했습니다.", e);
         }
