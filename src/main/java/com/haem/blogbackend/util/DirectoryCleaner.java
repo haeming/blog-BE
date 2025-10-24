@@ -7,10 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Slf4j
-public class DirectoryCleanUpUtil {
-    private DirectoryCleanUpUtil() {}
+public class DirectoryCleaner {
+    private DirectoryCleaner() {}
 
-    public static void cleanUpEmptyDirectory(Path dir, Path baseDir) {
+    public static void clean(Path dir, Path baseDir) {
         try{
             Path currentDir = dir;
 

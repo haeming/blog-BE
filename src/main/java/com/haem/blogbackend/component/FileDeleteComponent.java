@@ -1,6 +1,6 @@
 package com.haem.blogbackend.component;
 
-import com.haem.blogbackend.util.DirectoryCleanUpUtil;
+import com.haem.blogbackend.util.DirectoryCleaner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class FileDeleteComponent {
 
                 Files.deleteIfExists(filePath);
 
-                DirectoryCleanUpUtil.cleanUpEmptyDirectory(filePath.getParent(), Paths.get(uploadDir, basePath));
+                DirectoryCleaner.clean(filePath.getParent(), Paths.get(uploadDir, basePath));
             } catch (IOException e){
                 log.warn("파일 삭제 실패 (URL: {})", imageUrl, e);
             }
