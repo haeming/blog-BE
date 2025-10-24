@@ -1,5 +1,7 @@
 package com.haem.blogbackend.service;
 
+import com.haem.blogbackend.component.FileDeleteComponent;
+import com.haem.blogbackend.component.FileUploadComponent;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
 import com.haem.blogbackend.repository.ImageRepository;
@@ -10,11 +12,13 @@ import java.io.IOException;
 
 @Service
 public class ImageService {
-    private final FileStorageService fileStorageService;
+    private final FileUploadComponent fileUploadComponent;
+    private final FileDeleteComponent fileDeleteComponent;
     private final ImageRepository imageRepository;
 
-    public ImageService(FileStorageService fileStorageService, ImageRepository imageRepository){
-        this.fileStorageService = fileStorageService;
+    public ImageService(FileUploadComponent fileUploadComponent, FileDeleteComponent fileDeleteComponent, ImageRepository imageRepository){
+        this.fileUploadComponent = fileUploadComponent;
+        this.fileDeleteComponent = fileDeleteComponent;
         this.imageRepository = imageRepository;
     }
 
@@ -22,7 +26,7 @@ public class ImageService {
         if(file == null || file.isEmpty()){
             return;
         }
-        String imageUrl = fileStorageService.storeFile(file, subDir);
+        String imageUrl = fileUploadComponent.uploadFile(file, subDir);
         Image image = new Image(post, imageUrl, file.getOriginalFilename());
         post.addImage(image);
     }
@@ -31,14 +35,14 @@ public class ImageService {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("빈 파일은 업로드할 수 없습니다.");
         }
-        return fileStorageService.storeFile(file, subDir);
+        return fileUploadComponent.uploadFile(file, subDir);
     }
 
     public void deleteImage(Image image, String basePath) throws IOException {
         if(image == null || image.getImageUrl() == null){
             return;
         }
-        fileStorageService.deleteFile(image.getImageUrl(), basePath);
+        fileDeleteComponent.deleteFile(image.getImageUrl(), basePath);
         imageRepository.delete(image);
     }
 }

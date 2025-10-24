@@ -69,8 +69,6 @@ public class FileStorageService {
                 Path filePath = Paths.get(uploadDir, relativePath);
 
                 Files.deleteIfExists(filePath);
-
-                cleanUpEmptyDirectory(filePath.getParent(), basePath);
             } catch (IOException e){
                 log.warn("파일 삭제 실패 (URL: {})", imageUrl, e);
             }
