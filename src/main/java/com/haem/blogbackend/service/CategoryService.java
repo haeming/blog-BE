@@ -1,5 +1,7 @@
 package com.haem.blogbackend.service;
 
+import com.haem.blogbackend.component.FileDeleteComponent;
+import com.haem.blogbackend.component.FileUploadComponent;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +30,18 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
-    private final FileStorageService fileStorageService;
+    private final FileUploadComponent fileUploadComponent;
+    private final FileDeleteComponent fileDeleteComponent;
 
-    public CategoryService(CategoryRepository categoryRepository, PostRepository postRepository, FileStorageService fileStorageService) {
+    public CategoryService(
+            CategoryRepository categoryRepository,
+            PostRepository postRepository,
+            FileUploadComponent fileUploadComponent,
+            FileDeleteComponent fileDeleteComponent) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
-        this.fileStorageService = fileStorageService;
+        this.fileUploadComponent = fileUploadComponent;
+        this.fileDeleteComponent = fileDeleteComponent;
     }
 
     public long getCategoryCount(){
@@ -43,7 +51,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
         String originalName = (file != null && !file.isEmpty()) ? file.getOriginalFilename() : null;
-        String imageUrl = fileStorageService.storeFile(file, CATEGORY_BASE_PATH);
+        String imageUrl = fileUploadComponent.uploadFile(file, CATEGORY_BASE_PATH);
 
         Category category = Category.create(requestDto.getCategoryName(), imageUrl, originalName);
         Category saved = categoryRepository.save(category);
@@ -54,7 +62,7 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-        fileStorageService.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
+        fileDeleteComponent.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
         categoryRepository.delete(category);
     }
 
@@ -77,10 +85,10 @@ public class CategoryService {
             return CategoryResponseDto.from(category);
         }
 
-        fileStorageService.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
+        fileDeleteComponent.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
 
         String originalName = file.getOriginalFilename();
-        String imageUrl = fileStorageService.storeFile(file, CATEGORY_BASE_PATH);
+        String imageUrl = fileUploadComponent.uploadFile(file, CATEGORY_BASE_PATH);
 
         category.updateImage(imageUrl, originalName);
         return CategoryResponseDto.from(category);
