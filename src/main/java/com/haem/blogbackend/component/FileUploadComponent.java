@@ -1,8 +1,10 @@
 package com.haem.blogbackend.component;
 
 import com.haem.blogbackend.exception.base.FileStorageException;
+import com.haem.blogbackend.util.DirectoryCreator;
 import com.haem.blogbackend.util.FileNameGenerator;
 import com.haem.blogbackend.util.FilePathGenerator;
+import com.haem.blogbackend.util.FileValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ public class FileUploadComponent {
     private String uploadDir;
 
     public String uploadFile(MultipartFile file, String subDir) {
-        if(file == null || file.isEmpty()){
+        if(FileValidator.isValid(file)){
             return null;
         }
 
@@ -28,7 +30,7 @@ public class FileUploadComponent {
             String originalName = file.getOriginalFilename();
 
             Path saveFilePath = FilePathGenerator.generate(uploadDir, subDir);
-            Files.createDirectories(saveFilePath);
+            DirectoryCreator.create(saveFilePath);
 
             String saveFileName = FileNameGenerator.generate(originalName);
             Path filePath = saveFilePath.resolve(saveFileName);
