@@ -34,7 +34,7 @@ public class FileStorageService {
                 }
             }
         } catch (IOException e){
-            log.warn("폴더 정리 실패: {}", e.getMessage());
+            log.warn("폴더 정리 실패", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class FileStorageService {
 
                 cleanUpEmptyDirectory(filePath.getParent(), basePath);
             } catch (IOException e){
-                log.warn("파일 삭제 실패: {} (URL: {})", e.getMessage(), imageUrl);
+                log.warn("파일 삭제 실패 (URL: {})", imageUrl, e);
             }
         }
     }
