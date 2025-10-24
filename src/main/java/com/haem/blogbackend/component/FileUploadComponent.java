@@ -3,7 +3,6 @@ package com.haem.blogbackend.component;
 import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.util.FileNameGenerator;
 import com.haem.blogbackend.util.FilePathGenerator;
-import com.haem.blogbackend.util.FilePathUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
