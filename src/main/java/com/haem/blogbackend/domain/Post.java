@@ -4,9 +4,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.haem.blogbackend.exception.notfound.AdminNotFoundException;
-import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "post")
@@ -102,13 +112,10 @@ public class Post {
     }
 
     public static Post create(Category category, Admin admin, String title, String content){
-        if(admin == null){
-            throw new AdminNotFoundException(admin.getAccountName());
-        }
-        if(title == null || title.length() == 0){
+        if(title == null || title.isBlank()){
             throw new IllegalArgumentException("제목 입력은 필수입니다.");
         }
-        if(content == null || content.length() == 0){
+        if(content == null || content.isBlank()){
             throw new IllegalArgumentException("내용을 입력해 주세요.");
         }
         return new Post(category, admin, title, content);
