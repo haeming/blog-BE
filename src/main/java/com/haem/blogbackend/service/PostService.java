@@ -78,13 +78,14 @@ public class PostService {
         Admin admin = adminRepository.findByAccountName(accountName)
                 .orElseThrow(() -> new AdminNotFoundException(accountName));
 
-        Long categoryId = (requestDto.getCategoryId() != null) ? requestDto.getCategoryId() : 0L;
+        Long categoryId = Optional.ofNullable(requestDto.getCategoryId()).orElse(0L);
         Category category = null;
 
         if(categoryId != 0){
             category = categoryRepository.findById(requestDto.getCategoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException(requestDto.getCategoryId()));
+                    .orElseThrow(() -> new CategoryNotFoundException(categoryId));
         }
+        
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
 
