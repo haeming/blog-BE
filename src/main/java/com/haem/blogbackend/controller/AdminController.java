@@ -11,7 +11,6 @@ import com.haem.blogbackend.config.JwtProvider;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.dto.request.AdminLoginRequestDto;
 import com.haem.blogbackend.dto.response.AdminLoginResponseDto;
-import com.haem.blogbackend.dto.response.ApiResponse;
 import com.haem.blogbackend.dto.response.TokenVerifyResponseDto;
 import com.haem.blogbackend.exception.token.ExpiredTokenException;
 import com.haem.blogbackend.exception.token.InvalidTokenException;
@@ -34,7 +33,7 @@ public class AdminController {
     }
 
     @GetMapping("/verify-token")
-    public ApiResponse<TokenVerifyResponseDto> verifyToken(@RequestHeader(value = "Authorization", required = false) String authHeader){
+    public TokenVerifyResponseDto verifyToken(@RequestHeader(value = "Authorization", required = false) String authHeader){
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
             throw new InvalidTokenException();
         }
@@ -48,7 +47,7 @@ public class AdminController {
         Admin admin = adminService.findByAccountName(accountName);
         TokenVerifyResponseDto response = TokenVerifyResponseDto.from(admin);
 
-        return ApiResponse.ok(response);
+        return response;
     }
 
 }

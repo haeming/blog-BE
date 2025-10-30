@@ -1,14 +1,12 @@
 package com.haem.blogbackend.exception;
 
+import com.haem.blogbackend.dto.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.haem.blogbackend.dto.response.ApiResponse;
-import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.exception.base.NotFoundException;
 import com.haem.blogbackend.exception.base.TokenException;
 
@@ -18,51 +16,31 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<String>> handleIllegalArgument(IllegalArgumentException ex){
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ex.getMessage(),HttpStatus.BAD_REQUEST.value()));
-    }
-
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleNotFound(NotFoundException ex) {
-        log.warn("[NotFoundException] {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
+    public ErrorResponse handleNotFound(NotFoundException e) {
+        return ErrorResponse.of(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(FileStorageException.class)
-    public ResponseEntity<ApiResponse<String>> handleFileStorage(FileStorageException ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<String>> handleGeneral(Exception ex){
-        log.error("서버 오류 발생", ex);
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR.value()));
-    }
-
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(TokenException.class)
-    public ResponseEntity<ApiResponse<String>> handleTokenException(TokenException ex) {
-        log.warn("[TokenException] {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()));
+    public ErrorResponse handleTokenException(TokenException e) {
+        log.warn("TokenException 발생 {}", e.getMessage());
+        return ErrorResponse.of(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<String>> handleValidationException(MethodArgumentNotValidException ex){
-        BindingResult bindingResult = ex.getBindingResult();
-        String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(message, HttpStatus.BAD_REQUEST.value()));
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        return ErrorResponse.of(message, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleGeneral(Exception e){
+        log.error("서버 오류 발생", e);
+        return ErrorResponse.of("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
