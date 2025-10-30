@@ -18,26 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<String>> handleIllegalArgument(IllegalArgumentException ex){
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(ex.getMessage(),HttpStatus.BAD_REQUEST.value()));
-    }
-
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ApiResponse<String>> handleNotFound(NotFoundException ex) {
         log.warn("[NotFoundException] {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
-    }
-
-    @ExceptionHandler(FileStorageException.class)
-    public ResponseEntity<ApiResponse<String>> handleFileStorage(FileStorageException ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
     @ExceptionHandler(Exception.class)
