@@ -6,7 +6,6 @@ import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

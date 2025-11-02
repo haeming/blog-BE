@@ -1,8 +1,6 @@
 package com.haem.blogbackend.service;
 
-import com.haem.blogbackend.component.FileDeleteComponent;
 import com.haem.blogbackend.component.FileManagement;
-import com.haem.blogbackend.component.FileUploadComponent;
 import com.haem.blogbackend.domain.BasePath;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
