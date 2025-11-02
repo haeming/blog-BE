@@ -53,6 +53,7 @@ public class FileManagement {
             Files.deleteIfExists(filePath);
         } catch (IOException e){
             log.warn("파일 삭제 실패 (URL: {})", imageUrl, e);
+            throw new FileStorageException("파일 삭제 중 오류가 발생했습니다.", e);
         }
     }
 
