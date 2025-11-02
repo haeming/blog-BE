@@ -3,6 +3,7 @@ package com.haem.blogbackend.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.haem.blogbackend.domain.BasePath;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -24,7 +25,7 @@ public class ImageController {
     public List<String> uploadTempImages(
             @RequestPart("file") MultipartFile file
     ) throws IOException {
-        String url = imageService.uploadTempImage(file, "blog/post");
+        String url = imageService.uploadTempImage(file, BasePath.POST);
         return List.of(url);
     }
 

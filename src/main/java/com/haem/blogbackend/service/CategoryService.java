@@ -1,11 +1,12 @@
 package com.haem.blogbackend.service;
 
-import com.haem.blogbackend.component.FileDeleteComponent;
-import com.haem.blogbackend.component.FileUploadComponent;
+import com.haem.blogbackend.component.DirectoryManagement;
+import com.haem.blogbackend.component.FileManagement;
+import com.haem.blogbackend.domain.BasePath;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
+import com.haem.blogbackend.exception.base.FileStorageException;
 import com.haem.blogbackend.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,32 +17,30 @@ import com.haem.blogbackend.exception.notfound.CategoryNotFoundException;
 import com.haem.blogbackend.repository.CategoryRepository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
 @Transactional(readOnly = true)
 @Service
 public class CategoryService {
-
-    @Value("${file.upload-dir}")
-    private String uploadDir;
-
-    private static final String CATEGORY_BASE_PATH = "blog/category";
-
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
-    private final FileUploadComponent fileUploadComponent;
-    private final FileDeleteComponent fileDeleteComponent;
+    private final FileManagement fileManagement;
+    private final DirectoryManagement directoryManagement;
 
     public CategoryService(
             CategoryRepository categoryRepository,
             PostRepository postRepository,
-            FileUploadComponent fileUploadComponent,
-            FileDeleteComponent fileDeleteComponent) {
+            FileManagement fileManagement,
+            DirectoryManagement directoryManagement) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
-        this.fileUploadComponent = fileUploadComponent;
-        this.fileDeleteComponent = fileDeleteComponent;
+        this.fileManagement = fileManagement;
+        this.directoryManagement = directoryManagement;
     }
 
     public long getCategoryCount(){
@@ -50,9 +49,17 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
-        String originalName = (file != null && !file.isEmpty()) ? file.getOriginalFilename() : null;
-        String imageUrl = fileUploadComponent.uploadFile(file, CATEGORY_BASE_PATH);
-
+        String imageUrl = null;
+        String originalName = null;
+        if(file != null && !file.isEmpty()){
+            try (InputStream inputStream = file.getInputStream()){
+                originalName = file.getOriginalFilename();
+                imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
+            } catch (IOException e){
+                log.error("카테고리 이미지 업로드 실패", e);
+                throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);
+            }
+        }
         Category category = Category.create(requestDto.getCategoryName(), imageUrl, originalName);
         Category saved = categoryRepository.save(category);
         return CategoryResponseDto.from(saved);
@@ -62,7 +69,14 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-        fileDeleteComponent.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
+
+        if(category.getImageUrl() != null){
+            fileManagement.deleteFile(category.getImageUrl());
+            String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
+            Path filePath = Paths.get("uploadFiles", relativePath);
+            directoryManagement.clean(filePath.getParent(), Paths.get("uploadFiles"));
+        }
+
         categoryRepository.delete(category);
     }
 
@@ -85,10 +99,20 @@ public class CategoryService {
             return CategoryResponseDto.from(category);
         }
 
-        fileDeleteComponent.deleteFile(category.getImageUrl(), CATEGORY_BASE_PATH);
+        if (category.getImageUrl() != null){
+            fileManagement.deleteFile(category.getImageUrl());
+        }
 
-        String originalName = file.getOriginalFilename();
-        String imageUrl = fileUploadComponent.uploadFile(file, CATEGORY_BASE_PATH);
+        String imageUrl;
+        String originalName;
+
+        try (InputStream inputStream = file.getInputStream()) {
+            originalName = file.getOriginalFilename();
+            imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
+        } catch (IOException e) {
+            log.error("카테고리 이미지 수정 중 오류 발생", e);
+            throw new FileStorageException("이미지 수정 중 오류가 발생했습니다.");
+        }
 
         category.updateImage(imageUrl, originalName);
         return CategoryResponseDto.from(category);

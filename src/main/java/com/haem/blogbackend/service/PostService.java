@@ -79,12 +79,10 @@ public class PostService {
                 .orElseThrow(() -> new AdminNotFoundException(accountName));
 
         Long categoryId = Optional.ofNullable(requestDto.getCategoryId()).orElse(0L);
-        Category category = null;
-
-        if(categoryId != 0){
-            category = categoryRepository.findById(requestDto.getCategoryId())
-                    .orElseThrow(() -> new CategoryNotFoundException(categoryId));
-        }
+        Category category = (categoryId != 0)
+                ? categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId))
+                : null;
         
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
@@ -107,8 +105,8 @@ public class PostService {
 
         for(Image image : post.getImages()){
             try {
-                imageService.deleteImage(image, "blog/post");
-            } catch (IOException e){
+                imageService.deleteImage(image);
+            } catch (Exception e){
                 throw new FileStorageException("포스트 이미지 삭제 중 에러가 발생했습니다.", e);
             }
         }
