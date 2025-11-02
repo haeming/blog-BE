@@ -94,6 +94,12 @@ public class PostService {
             imageRepository.save(image);
         }
 
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                imageService.saveImage(post, file, com.haem.blogbackend.domain.BasePath.POST);
+            }
+        }
+
         return PostResponseDto.from(post);
     }
 
