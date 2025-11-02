@@ -1,6 +1,5 @@
 package com.haem.blogbackend.service;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -74,7 +73,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) throws IOException {
+    public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) {
         Admin admin = adminRepository.findByAccountName(accountName)
                 .orElseThrow(() -> new AdminNotFoundException(accountName));
 
@@ -92,6 +91,12 @@ public class PostService {
             String path = matcher.group().replace("(", "").replace(")", "");
             Image image = new Image(post, path, Paths.get(path).getFileName().toString());
             imageRepository.save(image);
+        }
+
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                imageService.saveImage(post, file, com.haem.blogbackend.domain.BasePath.POST);
+            }
         }
 
         return PostResponseDto.from(post);

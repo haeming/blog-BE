@@ -1,6 +1,5 @@
 package com.haem.blogbackend.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.haem.blogbackend.domain.BasePath;
@@ -22,9 +21,7 @@ public class ImageController {
     }
 
     @PostMapping("/temp-image")
-    public List<String> uploadTempImages(
-            @RequestPart("file") MultipartFile file
-    ) throws IOException {
+    public List<String> uploadTempImages(@RequestPart("file") MultipartFile file){
         String url = imageService.uploadTempImage(file, BasePath.POST);
         return List.of(url);
     }
