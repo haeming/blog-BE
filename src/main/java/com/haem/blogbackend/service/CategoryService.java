@@ -1,5 +1,6 @@
 package com.haem.blogbackend.service;
 
+import com.haem.blogbackend.component.DirectoryManagement;
 import com.haem.blogbackend.component.FileManagement;
 import com.haem.blogbackend.domain.BasePath;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
@@ -18,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
@@ -27,14 +30,17 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
     private final FileManagement fileManagement;
+    private final DirectoryManagement directoryManagement;
 
     public CategoryService(
             CategoryRepository categoryRepository,
             PostRepository postRepository,
-            FileManagement fileManagement) {
+            FileManagement fileManagement,
+            DirectoryManagement directoryManagement) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.fileManagement = fileManagement;
+        this.directoryManagement = directoryManagement;
     }
 
     public long getCategoryCount(){
@@ -63,7 +69,14 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException(id));
-        fileManagement.deleteFile(category.getImageUrl());
+
+        if(category.getImageUrl() != null){
+            fileManagement.deleteFile(category.getImageUrl());
+            String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
+            Path filePath = Paths.get("uploadFiles", relativePath);
+            directoryManagement.clean(filePath.getParent(), Paths.get("uploadFiles"));
+        }
+
         categoryRepository.delete(category);
     }
 
