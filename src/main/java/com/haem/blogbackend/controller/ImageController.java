@@ -1,6 +1,5 @@
 package com.haem.blogbackend.controller;
 
-import java.io.IOException;
 import java.util.List;
 
 import com.haem.blogbackend.domain.BasePath;
