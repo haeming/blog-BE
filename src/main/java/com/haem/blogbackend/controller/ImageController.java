@@ -22,9 +22,7 @@ public class ImageController {
     }
 
     @PostMapping("/temp-image")
-    public List<String> uploadTempImages(
-            @RequestPart("file") MultipartFile file
-    ) throws IOException {
+    public List<String> uploadTempImages(@RequestPart("file") MultipartFile file){
         String url = imageService.uploadTempImage(file, BasePath.POST);
         return List.of(url);
     }

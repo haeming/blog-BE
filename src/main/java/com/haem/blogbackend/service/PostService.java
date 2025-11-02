@@ -74,7 +74,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) throws IOException {
+    public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) {
         Admin admin = adminRepository.findByAccountName(accountName)
                 .orElseThrow(() -> new AdminNotFoundException(accountName));
 
