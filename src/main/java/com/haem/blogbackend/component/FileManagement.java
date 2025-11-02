@@ -5,7 +5,6 @@ import com.haem.blogbackend.exception.base.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +39,20 @@ public class FileManagement {
             return "/uploadFiles/" + datePath + "/" + saveName;
         } catch (IOException e){
             throw new FileStorageException("파일 저장 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    public void deleteFile(String imageUrl) {
+        if(imageUrl == null){
+            return;
+        }
+
+        try {
+            String relativePath = imageUrl.replace("/uploadFiles/", "");
+            Path filePath = Paths.get(uploadDir, relativePath);
+            Files.deleteIfExists(filePath);
+        } catch (IOException e){
+            log.warn("파일 삭제 실패 (URL: {})", imageUrl, e);
         }
     }
 
