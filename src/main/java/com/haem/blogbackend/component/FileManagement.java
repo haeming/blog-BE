@@ -29,11 +29,15 @@ public class FileManagement {
             LocalDate now = LocalDate.now();
             String datePath = String.format("%s/%d/%02d/%02d", basePath.getPath(), now.getYear(), now.getMonthValue(), now.getDayOfMonth());
 
-            Path savePath = Paths.get(uploadDir, datePath);
+            Path baseUploadDir = Paths.get(uploadDir).toAbsolutePath();
+            Path savePath = baseUploadDir.resolve(datePath);
             Files.createDirectories(savePath);
+            log.info("📁 [UPLOAD PATH] uploadDir={}, finalSavePath={}", uploadDir, savePath);
 
             String saveName = UUID.randomUUID() + "_" + originalName;
             Path filePath = savePath.resolve(saveName);
+            log.info("🧭 Saving file to: {}", filePath.toAbsolutePath());
+            log.info("📁 uploadDir={}, savePath={}", uploadDir, Paths.get(uploadDir, basePath.getPath()));
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 
             return "/uploadFiles/" + datePath + "/" + saveName;
