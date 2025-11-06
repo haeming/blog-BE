@@ -11,7 +11,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.base.FileStorageException;
 
@@ -26,13 +25,6 @@ public class FileManagement {
 
     public String uploadFile(InputStream inputStream, String originalName, BasePath basePath) {
         validate(originalName, inputStream);
-
-        // 정상적인 이미지 인가? ... 
-
-        //.. 썸네일... 처리...
-
-        // 추가 목표: 함수형 인터페이스 목록을 활용... 컴포넌트 설계... 고차 함수 형태로(람다식?)
-        // api wrapper 클래스를 만들고
 
         // 정상적인 이미지 인가? ... 
 
