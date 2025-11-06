@@ -46,6 +46,9 @@ public class Comment {
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", updatable = false, insertable = false)
+    private LocalDateTime updatedAt;
+
     // 기본생성자
     protected Comment(){}
 
@@ -95,6 +98,10 @@ public class Comment {
 
     public LocalDateTime getCreatedAt(){
         return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt(){
+        return updatedAt;
     }
 
     public void setPost(Post post){
