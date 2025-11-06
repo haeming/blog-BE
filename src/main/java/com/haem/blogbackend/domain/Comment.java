@@ -137,7 +137,6 @@ public class Comment {
     public void setIsPinned(boolean isPinned){
         this.isPinned = isPinned;
     }
-
     public static Comment createByAdmin(Post post, Admin admin, Comment parent, String content) {
         return new Comment(post, admin, parent, null, null, content, false);
     }
