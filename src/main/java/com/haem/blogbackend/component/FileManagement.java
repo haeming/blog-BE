@@ -1,11 +1,5 @@
 package com.haem.blogbackend.component;
 
-import com.haem.blogbackend.domain.BasePath;
-import com.haem.blogbackend.exception.base.FileStorageException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -14,6 +8,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.haem.blogbackend.domain.BasePath;
+import com.haem.blogbackend.exception.base.FileStorageException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -25,6 +27,13 @@ public class FileManagement {
     public String uploadFile(InputStream inputStream, String originalName, BasePath basePath) {
         validate(originalName, inputStream);
 
+        // 정상적인 이미지 인가? ... 
+
+        //.. 썸네일... 처리...
+
+        // 추가 목표: 함수형 인터페이스 목록을 활용... 컴포넌트 설계... 고차 함수 형태로(람다식?)
+        // api wrapper 클래스를 만들고
+
         try {
             LocalDate now = LocalDate.now();
             String datePath = String.format("%s/%d/%02d/%02d", basePath.getPath(), now.getYear(), now.getMonthValue(), now.getDayOfMonth());
@@ -32,12 +41,9 @@ public class FileManagement {
             Path baseUploadDir = Paths.get(uploadDir).toAbsolutePath();
             Path savePath = baseUploadDir.resolve(datePath);
             Files.createDirectories(savePath);
-            log.info("📁 [UPLOAD PATH] uploadDir={}, finalSavePath={}", uploadDir, savePath);
 
             String saveName = UUID.randomUUID() + "_" + originalName;
             Path filePath = savePath.resolve(saveName);
-            log.info("🧭 Saving file to: {}", filePath.toAbsolutePath());
-            log.info("📁 uploadDir={}, savePath={}", uploadDir, Paths.get(uploadDir, basePath.getPath()));
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 
             return "/uploadFiles/" + datePath + "/" + saveName;

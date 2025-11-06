@@ -40,7 +40,7 @@ public class Comment {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(name = "is_pinned")
+    @Column(name = "is_pinned", nullable = false)
     private Boolean isPinned;
 
     @Column(name = "created_at", updatable = false, insertable = false)
@@ -132,5 +132,7 @@ public class Comment {
         this.isPinned = isPinned;
     }
 
-
+    public static Comment create(Post post, Admin admin, Comment parent, String nickname, String password, String content, Boolean isPinned){
+        return new Comment(post, admin, parent, nickname, password, content, isPinned);
+    }
 }
