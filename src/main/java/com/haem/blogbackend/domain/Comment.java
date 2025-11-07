@@ -2,14 +2,7 @@ package com.haem.blogbackend.domain;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "comment")
@@ -41,13 +34,18 @@ public class Comment {
     private String content;
 
     @Column(name = "is_pinned", nullable = false)
-    private Boolean isPinned;
+    private boolean isPinned;
 
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", updatable = false, insertable = false)
+    @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     // 기본생성자
     protected Comment(){}
@@ -128,11 +126,15 @@ public class Comment {
         this.content = content;
     }
     
-    public void setIsPinned(Boolean isPinned){
+    public void setIsPinned(boolean isPinned){
         this.isPinned = isPinned;
     }
 
-    public static Comment create(Post post, Admin admin, Comment parent, String nickname, String password, String content, Boolean isPinned){
-        return new Comment(post, admin, parent, nickname, password, content, isPinned);
+    public static Comment createByAdmin(Post post, Admin admin, Comment parent, String content) {
+        return new Comment(post, admin, parent, null, null, content, false);
+    }
+
+    public static Comment createByUser(Post post, Comment parent, String nickname, String password, String content) {
+        return new Comment(post, null, parent, nickname, password, content, false);
     }
 }
