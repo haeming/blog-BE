@@ -1,7 +1,6 @@
 package com.haem.blogbackend.admin.controller;
 
 import com.haem.blogbackend.admin.service.CommentService;
-import com.haem.blogbackend.domain.Comment;
 import com.haem.blogbackend.dto.request.CommentCreateRequestDto;
 import com.haem.blogbackend.dto.response.CommentResponseDto;
 import jakarta.validation.Valid;
@@ -27,7 +26,6 @@ public class CommentController {
             @Valid @RequestBody CommentCreateRequestDto requestDto
             ){
         String accountName = user.getUsername();
-        CommentResponseDto responseDto = commentService.createComment(accountName, requestDto);
-        return responseDto;
+        return commentService.createComment(accountName, requestDto);
     }
 }

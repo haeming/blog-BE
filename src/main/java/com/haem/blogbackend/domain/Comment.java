@@ -1,8 +1,8 @@
 package com.haem.blogbackend.domain;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comment")
