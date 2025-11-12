@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 public class FileValidationComponent {
     public final Predicate<MultipartFile> isEmpty = MultipartFile::isEmpty;
     public final Predicate<MultipartFile> isImage = file -> {
-        if(file.getContentType() == null || file.getContentType().equals("")){
+        if(file.getContentType() == null || file.isEmpty()){
             return false;
         }
         return file.getContentType().startsWith("image");
@@ -22,7 +22,8 @@ public class FileValidationComponent {
             String originalFilename = file.getOriginalFilename();
             if(originalFilename == null){
                 return false;
-            };
+            }
+
             String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
             return Arrays.asList(extensions).contains(ext.toLowerCase());
         };
