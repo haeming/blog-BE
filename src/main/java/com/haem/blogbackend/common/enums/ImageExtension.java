@@ -20,10 +20,6 @@ public enum ImageExtension {
         this.extension = extension;
     }
 
-    public String getExtension() {
-        return extension;
-    }
-
     private static final Set<String> ALLOWED_EXTENSIONS_SET =
             Arrays.stream(ImageExtension.values())
                     .map(ImageExtension::getExtension)
