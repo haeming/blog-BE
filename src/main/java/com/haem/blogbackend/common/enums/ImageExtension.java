@@ -26,8 +26,8 @@ public enum ImageExtension {
                     .map(ImageExtension::getExtension)
                     .collect(Collectors.toSet());
 
-    public static boolean contains(String extension) {
-        return ALLOWED_EXTENSIONS_SET.contains(extension.toLowerCase());
+    public static boolean contains(String ext) {
+        return ALLOWED_EXTENSIONS_SET.contains(ext.toLowerCase());
     }
 
     public static String getAllowedExtensionsString () {

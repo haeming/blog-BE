@@ -1,5 +1,6 @@
 package com.haem.blogbackend.common.component;
 
+import com.haem.blogbackend.common.enums.ImageExtension;
 import com.haem.blogbackend.common.exception.base.InvalidFileException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,7 @@ public class FileValidationComponent {
         return file.getContentType().startsWith("image");
     };
 
-    public Predicate<MultipartFile> hasAllowedExtension(String... extensions){
+    public Predicate<MultipartFile> hasAllowedExtension(){
         return file -> {
             String originalFilename = file.getOriginalFilename();
             if(originalFilename == null){
@@ -25,7 +26,7 @@ public class FileValidationComponent {
             }
 
             String ext = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            return Arrays.asList(extensions).contains(ext.toLowerCase());
+            return ImageExtension.contains(ext);
         };
     }
 
