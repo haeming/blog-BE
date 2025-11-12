@@ -34,4 +34,11 @@ public class FileValidationComponent {
             throw new InvalidFileException(errorMessage);
         }
     }
+
+    public void validateImageFile(MultipartFile file){
+        validate(file, isEmpty, "업로드할 파일이 비어있습니다.");
+        validate(file, isImage.negate(), "이미지 파일 형식만 업로드할 수 있습니다.");
+        validate(file, hasAllowedExtension().negate(),
+                String.format("허용되지 않는 파일 확장자입니다. %s 파일만 업로드할 수 있습니다.", ImageExtension.getAllowedExtensionsString()));
+    }
 }
