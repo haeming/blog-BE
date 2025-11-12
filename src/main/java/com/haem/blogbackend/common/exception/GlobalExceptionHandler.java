@@ -1,7 +1,8 @@
 package com.haem.blogbackend.common.exception;
 
+import com.haem.blogbackend.common.exception.base.InvalidFileException;
 import com.haem.blogbackend.common.exception.base.TokenException;
-import com.haem.blogbackend.dto.response.ErrorResponse;
+import com.haem.blogbackend.common.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,4 +44,9 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of("서버 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(InvalidFileException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidFile(InvalidFileException e) {
+        return ErrorResponse.of(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }

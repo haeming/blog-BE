@@ -1,4 +1,4 @@
-package com.haem.blogbackend.domain;
+package com.haem.blogbackend.common.enums;
 
 import lombok.Getter;
 

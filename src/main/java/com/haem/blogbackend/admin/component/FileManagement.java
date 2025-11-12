@@ -1,6 +1,6 @@
 package com.haem.blogbackend.admin.component;
 
-import com.haem.blogbackend.domain.BasePath;
+import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.base.FileStorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

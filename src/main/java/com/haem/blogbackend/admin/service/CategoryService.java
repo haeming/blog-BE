@@ -4,7 +4,7 @@ import com.haem.blogbackend.admin.component.DirectoryManagement;
 import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
 import com.haem.blogbackend.admin.repository.PostRepository;
-import com.haem.blogbackend.domain.BasePath;
+import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.common.exception.base.FileStorageException;
 import lombok.extern.slf4j.Slf4j;

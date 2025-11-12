@@ -2,7 +2,7 @@ package com.haem.blogbackend.admin.service;
 
 import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.admin.repository.ImageRepository;
-import com.haem.blogbackend.domain.BasePath;
+import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
 import com.haem.blogbackend.common.exception.base.FileStorageException;

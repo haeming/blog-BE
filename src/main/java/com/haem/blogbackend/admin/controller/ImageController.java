@@ -2,7 +2,7 @@ package com.haem.blogbackend.admin.controller;
 
 import java.util.List;
 
-import com.haem.blogbackend.domain.BasePath;
+import com.haem.blogbackend.common.enums.BasePath;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
