@@ -2,6 +2,7 @@ package com.haem.blogbackend.admin.service;
 
 import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.admin.repository.ImageRepository;
+import com.haem.blogbackend.common.component.FileValidationComponent;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
@@ -18,16 +19,21 @@ import java.io.InputStream;
 public class ImageService {
     private final FileManagement fileManagement;
     private final ImageRepository imageRepository;
+    private final FileValidationComponent fileValidationComponent;
 
-    public ImageService(FileManagement fileManagement, ImageRepository imageRepository){
+    public ImageService(
+            FileManagement fileManagement,
+            ImageRepository imageRepository,
+            FileValidationComponent fileValidationComponent){
         this.fileManagement = fileManagement;
         this.imageRepository = imageRepository;
+        this.fileValidationComponent = fileValidationComponent;
     }
 
     public void saveImage(Post post, MultipartFile file, BasePath basePath) {
-        if(file == null || file.isEmpty()){
-            return;
-        }
+        fileValidationComponent.validate(file, fileValidationComponent.isEmpty, "업로드할 파일이 비어있습니다.");
+        fileValidationComponent.validate(file, fileValidationComponent.isImage.negate(), "이미지 파일 형식만 업로드할 수 있습니다.");
+
         try (InputStream inputStream = file.getInputStream()) {
             String originalName = file.getOriginalFilename();
             String imageUrl = fileManagement.uploadFile(inputStream, originalName, basePath);
@@ -42,9 +48,8 @@ public class ImageService {
     }
 
     public String uploadTempImage(MultipartFile file, BasePath basePath) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("빈 파일은 업로드할 수 없습니다.");
-        }
+        fileValidationComponent.validate(file, fileValidationComponent.isEmpty, "업로드할 파일이 비어있습니다.");
+        fileValidationComponent.validate(file, fileValidationComponent.isImage.negate(), "이미지 파일 형식만 업로드할 수 있습니다.");
 
         try (InputStream inputStream = file.getInputStream()) {
             String originalName = file.getOriginalFilename();
