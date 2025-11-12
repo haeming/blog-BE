@@ -1,9 +1,12 @@
 package com.haem.blogbackend.common.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 public enum ImageExtension {
     JPG("jpg"),
     JPEG("jpeg"),

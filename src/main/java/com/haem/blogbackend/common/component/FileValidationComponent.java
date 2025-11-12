@@ -5,7 +5,6 @@ import com.haem.blogbackend.common.exception.base.InvalidFileException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.function.Predicate;
 
 @Component
