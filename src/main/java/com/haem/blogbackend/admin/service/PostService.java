@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import com.haem.blogbackend.admin.repository.AdminRepository;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
 import com.haem.blogbackend.admin.repository.ImageRepository;
+import com.haem.blogbackend.common.enums.BasePath;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -95,7 +96,7 @@ public class PostService {
 
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
-                imageService.saveImage(post, file, com.haem.blogbackend.domain.BasePath.POST);
+                imageService.saveImage(post, file, BasePath.POST);
             }
         }
 

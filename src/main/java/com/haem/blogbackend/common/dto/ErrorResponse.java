@@ -1,4 +1,4 @@
-package com.haem.blogbackend.dto.response;
+package com.haem.blogbackend.common.dto;
 
 import org.springframework.http.HttpStatus;
 
