@@ -20,11 +20,9 @@ import com.haem.blogbackend.admin.service.AdminService;
 @RequestMapping("/api/admin")
 public class AuthController {
     private final AdminService adminService;
-    private final JwtProvider jwtProvider;
 
     public AuthController(AdminService adminService, JwtProvider jwtProvider) {
         this.adminService = adminService;
-        this.jwtProvider = jwtProvider;
     }
 
     @PostMapping("/login")
@@ -32,22 +30,19 @@ public class AuthController {
         return adminService.adminLogin(requestDto);
     }
 
-    @GetMapping("/verify-token")
+    @GetMapping("/check-token")
     public TokenVerifyResponseDto verifyToken(@RequestHeader(value = "Authorization", required = false) String authHeader){
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            throw new InvalidTokenException();
-        }
-        String token = authHeader.substring(7);
-
-        if(!jwtProvider.validateToken(token)){
-            throw new ExpiredTokenException();
-        }
-
-        String accountName = jwtProvider.getAccountName(token);
-        Admin admin = adminService.findByAccountName(accountName);
+        String token = extractToken(authHeader);
+        Admin admin = adminService.verifyAndGetAdmin(token);
         TokenVerifyResponseDto response = TokenVerifyResponseDto.from(admin);
 
         return response;
     }
 
+    private String extractToken(String authHeader){
+        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+            throw new InvalidTokenException();
+        }
+        return authHeader.substring(7);
+    }
 }
