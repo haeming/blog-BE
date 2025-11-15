@@ -1,6 +1,5 @@
 package com.haem.blogbackend.admin.controller;
 
-import com.haem.blogbackend.admin.component.JwtProvider;
 import com.haem.blogbackend.admin.service.AdminService;
 import com.haem.blogbackend.common.exception.token.InvalidTokenException;
 import com.haem.blogbackend.domain.Admin;

@@ -2,7 +2,6 @@ package com.haem.blogbackend.admin.service;
 
 import com.haem.blogbackend.admin.component.JwtProvider;
 import com.haem.blogbackend.admin.repository.AdminRepository;
-import com.haem.blogbackend.common.exception.base.InvalidFileException;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.token.ExpiredTokenException;
 import com.haem.blogbackend.domain.Admin;
@@ -24,10 +23,7 @@ public class AdminService {
     }
 
     public AdminLoginResponseDto adminLogin(AdminLoginRequestDto requestDto){
-        String accountName = requestDto.getAccountName();
-        String tempPassword = requestDto.getPassword();
-
-        Admin admin = getVerifiedAdmin(accountName, tempPassword);
+        Admin admin = getVerifiedAdmin(requestDto);
         String token = jwtProvider.generateToken(admin);
 
         return AdminLoginResponseDto.from(admin, token);
@@ -38,10 +34,10 @@ public class AdminService {
         return getAdminOrThrow(accountName);
     }
 
-    private Admin getVerifiedAdmin(String accountName, String tempPassword){
-        Admin admin = getAdminOrThrow(accountName);
-        if(!passwordEncoder.matches(tempPassword, admin.getPassword())){
-            throw new InvalidFileException("아이디 혹은 비밀번호가 일치하지 않습니다.");
+    private Admin getVerifiedAdmin(AdminLoginRequestDto requestDto){
+        Admin admin = getAdminOrThrow(requestDto.getAccountName());
+        if(!passwordEncoder.matches(requestDto.getPassword(), admin.getPassword())){
+            throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
         }
         return admin;
     }
