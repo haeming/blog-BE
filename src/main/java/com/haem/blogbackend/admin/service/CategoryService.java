@@ -1,27 +1,28 @@
 package com.haem.blogbackend.admin.service;
 
-import com.haem.blogbackend.admin.component.DirectoryManagement;
-import com.haem.blogbackend.admin.component.FileManagement;
-import com.haem.blogbackend.admin.repository.CategoryRepository;
-import com.haem.blogbackend.admin.repository.PostRepository;
-import com.haem.blogbackend.common.enums.BasePath;
-import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
-import com.haem.blogbackend.common.exception.base.FileStorageException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.haem.blogbackend.domain.Category;
-import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
-import com.haem.blogbackend.dto.response.CategoryResponseDto;
-import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.haem.blogbackend.admin.component.DirectoryManagement;
+import com.haem.blogbackend.admin.component.FileManagement;
+import com.haem.blogbackend.admin.repository.CategoryRepository;
+import com.haem.blogbackend.admin.repository.PostRepository;
+import com.haem.blogbackend.common.enums.BasePath;
+import com.haem.blogbackend.common.exception.base.FileStorageException;
+import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
+import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
+import com.haem.blogbackend.dto.response.CategoryResponseDto;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -74,7 +75,7 @@ public class CategoryService {
             fileManagement.deleteFile(category.getImageUrl());
             String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
             Path filePath = Paths.get("uploadFiles", relativePath);
-            directoryManagement.clean(filePath.getParent(), Paths.get("uploadFiles"));
+            directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
         }
 
         categoryRepository.delete(category);
