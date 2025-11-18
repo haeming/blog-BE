@@ -38,53 +38,33 @@ public class ImageService {
 
     public void saveImage(Post post, MultipartFile file, BasePath basePath) {
         validateImage(file);
-
-        try (InputStream originalInputStream = file.getInputStream()) {
-            byte[] imageBytes = originalInputStream.readAllBytes();
-
-            validateImageContent(imageBytes);
-
-            InputStream newInputStream = new ByteArrayInputStream(imageBytes);
-
-            String originalName = file.getOriginalFilename();
-            String imageUrl = fileManagement.uploadFile(newInputStream, originalName, basePath);
-
-            Image image = new Image(post, imageUrl, originalName);
-            post.addImage(image);
-            imageRepository.save(image);
-        } catch (IOException e) {
-            log.error("이미지 저장 실패", e);
-            throw new FileStorageException("이미지 저장 중 오류가 발생했습니다.", e);
-        }
+        byte[] imageBytes = extractAndValidateBytes(file);
+        String imageUrl = uploadBytes(imageBytes, file.getOriginalFilename(), basePath);
+        saveImageEntity(post, imageUrl, file.getOriginalFilename());
     }
 
     public String uploadTempImage(MultipartFile file, BasePath basePath) {
         validateImage(file);
+        byte[] imageBytes = extractAndValidateBytes(file);
 
-        try (InputStream originalInputStream = file.getInputStream()) {
-            byte[] imageBytes = originalInputStream.readAllBytes();
-            
-            validateImageContent(imageBytes);
-
-            InputStream newInputStream = new ByteArrayInputStream(imageBytes);
-
-            String originalName = file.getOriginalFilename();
-            return fileManagement.uploadFile(newInputStream, originalName, basePath);
-        } catch (IOException e) {
-            log.error("임시 이미지 업로드 실패", e);
-            throw new FileStorageException("임시 이미지 업로드 중 오류가 발생했습니다.", e);
-        }
+        return uploadBytes(imageBytes, file.getOriginalFilename(), basePath);
     }
 
     public void deleteImage(Image image) {
         if (image == null || image.getImageUrl() == null) return;
 
-        try {
-            fileManagement.deleteFile(image.getImageUrl());
-            imageRepository.delete(image);
-        } catch (Exception e) {
-            log.error("이미지 삭제 실패", e);
-            throw new FileStorageException("이미지 삭제 중 오류가 발생했습니다.", e);
+        deleteFileAndEntity(image);
+    }
+
+    private byte[] extractAndValidateBytes(MultipartFile file){
+        try (InputStream originalInputStream = file.getInputStream()){
+            byte[] bytes = originalInputStream.readAllBytes();
+            validateImageContent(bytes);
+            return bytes;
+        } catch (IOException e) {
+            log.error("이미지 파일 읽기 실패", e);
+            throw new FileStorageException("이미지 처리 중 오류가 발생했습니다.", e);
+
         }
     }
 
@@ -110,6 +90,22 @@ public class ImageService {
         }
     }
 
+    private String uploadBytes(byte[] bytes, String originalName, BasePath basePath){
+        InputStream stream = new ByteArrayInputStream(bytes);
+        return fileManagement.uploadFile(stream, originalName, basePath);
+    }
+
+    private void saveImageEntity(Post post, String imageUrl, String originalName){
+        Image image = new Image(post, imageUrl, originalName);
+        post.addImage(image);
+        imageRepository.save(image);
+    }    
+
+    private void deleteFileAndEntity(Image image) {
+        fileManagement.deleteFile(image.getImageUrl());
+        imageRepository.delete(image);
+    }
+    
     private void validateImageContent(byte[] imageBytes){
         boolean allContentValid = imageValidators.stream()
                     .anyMatch(validator -> validator.test(imageBytes));
