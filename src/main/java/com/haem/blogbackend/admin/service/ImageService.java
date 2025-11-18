@@ -1,5 +1,13 @@
 package com.haem.blogbackend.admin.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.admin.repository.ImageRepository;
 import com.haem.blogbackend.common.component.ImageValidator;
@@ -9,14 +17,8 @@ import com.haem.blogbackend.common.exception.base.FileStorageException;
 import com.haem.blogbackend.common.exception.base.InvalidFileException;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -99,7 +101,9 @@ public class ImageService {
             throw new InvalidFileException("업로드할 파일이 비어있습니다.");
         }
 
-        if(file.getContentType() == null || !file.getContentType().startsWith("image")){
+        String contentType = file.getContentType();
+
+        if (contentType == null || !contentType.startsWith("image")) {
             throw new InvalidFileException("이미지 파일 형식만 업로드할 수 있습니다.");
         }
 
