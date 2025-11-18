@@ -41,12 +41,8 @@ public class ImageService {
 
         try (InputStream originalInputStream = file.getInputStream()) {
             byte[] imageBytes = originalInputStream.readAllBytes();
-            boolean allContentValid = imageValidators.stream()
-                    .anyMatch(validator -> validator.test(imageBytes));
 
-            if(!allContentValid){
-                throw new InvalidFileException("이미지 파일 내용이 유효하지 않아 검증에 실패했습니다.");
-            }
+            validateImageContent(imageBytes);
 
             InputStream newInputStream = new ByteArrayInputStream(imageBytes);
 
@@ -67,12 +63,8 @@ public class ImageService {
 
         try (InputStream originalInputStream = file.getInputStream()) {
             byte[] imageBytes = originalInputStream.readAllBytes();
-            boolean allContentValid = imageValidators.stream()
-                    .anyMatch(validator -> validator.test(imageBytes));
-
-            if(!allContentValid){
-                throw new InvalidFileException("이미지 파일 내용이 유효하지 않아 검증에 실패했습니다.");
-            }
+            
+            validateImageContent(imageBytes);
 
             InputStream newInputStream = new ByteArrayInputStream(imageBytes);
 
@@ -116,5 +108,14 @@ public class ImageService {
         if(!ImageExtension.contains(ext)){
             throw new InvalidFileException(String.format("허용되지 않는 파일 확장자입니다. %s 파일만 업로드할 수 있습니다.", ImageExtension.getAllowedExtensionsString()));
         }
+    }
+
+    private void validateImageContent(byte[] imageBytes){
+        boolean allContentValid = imageValidators.stream()
+                    .anyMatch(validator -> validator.test(imageBytes));
+
+            if(!allContentValid){
+                throw new InvalidFileException("이미지 파일 내용이 유효하지 않아 검증에 실패했습니다.");
+            }
     }
 }
