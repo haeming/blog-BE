@@ -110,8 +110,8 @@ public class ImageService {
         boolean allContentValid = imageValidators.stream()
                     .anyMatch(validator -> validator.test(imageBytes));
 
-            if(!allContentValid){
-                throw new InvalidFileException("이미지 파일 내용이 유효하지 않아 검증에 실패했습니다.");
-            }
+        if(!allContentValid){
+            throw new InvalidFileException("이미지 파일 내용이 유효하지 않아 검증에 실패했습니다.");
+        }
     }
 }

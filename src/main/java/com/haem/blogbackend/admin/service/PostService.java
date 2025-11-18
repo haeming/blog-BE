@@ -5,16 +5,20 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.haem.blogbackend.admin.repository.AdminRepository;
-import com.haem.blogbackend.admin.repository.CategoryRepository;
-import com.haem.blogbackend.admin.repository.ImageRepository;
-import com.haem.blogbackend.common.enums.BasePath;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.haem.blogbackend.admin.repository.AdminRepository;
+import com.haem.blogbackend.admin.repository.CategoryRepository;
+import com.haem.blogbackend.admin.repository.ImageRepository;
+import com.haem.blogbackend.admin.repository.PostRepository;
+import com.haem.blogbackend.common.enums.BasePath;
+import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
+import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
+import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.domain.Image;
@@ -23,11 +27,6 @@ import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.common.exception.base.FileStorageException;
-import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
-import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
-import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
-import com.haem.blogbackend.admin.repository.PostRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,57 +74,89 @@ public class PostService {
 
     @Transactional
     public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) {
-        Admin admin = adminRepository.findByAccountName(accountName)
-                .orElseThrow(() -> new AdminNotFoundException(accountName));
+        Admin admin = findAdminOrNull(accountName);
 
-        Long categoryId = Optional.ofNullable(requestDto.getCategoryId()).orElse(0L);
-        Category category = (categoryId != 0)
-                ? categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException(categoryId))
-                : null;
+        Category category = findCategoryOrNull(requestDto.getCategoryId());
         
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
 
-        Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(requestDto.getContent());
-        while (matcher.find()) {
-            String path = matcher.group().replace("(", "").replace(")", "");
-            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
-            imageRepository.save(image);
-        }
+        extractImagesFromContent(post, requestDto.getContent());
 
-        if (files != null && files.length > 0) {
-            for (MultipartFile file : files) {
-                imageService.saveImage(post, file, BasePath.POST);
-            }
-        }
+        saveFiles(post, files);
 
         return PostResponseDto.from(post);
     }
 
-
     @Transactional
     public void deletePost (Long id){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
+        Post post = findPostOrNull(id);
 
-        for(Image image : post.getImages()){
-            try {
-                imageService.deleteImage(image);
-            } catch (Exception e){
-                throw new FileStorageException("포스트 이미지 삭제 중 에러가 발생했습니다.", e);
-            }
-        }
+        deleteAllImages(post);
         postRepository.delete(post);
     }
 
     @Transactional
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException(id));
-        if(requestDto.getTitle() != null && requestDto.getContent() != null){
-            post.updateInfo(requestDto.getTitle(), requestDto.getContent());
-        }
+        Post post = findPostOrNull(id);
+        updatePostIfValid(post, requestDto);
         return PostResponseDto.from(post);
+    }
+
+    
+    private Admin findAdminOrNull(String accountName){
+        if(accountName == null || accountName.isEmpty()){
+            throw new AdminNotFoundException(accountName);
+        }
+        return adminRepository.findByAccountName(accountName)
+            .orElseThrow(() -> new AdminNotFoundException(accountName));
+    }
+
+    private Category findCategoryOrNull(Long categoryId){
+        if(categoryId == null || categoryId == 0){
+            throw new CategoryNotFoundException(categoryId);
+        }
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+    }
+
+    private Post findPostOrNull(Long postId){
+        if(postId == null || postId == 0){
+            throw new PostNotFoundException(postId);
+        }
+        return postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException(postId));
+    }
+
+    private void extractImagesFromContent(Post post, String content){
+        Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(content);
+        while (matcher.find()) {
+            String path = matcher.group().replace("(", "").replace(")", "");
+            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
+            imageRepository.save(image);
+        }
+    }
+
+    private void saveFiles(Post post, MultipartFile[] files) {
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                imageService.saveImage(post, file, BasePath.POST);
+            }
+        }
+    }
+
+    private void deleteAllImages(Post post) {
+        for (Image image : post.getImages()) {
+            imageService.deleteImage(image);
+        }
+    }
+
+    private void updatePostIfValid(Post post, PostUpdateInfoRequestDto requestDto){
+        if(requestDto.getTitle() != null && !requestDto.getTitle().isBlank()){
+            post.setTitle(requestDto.getTitle());
+        }
+        if(requestDto.getContent() != null && !requestDto.getContent().isBlank()){
+            post.setContent(requestDto.getContent());
+        }
     }
 }
