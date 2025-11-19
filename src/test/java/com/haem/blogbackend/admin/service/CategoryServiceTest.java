@@ -1,5 +1,26 @@
 package com.haem.blogbackend.admin.service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.haem.blogbackend.admin.component.DirectoryManagement;
 import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
@@ -8,23 +29,6 @@ import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
@@ -106,7 +110,7 @@ class CategoryServiceTest {
 
         // then
         verify(fileManagement, times(1)).deleteFile(anyString());
-        verify(directoryManagement, times(1)).clean(any(), any());
+        verify(directoryManagement, times(1)).deleteEmptyParentDirectories(any(), any());
         verify(categoryRepository, times(1)).delete(any(Category.class));
     }
 
