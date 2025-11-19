@@ -68,8 +68,7 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+        Category category = findCategoryOrNull(id);
 
         if(category.getImageUrl() != null){
             fileManagement.deleteFile(category.getImageUrl());
@@ -83,8 +82,8 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto updateCategoryName(Long id, CategoryUpdateNameRequestDto requestDto){
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+        Category category = findCategoryOrNull(id);
+
         if(requestDto.getCategoryName() != null){
             category.updateName(requestDto.getCategoryName());
         }
@@ -93,8 +92,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+        Category category = findCategoryOrNull(id);
 
         if (file == null || file.isEmpty()) {
             return CategoryResponseDto.from(category);
@@ -128,5 +126,13 @@ public class CategoryService {
 
     public long getPostCountByCategoryId(Long categoryId){
         return postRepository.countByCategoryId(categoryId);
+    }
+
+    private Category findCategoryOrNull(Long categoryId){
+        if(categoryId == null || categoryId == 0){
+            throw new CategoryNotFoundException(categoryId);
+        }
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
     }
 }
