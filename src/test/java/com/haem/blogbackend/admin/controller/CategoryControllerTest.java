@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haem.blogbackend.admin.component.JwtProvider;
 import com.haem.blogbackend.admin.service.AdminService;
 import com.haem.blogbackend.admin.service.CategoryService;
+import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.dto.response.CategoryResponseDto;
@@ -17,8 +18,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,8 +50,8 @@ class CategoryControllerTest {
     void getCategories() throws Exception {
         // given
         List<CategoryResponseDto> categories = List.of(
-                new CategoryResponseDto(1L, "cat1", null, null, LocalDateTime.now()),
-                new CategoryResponseDto(2L, "cat2", null, null, LocalDateTime.now())
+                CategoryResponseDto.from(new Category("cat1")),
+                CategoryResponseDto.from(new Category("cat2"))
         );
         given(categoryService.getCategories()).willReturn(categories);
 
@@ -96,7 +95,7 @@ class CategoryControllerTest {
         MockMultipartFile data = new MockMultipartFile("data", "", "application/json", objectMapper.writeValueAsBytes(requestDto));
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test".getBytes());
 
-        given(categoryService.createCategory(any(), any())).willReturn(new CategoryResponseDto(1L, "new-cat", "/path/to/image.jpg", "test.jpg", LocalDateTime.now()));
+        given(categoryService.createCategory(any(), any())).willReturn(CategoryResponseDto.from(new Category("new-cat", "/path/to/image.jpg", "test.jpg")));
 
         // when & then
         mockMvc.perform(multipart("/api/admin/categories")
@@ -124,7 +123,7 @@ class CategoryControllerTest {
         // given
         Long categoryId = 1L;
         CategoryUpdateNameRequestDto requestDto = new CategoryUpdateNameRequestDto("updated-name");
-        given(categoryService.updateCategoryName(any(), any())).willReturn(new CategoryResponseDto(categoryId, "updated-name", null, null, LocalDateTime.now()));
+        given(categoryService.updateCategoryName(any(), any())).willReturn(CategoryResponseDto.from(new Category("updated-name")));
 
         // when & then
         mockMvc.perform(patch("/api/admin/categories/{id}/name", categoryId)
@@ -141,7 +140,7 @@ class CategoryControllerTest {
         // given
         Long categoryId = 1L;
         MockMultipartFile file = new MockMultipartFile("file", "new.jpg", "image/jpeg", "test".getBytes());
-        given(categoryService.updateCategoryImage(any(), any())).willReturn(new CategoryResponseDto(categoryId, "cat-name", "/path/to/new.jpg", "new.jpg", LocalDateTime.now()));
+        given(categoryService.updateCategoryImage(any(), any())).willReturn(CategoryResponseDto.from(new Category("cat-name", "/path/to/new.jpg", "new.jpg")));
 
         // when & then
         mockMvc.perform(multipart("/api/admin/categories/{id}/image", categoryId)

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haem.blogbackend.admin.component.JwtProvider;
 import com.haem.blogbackend.admin.service.AdminService;
 import com.haem.blogbackend.admin.service.PostService;
+import com.haem.blogbackend.domain.Admin;
+import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.domain.Post;
 import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
@@ -21,7 +24,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -53,8 +55,11 @@ class PostControllerTest {
     @DisplayName("게시물 목록 조회")
     void getPosts() throws Exception {
         // given
+        Admin admin = new Admin("admin", "password");
+        Category category = new Category("cat");
+        Post post = new Post(category, admin, "title", "content");
         Page<PostSummaryResponseDto> page = new PageImpl<>(List.of(
-                new PostSummaryResponseDto(1L, "title", "content", "cat", LocalDateTime.now(), LocalDateTime.now())
+                PostSummaryResponseDto.from(post, "cat")
         ));
         given(postService.getPosts(any(PageRequest.class))).willReturn(page);
 
@@ -82,7 +87,10 @@ class PostControllerTest {
     void getPost() throws Exception {
         // given
         Long postId = 1L;
-        PostResponseDto responseDto = new PostResponseDto(postId, "title", "content", 1L, "cat", LocalDateTime.now(), LocalDateTime.now(), List.of());
+        Admin admin = new Admin("admin", "password");
+        Category category = new Category("cat");
+        Post post = new Post(category, admin, "title", "content");
+        PostResponseDto responseDto = PostResponseDto.from(post);
         given(postService.getPost(postId)).willReturn(responseDto);
 
         // when & then
@@ -97,8 +105,9 @@ class PostControllerTest {
         // given
         PostCreateRequestDto requestDto = PostCreateRequestDto.builder().title("new post").content("new content").build();
         MockMultipartFile data = new MockMultipartFile("data", "", "application/json", objectMapper.writeValueAsBytes(requestDto));
-
-        given(postService.createPost(any(), any(), any())).willReturn(new PostResponseDto(1L, "new post", "new content", null, null, LocalDateTime.now(), null, List.of()));
+        Admin admin = new Admin("admin", "password");
+        Post post = new Post(null, admin, "new post", "new content");
+        given(postService.createPost(any(), any(), any())).willReturn(PostResponseDto.from(post));
 
         // when & then
         mockMvc.perform(multipart("/api/admin/posts")
@@ -125,7 +134,10 @@ class PostControllerTest {
         // given
         Long postId = 1L;
         PostUpdateInfoRequestDto requestDto = new PostUpdateInfoRequestDto("updated title", "updated content", 1L);
-        given(postService.updatePostInfo(any(), any())).willReturn(new PostResponseDto(postId, "updated title", "updated content", 1L, "cat", LocalDateTime.now(), LocalDateTime.now(), List.of()));
+        Admin admin = new Admin("admin", "password");
+        Category category = new Category("cat");
+        Post post = new Post(category, admin, "updated title", "updated content");
+        given(postService.updatePostInfo(any(), any())).willReturn(PostResponseDto.from(post));
 
         // when & then
         mockMvc.perform(patch("/api/admin/posts/{id}/info", postId)
