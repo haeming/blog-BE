@@ -80,13 +80,7 @@ public class CategoryService {
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
         Category category = findCategoryOrNull(id);
 
-        if (file == null || file.isEmpty()) {
-            return CategoryResponseDto.from(category);
-        }
-
-        if (category.getImageUrl() != null){
-            fileManagement.deleteFile(category.getImageUrl());
-        }
+        prepareCategoryImageUpdate(category, file);
 
         UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
 
@@ -137,5 +131,15 @@ public class CategoryService {
         String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
         Path filePath = Paths.get("uploadFiles", relativePath);
         directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
+    }
+
+    private boolean prepareCategoryImageUpdate(Category category, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+        if (category.getImageUrl() != null) {
+            fileManagement.deleteFile(category.getImageUrl());
+        }
+        return true;
     }
 }
