@@ -1,5 +1,27 @@
 package com.haem.blogbackend.admin.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+
+import com.haem.blogbackend.admin.component.ImageProcessor;
 import com.haem.blogbackend.admin.repository.AdminRepository;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
 import com.haem.blogbackend.admin.repository.ImageRepository;
@@ -11,25 +33,6 @@ import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.mock.web.MockMultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -47,7 +50,7 @@ class PostServiceTest {
     private ImageRepository imageRepository;
 
     @Mock
-    private ImageService imageService;
+    private ImageProcessor imageProcessor;
 
     @InjectMocks
     private PostService postService;
@@ -133,7 +136,7 @@ class PostServiceTest {
 
         // then
         assertThat(responseDto.getTitle()).isEqualTo("title");
-        verify(imageService, times(1)).saveImage(any(Post.class), any(MockMultipartFile.class), any());
+        verify(imageProcessor, times(1)).saveImage(any(Post.class), any(MockMultipartFile.class), any());
     }
 
     @Test

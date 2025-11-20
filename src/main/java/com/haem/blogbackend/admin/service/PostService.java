@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.haem.blogbackend.admin.component.ImageProcessor;
 import com.haem.blogbackend.admin.repository.AdminRepository;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
 import com.haem.blogbackend.admin.repository.ImageRepository;
@@ -38,19 +39,19 @@ public class PostService {
     private final AdminRepository adminRepository;
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
-    private final ImageService imageService;
+    private final ImageProcessor imageProcessor;
 
     public PostService(
             PostRepository postRepository,
             AdminRepository adminRepository,
             CategoryRepository categoryRepository,
             ImageRepository imageRepository,
-            ImageService imageService) {
+            ImageProcessor imageProcessor){
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
-        this.imageService = imageService;
+        this.imageProcessor = imageProcessor;
     }
 
     public long getPostCount(){
@@ -140,14 +141,14 @@ public class PostService {
     private void saveFiles(Post post, MultipartFile[] files) {
         if (files != null && files.length > 0) {
             for (MultipartFile file : files) {
-                imageService.saveImage(post, file, BasePath.POST);
+                imageProcessor.saveImage(post, file, BasePath.POST);
             }
         }
     }
 
     private void deleteAllImages(Post post) {
         for (Image image : post.getImages()) {
-            imageService.deleteImage(image);
+            imageProcessor.deleteImage(image);
         }
     }
 
