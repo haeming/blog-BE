@@ -50,18 +50,10 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
-        String imageUrl = null;
-        String originalName = null;
-        if(file != null && !file.isEmpty()){
-            try (InputStream inputStream = file.getInputStream()){
-                originalName = file.getOriginalFilename();
-                imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
-            } catch (IOException e){
-                log.error("카테고리 이미지 업로드 실패", e);
-                throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);
-            }
-        }
-        Category category = Category.create(requestDto.getCategoryName(), imageUrl, originalName);
+        
+        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
+
+        Category category = Category.create(requestDto.getCategoryName(), uploadResult.imageUrl, uploadResult.originalName);
         Category saved = categoryRepository.save(category);
         return CategoryResponseDto.from(saved);
     }
@@ -102,18 +94,9 @@ public class CategoryService {
             fileManagement.deleteFile(category.getImageUrl());
         }
 
-        String imageUrl;
-        String originalName;
+        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
 
-        try (InputStream inputStream = file.getInputStream()) {
-            originalName = file.getOriginalFilename();
-            imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
-        } catch (IOException e) {
-            log.error("카테고리 이미지 수정 중 오류 발생", e);
-            throw new FileStorageException("이미지 수정 중 오류가 발생했습니다.");
-        }
-
-        category.updateImage(imageUrl, originalName);
+        category.updateImage(uploadResult.imageUrl, uploadResult.originalName);
         return CategoryResponseDto.from(category);
     }
 
@@ -128,11 +111,28 @@ public class CategoryService {
         return postRepository.countByCategoryId(categoryId);
     }
 
+    private record UploadResult(String originalName, String imageUrl) {}
+
     private Category findCategoryOrNull(Long categoryId){
         if(categoryId == null || categoryId == 0){
             throw new CategoryNotFoundException(categoryId);
         }
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+    }
+
+    private UploadResult uploadImageFile(MultipartFile file, BasePath basePath){
+        if(file == null || file.isEmpty()){
+            return null;
+        }
+        
+        try (InputStream inputStream = file.getInputStream()) {
+            String originalName = file.getOriginalFilename();
+            String imageUrl = fileManagement.uploadFile(inputStream, originalName, basePath);
+            return new UploadResult(originalName, imageUrl);
+        } catch (IOException e) {
+            log.error("이미지 업로드 실패", e);
+            throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);
+        }
     }
 }
