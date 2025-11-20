@@ -32,6 +32,7 @@ public class CategoryService {
     private final PostRepository postRepository;
     private final FileManagement fileManagement;
     private final DirectoryManagement directoryManagement;
+    private record UploadResult(String originalName, String imageUrl) {}
 
     public CategoryService(
             CategoryRepository categoryRepository,
@@ -61,14 +62,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(Long id) {
         Category category = findCategoryOrNull(id);
-
-        if(category.getImageUrl() != null){
-            fileManagement.deleteFile(category.getImageUrl());
-            String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
-            Path filePath = Paths.get("uploadFiles", relativePath);
-            directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
-        }
-
+        deleteCategoryImage(category);
         categoryRepository.delete(category);
     }
 
@@ -111,8 +105,6 @@ public class CategoryService {
         return postRepository.countByCategoryId(categoryId);
     }
 
-    private record UploadResult(String originalName, String imageUrl) {}
-
     private Category findCategoryOrNull(Long categoryId){
         if(categoryId == null || categoryId == 0){
             throw new CategoryNotFoundException(categoryId);
@@ -125,7 +117,7 @@ public class CategoryService {
         if(file == null || file.isEmpty()){
             return null;
         }
-        
+
         try (InputStream inputStream = file.getInputStream()) {
             String originalName = file.getOriginalFilename();
             String imageUrl = fileManagement.uploadFile(inputStream, originalName, basePath);
@@ -134,5 +126,16 @@ public class CategoryService {
             log.error("이미지 업로드 실패", e);
             throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);
         }
+    }
+
+    private void deleteCategoryImage(Category category){
+        if(category.getImageUrl() == null) {
+            return;
+        }
+
+        fileManagement.deleteFile(category.getImageUrl());
+        String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
+        Path filePath = Paths.get("uploadFiles", relativePath);
+        directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
     }
 }
