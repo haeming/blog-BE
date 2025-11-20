@@ -1,40 +1,52 @@
-package com.haem.blogbackend.admin.service;
+package com.haem.blogbackend.admin.component;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.haem.blogbackend.admin.component.FileManagement;
+import com.haem.blogbackend.admin.repository.ImageRepository;
 import com.haem.blogbackend.common.component.ImageValidator;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.enums.ImageExtension;
 import com.haem.blogbackend.common.exception.base.FileStorageException;
 import com.haem.blogbackend.common.exception.base.InvalidFileException;
+import com.haem.blogbackend.domain.Image;
+import com.haem.blogbackend.domain.Post;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
-public class ImageService {
+@Component
+public class ImageProcessor {
     private final FileManagement fileManagement;
+    private final ImageRepository imageRepository;
     private final List<ImageValidator> imageValidators;
 
-    public ImageService(
-            FileManagement fileManagement,
-            List<ImageValidator> imageValidators){
+    public ImageProcessor(
+        FileManagement fileManagement,
+        ImageRepository imageRepository,
+        List<ImageValidator> imageValidators
+    ){
         this.fileManagement = fileManagement;
+        this.imageRepository = imageRepository;
         this.imageValidators = imageValidators;
     }
 
-    public String uploadTempImage(MultipartFile file, BasePath basePath) {
+    public void saveImage(Post post, MultipartFile file, BasePath basePath) {
         validateImage(file);
         byte[] imageBytes = extractAndValidateBytes(file);
+        String imageUrl = uploadBytes(imageBytes, file.getOriginalFilename(), basePath);
+        saveImageEntity(post, imageUrl, file.getOriginalFilename());
+    }
 
-        return uploadBytes(imageBytes, file.getOriginalFilename(), basePath);
+    public void deleteImage(Image image) {
+        if (image == null || image.getImageUrl() == null) return;
+
+        deleteFileAndEntity(image);
     }
 
     private byte[] extractAndValidateBytes(MultipartFile file){
@@ -74,6 +86,17 @@ public class ImageService {
     private String uploadBytes(byte[] bytes, String originalName, BasePath basePath){
         InputStream stream = new ByteArrayInputStream(bytes);
         return fileManagement.uploadFile(stream, originalName, basePath);
+    }
+
+    private void saveImageEntity(Post post, String imageUrl, String originalName){
+        Image image = new Image(post, imageUrl, originalName);
+        post.addImage(image);
+        imageRepository.save(image);
+    }    
+
+    private void deleteFileAndEntity(Image image) {
+        fileManagement.deleteFile(image.getImageUrl());
+        imageRepository.delete(image);
     }
     
     private void validateImageContent(byte[] imageBytes){

@@ -32,6 +32,7 @@ public class CategoryService {
     private final PostRepository postRepository;
     private final FileManagement fileManagement;
     private final DirectoryManagement directoryManagement;
+    private record UploadResult(String originalName, String imageUrl) {}
 
     public CategoryService(
             CategoryRepository categoryRepository,
@@ -50,41 +51,25 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
-        String imageUrl = null;
-        String originalName = null;
-        if(file != null && !file.isEmpty()){
-            try (InputStream inputStream = file.getInputStream()){
-                originalName = file.getOriginalFilename();
-                imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
-            } catch (IOException e){
-                log.error("카테고리 이미지 업로드 실패", e);
-                throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);
-            }
-        }
-        Category category = Category.create(requestDto.getCategoryName(), imageUrl, originalName);
+        
+        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
+
+        Category category = Category.create(requestDto.getCategoryName(), uploadResult.imageUrl, uploadResult.originalName);
         Category saved = categoryRepository.save(category);
         return CategoryResponseDto.from(saved);
     }
 
     @Transactional
     public void deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
-
-        if(category.getImageUrl() != null){
-            fileManagement.deleteFile(category.getImageUrl());
-            String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
-            Path filePath = Paths.get("uploadFiles", relativePath);
-            directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
-        }
-
+        Category category = findCategoryOrNull(id);
+        deleteCategoryImage(category);
         categoryRepository.delete(category);
     }
 
     @Transactional
     public CategoryResponseDto updateCategoryName(Long id, CategoryUpdateNameRequestDto requestDto){
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+        Category category = findCategoryOrNull(id);
+
         if(requestDto.getCategoryName() != null){
             category.updateName(requestDto.getCategoryName());
         }
@@ -93,29 +78,13 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundException(id));
+        Category category = findCategoryOrNull(id);
 
-        if (file == null || file.isEmpty()) {
-            return CategoryResponseDto.from(category);
-        }
+        prepareCategoryImageUpdate(category, file);
 
-        if (category.getImageUrl() != null){
-            fileManagement.deleteFile(category.getImageUrl());
-        }
+        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
 
-        String imageUrl;
-        String originalName;
-
-        try (InputStream inputStream = file.getInputStream()) {
-            originalName = file.getOriginalFilename();
-            imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
-        } catch (IOException e) {
-            log.error("카테고리 이미지 수정 중 오류 발생", e);
-            throw new FileStorageException("이미지 수정 중 오류가 발생했습니다.");
-        }
-
-        category.updateImage(imageUrl, originalName);
+        category.updateImage(uploadResult.imageUrl, uploadResult.originalName);
         return CategoryResponseDto.from(category);
     }
 
@@ -128,5 +97,49 @@ public class CategoryService {
 
     public long getPostCountByCategoryId(Long categoryId){
         return postRepository.countByCategoryId(categoryId);
+    }
+
+    private Category findCategoryOrNull(Long categoryId){
+        if(categoryId == null || categoryId == 0){
+            throw new CategoryNotFoundException(categoryId);
+        }
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+    }
+
+    private UploadResult uploadImageFile(MultipartFile file, BasePath basePath){
+        if(file == null || file.isEmpty()){
+            return null;
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            String originalName = file.getOriginalFilename();
+            String imageUrl = fileManagement.uploadFile(inputStream, originalName, basePath);
+            return new UploadResult(originalName, imageUrl);
+        } catch (IOException e) {
+            log.error("이미지 업로드 실패", e);
+            throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);
+        }
+    }
+
+    private void deleteCategoryImage(Category category){
+        if(category.getImageUrl() == null) {
+            return;
+        }
+
+        fileManagement.deleteFile(category.getImageUrl());
+        String relativePath = category.getImageUrl().replace("/uploadFiles/", "");
+        Path filePath = Paths.get("uploadFiles", relativePath);
+        directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
+    }
+
+    private boolean prepareCategoryImageUpdate(Category category, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+        if (category.getImageUrl() != null) {
+            fileManagement.deleteFile(category.getImageUrl());
+        }
+        return true;
     }
 }
