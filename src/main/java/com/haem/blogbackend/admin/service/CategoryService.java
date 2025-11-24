@@ -61,14 +61,14 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(Long id) {
-        Category category = findCategoryOrNull(id);
+        Category category = getCategoryOrThrow(id);
         deleteCategoryImage(category);
         categoryRepository.delete(category);
     }
 
     @Transactional
     public CategoryResponseDto updateCategoryName(Long id, CategoryUpdateNameRequestDto requestDto){
-        Category category = findCategoryOrNull(id);
+        Category category = getCategoryOrThrow(id);
 
         if(requestDto.getCategoryName() != null){
             category.updateName(requestDto.getCategoryName());
@@ -78,7 +78,7 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
-        Category category = findCategoryOrNull(id);
+        Category category = getCategoryOrThrow(id);
 
         prepareCategoryImageUpdate(category, file);
 
@@ -99,7 +99,7 @@ public class CategoryService {
         return postRepository.countByCategoryId(categoryId);
     }
 
-    private Category findCategoryOrNull(Long categoryId){
+    private Category getCategoryOrThrow(Long categoryId){
         if(categoryId == null || categoryId == 0){
             throw new CategoryNotFoundException(categoryId);
         }

@@ -4,7 +4,7 @@ import com.haem.blogbackend.common.exception.base.NotFoundException;
 
 public class AdminNotFoundException extends NotFoundException {
     public AdminNotFoundException(String accountName) {
-        super("존재하지 않는 관리자입니다. accountName=" + accountName);
+        super(String.format("존재하지 않는 관리자입니다. accountName = %s", accountName));
     }
 
 }
