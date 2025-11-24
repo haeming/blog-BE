@@ -20,7 +20,7 @@ public class EntityFinder {
                 .orElseThrow(exceptionSupplier);
     }
 
-    public <T, E extends RuntimeException> T findOrThrow(
+    public <T, E extends RuntimeException> T findByStringKeyOrThrow(
             String key,
             Function<String, Optional<T>> finder,
             Supplier<E> exceptionSupplier) {
