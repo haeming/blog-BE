@@ -20,6 +20,16 @@ public class EntityFinder {
                 .orElseThrow(exceptionSupplier);
     }
 
+    public <T, ID> T findByIdOrNull(
+            ID id,
+            JpaRepository<T, ID> repository
+    ){
+        if(id == null || (id instanceof Long && id.equals(0L))){
+            return null;
+        }
+        return repository.findById(id).orElse(null);
+    }
+
     public <T, E extends RuntimeException> T findByStringKeyOrThrow(
             String key,
             Function<String, Optional<T>> finder,
