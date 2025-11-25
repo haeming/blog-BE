@@ -136,13 +136,12 @@ public class CategoryService {
         directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
     }
 
-    private boolean prepareCategoryImageUpdate(Category category, MultipartFile file) {
+    private void prepareCategoryImageUpdate(Category category, MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return false;
+            return;
         }
         if (category.getImageUrl() != null) {
             fileManagement.deleteFile(category.getImageUrl());
         }
-        return true;
     }
 }
