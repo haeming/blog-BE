@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.haem.blogbackend.admin.component.EntityFinder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,16 +33,19 @@ public class CategoryService {
     private final PostRepository postRepository;
     private final FileManagement fileManagement;
     private final DirectoryManagement directoryManagement;
+    private final EntityFinder entityFinder;
     private record UploadResult(String originalName, String imageUrl) {}
 
     public CategoryService(
             CategoryRepository categoryRepository,
             PostRepository postRepository,
             FileManagement fileManagement,
+            EntityFinder entityFinder,
             DirectoryManagement directoryManagement) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.fileManagement = fileManagement;
+        this.entityFinder = entityFinder;
         this.directoryManagement = directoryManagement;
     }
 
@@ -79,7 +83,6 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
         Category category = getCategoryOrThrow(id);
-
         prepareCategoryImageUpdate(category, file);
 
         UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
@@ -100,11 +103,11 @@ public class CategoryService {
     }
 
     private Category getCategoryOrThrow(Long categoryId){
-        if(categoryId == null || categoryId == 0){
-            throw new CategoryNotFoundException(categoryId);
-        }
-        return categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+        return entityFinder.findByIdOrThrow(
+                categoryId,
+                categoryRepository,
+                () -> new CategoryNotFoundException(categoryId)
+        );
     }
 
     private UploadResult uploadImageFile(MultipartFile file, BasePath basePath){

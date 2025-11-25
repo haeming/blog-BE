@@ -48,8 +48,8 @@ public class CommentService {
 
     private Post getPostOrThrow(Long postId) {
         return entityFinder.findByIdOrThrow(
-                postRepository,
                 postId,
+                postRepository,
                 () -> new PostNotFoundException(postId)
         );
     }
@@ -62,21 +62,13 @@ public class CommentService {
         );
     }
 
-    private Comment getCommentOrThrow(Long commentId) {
-        return entityFinder.findByIdOrThrow(
-                commentRepository,
-                commentId,
-                () -> new CommentNotFoundException(commentId)
-        );
-    }
-
     private Comment findParentCommentOrNull (Long parentId) {
         if(parentId == null){
             return null;
         }
         return entityFinder.findByIdOrThrow(
-                commentRepository,
                 parentId,
+                commentRepository,
                 () -> new CommentNotFoundException(parentId)
         );
     }
