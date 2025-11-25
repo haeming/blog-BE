@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.haem.blogbackend.admin.component.EntityFinder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,16 +33,19 @@ public class CategoryService {
     private final PostRepository postRepository;
     private final FileManagement fileManagement;
     private final DirectoryManagement directoryManagement;
+    private final EntityFinder entityFinder;
     private record UploadResult(String originalName, String imageUrl) {}
 
     public CategoryService(
             CategoryRepository categoryRepository,
             PostRepository postRepository,
             FileManagement fileManagement,
+            EntityFinder entityFinder,
             DirectoryManagement directoryManagement) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.fileManagement = fileManagement;
+        this.entityFinder = entityFinder;
         this.directoryManagement = directoryManagement;
     }
 
@@ -52,7 +56,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
         
-        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
+        UploadResult uploadResult = uploadImageFile(file);
 
         Category category = Category.create(requestDto.getCategoryName(), uploadResult.imageUrl, uploadResult.originalName);
         Category saved = categoryRepository.save(category);
@@ -79,10 +83,9 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
         Category category = getCategoryOrThrow(id);
-
         prepareCategoryImageUpdate(category, file);
 
-        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
+        UploadResult uploadResult = uploadImageFile(file);
 
         category.updateImage(uploadResult.imageUrl, uploadResult.originalName);
         return CategoryResponseDto.from(category);
@@ -100,21 +103,21 @@ public class CategoryService {
     }
 
     private Category getCategoryOrThrow(Long categoryId){
-        if(categoryId == null || categoryId == 0){
-            throw new CategoryNotFoundException(categoryId);
-        }
-        return categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+        return entityFinder.findByIdOrThrow(
+                categoryId,
+                categoryRepository,
+                () -> new CategoryNotFoundException(categoryId)
+        );
     }
 
-    private UploadResult uploadImageFile(MultipartFile file, BasePath basePath){
+    private UploadResult uploadImageFile(MultipartFile file){
         if(file == null || file.isEmpty()){
             return null;
         }
 
         try (InputStream inputStream = file.getInputStream()) {
             String originalName = file.getOriginalFilename();
-            String imageUrl = fileManagement.uploadFile(inputStream, originalName, basePath);
+            String imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
             return new UploadResult(originalName, imageUrl);
         } catch (IOException e) {
             log.error("이미지 업로드 실패", e);
@@ -133,13 +136,12 @@ public class CategoryService {
         directoryManagement.deleteEmptyParentDirectories(filePath.getParent(), Paths.get("uploadFiles"));
     }
 
-    private boolean prepareCategoryImageUpdate(Category category, MultipartFile file) {
+    private void prepareCategoryImageUpdate(Category category, MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return false;
+            return;
         }
         if (category.getImageUrl() != null) {
             fileManagement.deleteFile(category.getImageUrl());
         }
-        return true;
     }
 }

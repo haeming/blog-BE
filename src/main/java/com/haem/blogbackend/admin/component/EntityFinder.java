@@ -10,10 +10,10 @@ import java.util.function.Supplier;
 @Component
 public class EntityFinder {
     public <T, ID, E extends RuntimeException> T findByIdOrThrow(
-            JpaRepository<T, ID> repository,
             ID id,
+            JpaRepository<T, ID> repository,
             Supplier<E> exceptionSupplier) {
-        if(id == null || id instanceof Long && ((Long)id).equals(0L)){
+        if(id == null || (id instanceof Long && id.equals(0L))){
             throw exceptionSupplier.get();
         }
         return repository.findById(id)

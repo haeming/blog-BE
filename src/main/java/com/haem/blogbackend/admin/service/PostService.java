@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.haem.blogbackend.admin.component.EntityFinder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,18 +41,21 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final ImageRepository imageRepository;
     private final ImageProcessor imageProcessor;
+    private final EntityFinder entityFinder;
 
     public PostService(
             PostRepository postRepository,
             AdminRepository adminRepository,
             CategoryRepository categoryRepository,
             ImageRepository imageRepository,
-            ImageProcessor imageProcessor){
+            ImageProcessor imageProcessor,
+            EntityFinder entityFinder){
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
         this.imageProcessor = imageProcessor;
+        this.entityFinder = entityFinder;
     }
 
     public long getPostCount(){
@@ -75,15 +79,12 @@ public class PostService {
 
     @Transactional
     public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) {
-        Admin admin = findAdminOrNull(accountName);
-
-        Category category = findCategoryOrNull(requestDto.getCategoryId());
-        
+        Admin admin = getAdminOrThrow(accountName);
+        Category category = getCategoryOrThrow(requestDto.getCategoryId());
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
 
         extractImagesFromContent(post, requestDto.getContent());
-
         saveFiles(post, files);
 
         return PostResponseDto.from(post);
@@ -91,7 +92,7 @@ public class PostService {
 
     @Transactional
     public void deletePost (Long id){
-        Post post = findPostOrNull(id);
+        Post post = getPostOrThrow(id);
 
         deleteAllImages(post);
         postRepository.delete(post);
@@ -99,34 +100,34 @@ public class PostService {
 
     @Transactional
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
-        Post post = findPostOrNull(id);
+        Post post = getPostOrThrow(id);
         updatePostIfValid(post, requestDto);
         return PostResponseDto.from(post);
     }
 
     
-    private Admin findAdminOrNull(String accountName){
-        if(accountName == null || accountName.isEmpty()){
-            throw new AdminNotFoundException(accountName);
-        }
-        return adminRepository.findByAccountName(accountName)
-            .orElseThrow(() -> new AdminNotFoundException(accountName));
+    private Admin getAdminOrThrow(String accountName){
+        return entityFinder.findByStringKeyOrThrow(
+                accountName,
+                adminRepository::findByAccountName,
+                () -> new AdminNotFoundException(accountName)
+        );
     }
 
-    private Category findCategoryOrNull(Long categoryId){
-        if(categoryId == null || categoryId == 0){
-            throw new CategoryNotFoundException(categoryId);
-        }
-        return categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new CategoryNotFoundException(categoryId));
+    private Category getCategoryOrThrow(Long categoryId){
+        return entityFinder.findByIdOrThrow(
+                categoryId,
+                categoryRepository,
+                () -> new CategoryNotFoundException(categoryId)
+        );
     }
 
-    private Post findPostOrNull(Long postId){
-        if(postId == null || postId == 0){
-            throw new PostNotFoundException(postId);
-        }
-        return postRepository.findById(postId)
-            .orElseThrow(() -> new PostNotFoundException(postId));
+    private Post getPostOrThrow(Long postId){
+        return entityFinder.findByIdOrThrow(
+                postId,
+                postRepository,
+                () -> new PostNotFoundException(postId)
+        );
     }
 
     private void extractImagesFromContent(Post post, String content){
@@ -139,7 +140,7 @@ public class PostService {
     }
 
     private void saveFiles(Post post, MultipartFile[] files) {
-        if (files != null && files.length > 0) {
+        if (files != null) {
             for (MultipartFile file : files) {
                 imageProcessor.saveImage(post, file, BasePath.POST);
             }
