@@ -1,17 +1,6 @@
 package com.haem.blogbackend.admin.service;
 
-import java.nio.file.Paths;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.haem.blogbackend.admin.component.EntityFinder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.haem.blogbackend.admin.component.ImageProcessor;
 import com.haem.blogbackend.admin.repository.AdminRepository;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
@@ -19,7 +8,6 @@ import com.haem.blogbackend.admin.repository.ImageRepository;
 import com.haem.blogbackend.admin.repository.PostRepository;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
-import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
 import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Category;
@@ -29,8 +17,17 @@ import com.haem.blogbackend.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.dto.response.PostResponseDto;
 import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Transactional(readOnly = true)
