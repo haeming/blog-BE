@@ -115,11 +115,7 @@ public class PostService {
     }
 
     private Category getCategoryOrThrow(Long categoryId){
-        return entityFinder.findByIdOrThrow(
-                categoryId,
-                categoryRepository,
-                () -> new CategoryNotFoundException(categoryId)
-        );
+        return entityFinder.findByIdOrNull(categoryId,categoryRepository);
     }
 
     private Post getPostOrThrow(Long postId){
