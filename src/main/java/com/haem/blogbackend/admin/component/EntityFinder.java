@@ -13,7 +13,7 @@ public class EntityFinder {
             ID id,
             JpaRepository<T, ID> repository,
             Supplier<E> exceptionSupplier) {
-        if(id == null || id instanceof Long && ((Long)id).equals(0L)){
+        if(id == null || (id instanceof Long && id.equals(0L))){
             throw exceptionSupplier.get();
         }
         return repository.findById(id)

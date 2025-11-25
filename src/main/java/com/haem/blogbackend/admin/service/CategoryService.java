@@ -56,7 +56,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto createCategory(CategoryCreateRequestDto requestDto, MultipartFile file) {
         
-        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
+        UploadResult uploadResult = uploadImageFile(file);
 
         Category category = Category.create(requestDto.getCategoryName(), uploadResult.imageUrl, uploadResult.originalName);
         Category saved = categoryRepository.save(category);
@@ -85,7 +85,7 @@ public class CategoryService {
         Category category = getCategoryOrThrow(id);
         prepareCategoryImageUpdate(category, file);
 
-        UploadResult uploadResult = uploadImageFile(file, BasePath.CATEGORY);
+        UploadResult uploadResult = uploadImageFile(file);
 
         category.updateImage(uploadResult.imageUrl, uploadResult.originalName);
         return CategoryResponseDto.from(category);
@@ -110,14 +110,14 @@ public class CategoryService {
         );
     }
 
-    private UploadResult uploadImageFile(MultipartFile file, BasePath basePath){
+    private UploadResult uploadImageFile(MultipartFile file){
         if(file == null || file.isEmpty()){
             return null;
         }
 
         try (InputStream inputStream = file.getInputStream()) {
             String originalName = file.getOriginalFilename();
-            String imageUrl = fileManagement.uploadFile(inputStream, originalName, basePath);
+            String imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
             return new UploadResult(originalName, imageUrl);
         } catch (IOException e) {
             log.error("이미지 업로드 실패", e);
