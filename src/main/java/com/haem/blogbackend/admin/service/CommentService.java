@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Transactional(readOnly = true)
 @Service
@@ -34,6 +36,17 @@ public class CommentService {
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.entityFinder = entityFinder;
+    }
+
+    public long getCommentCount (){
+        return commentRepository.count();
+    }
+
+    public List<CommentResponseDto> getCommentsByPostId(Long postId){
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        return comments.stream()
+                .map(CommentResponseDto::from)
+                .toList();
     }
 
     @Transactional

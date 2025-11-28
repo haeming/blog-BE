@@ -6,10 +6,9 @@ import com.haem.blogbackend.dto.response.CommentResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/comments")
@@ -18,6 +17,16 @@ public class CommentController {
 
     public CommentController(CommentService commentService) {
         this.commentService = commentService;
+    }
+
+    @GetMapping
+    public List<CommentResponseDto> getComments(Long postId) {
+        return commentService.getCommentsByPostId(postId);
+    }
+
+    @GetMapping("/count")
+    public long getCommentCount() {
+        return commentService.getCommentCount();
     }
 
     @PostMapping
