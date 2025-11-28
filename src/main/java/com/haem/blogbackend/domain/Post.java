@@ -97,6 +97,10 @@ public class Post {
         return createdAt;
     }
 
+    public LocalDateTime getDeletedAt(){
+        return deletedAt;
+    }
+
     public void setCategory(Category category){
         this.category = category;
     }
