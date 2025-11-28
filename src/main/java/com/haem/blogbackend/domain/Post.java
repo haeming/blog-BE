@@ -97,10 +97,6 @@ public class Post {
         return createdAt;
     }
 
-    public LocalDateTime getDeletedAt(){
-        return deletedAt;
-    }
-
     public void setCategory(Category category){
         this.category = category;
     }
@@ -119,6 +115,10 @@ public class Post {
 
     public void setImages(List<Image> images){
         this.images = images;
+    }
+
+    public void touchUpdate(){
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void softDelete(){
