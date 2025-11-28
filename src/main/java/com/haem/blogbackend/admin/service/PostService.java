@@ -60,12 +60,13 @@ public class PostService {
     }
 
     public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
-        return postRepository.findAll(pageable).map(post -> {
-            String categoryName = Optional.ofNullable(post.getCategory())
-                    .map(Category::getCategoryName)
-                    .orElse("미분류");
-            return PostSummaryResponseDto.from(post, categoryName);
-        });
+        return postRepository.findByDeletedAtIsNull(pageable)
+                .map(post -> {
+                    String categoryName = Optional.ofNullable(post.getCategory())
+                            .map(Category::getCategoryName)
+                            .orElse("미분류");
+                    return PostSummaryResponseDto.from(post, categoryName);
+                });
     }
 
     public PostResponseDto getPost (Long id){
@@ -92,7 +93,7 @@ public class PostService {
         Post post = getPostOrThrow(id);
 
         deleteAllImages(post);
-        postRepository.delete(post);
+        post.softDelete();
     }
 
     @Transactional
