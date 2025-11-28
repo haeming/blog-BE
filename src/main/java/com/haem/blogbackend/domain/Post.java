@@ -17,9 +17,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "post")
+@SQLRestriction("deleted_at IS NULL")
 public class Post {
 
     @Id
@@ -46,6 +48,9 @@ public class Post {
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
@@ -63,24 +68,31 @@ public class Post {
     public Long getId(){
         return id;
     }
+
     public Category getCategory(){
         return category;
     }
+
     public Admin getAdmin(){
         return admin;
     }
+
     public String getTitle(){
         return title;
     }
+
     public String getContent(){
         return content;
     }
+
     public List<Image> getImages(){
         return images;
     }
+
     public LocalDateTime getUpdatedAt(){
         return updatedAt;
     }
+
     public LocalDateTime getCreatedAt(){
         return createdAt;
     }
@@ -88,17 +100,29 @@ public class Post {
     public void setCategory(Category category){
         this.category = category;
     }
+
     public void setAdmin(Admin admin){
         this.admin = admin;
     }
+
     public void setTitle(String title){
         this.title = title;
     }
+
     public void setContent(String content){
         this.content = content;
     }
+
     public void setImages(List<Image> images){
         this.images = images;
+    }
+
+    public void touchUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void softDelete(){
+        deletedAt = LocalDateTime.now();
     }
 
     public void addImage(Image image) {
