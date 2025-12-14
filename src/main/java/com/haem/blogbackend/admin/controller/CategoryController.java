@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
-import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
-import com.haem.blogbackend.dto.response.CategoryResponseDto;
+import com.haem.blogbackend.admin.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.CategoryUpdateNameRequestDto;
+import com.haem.blogbackend.admin.dto.response.CategoryResponseDto;
 import com.haem.blogbackend.admin.service.CategoryService;
 
 import jakarta.validation.Valid;

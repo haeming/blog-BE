@@ -1,4 +1,4 @@
-package com.haem.blogbackend.dto.request;
+package com.haem.blogbackend.admin.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;

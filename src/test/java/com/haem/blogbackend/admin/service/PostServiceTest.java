@@ -29,10 +29,10 @@ import com.haem.blogbackend.admin.repository.PostRepository;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.dto.request.PostCreateRequestDto;
-import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.dto.response.PostResponseDto;
-import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
+import com.haem.blogbackend.admin.dto.response.PostResponseDto;
+import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {

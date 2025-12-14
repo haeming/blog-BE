@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.haem.blogbackend.dto.request.PostCreateRequestDto;
-import com.haem.blogbackend.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.dto.response.PostResponseDto;
-import com.haem.blogbackend.dto.response.PostSummaryResponseDto;
+import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
+import com.haem.blogbackend.admin.dto.response.PostResponseDto;
+import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.admin.service.PostService;
 
 import jakarta.validation.Valid;
