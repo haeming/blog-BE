@@ -53,7 +53,6 @@ class CommentControllerTest {
                 .postId(1L)
                 .content("test comment")
                 .nickname("admin") // Add nickname
-                .password("password") // Add password
                 .build();
 
         CommentResponseDto responseDto = CommentResponseDto.builder()
