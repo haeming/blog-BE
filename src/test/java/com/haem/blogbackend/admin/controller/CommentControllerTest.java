@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.haem.blogbackend.admin.component.JwtProvider;
 import com.haem.blogbackend.admin.service.AdminService;
 import com.haem.blogbackend.admin.service.CommentService;
-import com.haem.blogbackend.admin.dto.request.CommentCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,10 +49,9 @@ class CommentControllerTest {
     @DisplayName("댓글 생성")
     void createComment() throws Exception {
         // given
-        CommentCreateRequestDto requestDto = CommentCreateRequestDto.builder()
+        AdminCommentCreateRequestDto requestDto = AdminCommentCreateRequestDto.builder()
                 .postId(1L)
                 .content("test comment")
-                .nickname("admin") // Add nickname
                 .build();
 
         CommentResponseDto responseDto = CommentResponseDto.builder()
@@ -62,7 +61,7 @@ class CommentControllerTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        given(commentService.createComment(anyString(), any(CommentCreateRequestDto.class))).willReturn(responseDto);
+        given(commentService.createComment(anyString(), any(AdminCommentCreateRequestDto.class))).willReturn(responseDto);
 
         // when & then
         mockMvc.perform(post("/api/admin/comments")

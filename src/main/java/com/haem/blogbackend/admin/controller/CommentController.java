@@ -1,7 +1,7 @@
 package com.haem.blogbackend.admin.controller;
 
 import com.haem.blogbackend.admin.service.CommentService;
-import com.haem.blogbackend.admin.dto.request.CommentCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,10 +31,9 @@ public class CommentController {
 
     @PostMapping
     public CommentResponseDto createComment (
-            @AuthenticationPrincipal UserDetails user,
-            @Valid @RequestBody CommentCreateRequestDto requestDto
+            @AuthenticationPrincipal UserDetails admin,
+            @Valid @RequestBody AdminCommentCreateRequestDto requestDto
             ){
-        String accountName = user.getUsername();
-        return commentService.createComment(accountName, requestDto);
+        return commentService.createComment(admin.getUsername(), requestDto);
     }
 }

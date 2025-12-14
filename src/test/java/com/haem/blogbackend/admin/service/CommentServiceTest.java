@@ -6,7 +6,7 @@ import com.haem.blogbackend.admin.repository.PostRepository;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Comment;
 import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.admin.dto.request.CommentCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class CommentServiceTest {
         // given
         String accountName = "admin";
         Long postId = 1L;
-        CommentCreateRequestDto requestDto = CommentCreateRequestDto.builder()
+        AdminCommentCreateRequestDto requestDto = AdminCommentCreateRequestDto.builder()
                 .postId(postId)
                 .content("test comment")
                 .build();
