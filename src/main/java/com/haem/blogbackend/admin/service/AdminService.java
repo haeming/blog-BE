@@ -5,8 +5,8 @@ import com.haem.blogbackend.admin.repository.AdminRepository;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.token.ExpiredTokenException;
 import com.haem.blogbackend.domain.Admin;
-import com.haem.blogbackend.dto.request.AdminLoginRequestDto;
-import com.haem.blogbackend.dto.response.AdminLoginResponseDto;
+import com.haem.blogbackend.admin.dto.request.AdminLoginRequestDto;
+import com.haem.blogbackend.admin.dto.response.AdminLoginResponseDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.haem.blogbackend.dto.response;
+package com.haem.blogbackend.admin.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

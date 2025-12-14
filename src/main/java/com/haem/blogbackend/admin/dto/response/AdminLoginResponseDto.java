@@ -1,4 +1,4 @@
-package com.haem.blogbackend.dto.response;
+package com.haem.blogbackend.admin.dto.response;
 
 import com.haem.blogbackend.domain.Admin;
 

@@ -26,9 +26,9 @@ import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.admin.repository.CategoryRepository;
 import com.haem.blogbackend.admin.repository.PostRepository;
 import com.haem.blogbackend.domain.Category;
-import com.haem.blogbackend.dto.request.CategoryCreateRequestDto;
-import com.haem.blogbackend.dto.request.CategoryUpdateNameRequestDto;
-import com.haem.blogbackend.dto.response.CategoryResponseDto;
+import com.haem.blogbackend.admin.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.CategoryUpdateNameRequestDto;
+import com.haem.blogbackend.admin.dto.response.CategoryResponseDto;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {

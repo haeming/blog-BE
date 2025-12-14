@@ -10,8 +10,8 @@ import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Comment;
 import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.dto.request.CommentCreateRequestDto;
-import com.haem.blogbackend.dto.response.CommentResponseDto;
+import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
+import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +50,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDto createComment(String accountName, CommentCreateRequestDto requestDto){
+    public CommentResponseDto createComment(String accountName, AdminCommentCreateRequestDto requestDto){
         Post post = getPostOrThrow(requestDto.getPostId());
         Admin admin = getAdminOrThrow(accountName);
         Comment parent = findParentCommentOrNull(requestDto.getParentId());
