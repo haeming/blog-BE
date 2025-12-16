@@ -6,6 +6,7 @@ import com.haem.blogbackend.admin.service.AdminService;
 import com.haem.blogbackend.admin.service.CommentService;
 import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
+import com.haem.blogbackend.admin.service.dto.CommentCreateCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ class CommentControllerTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        given(commentService.createComment(anyString(), any(AdminCommentCreateRequestDto.class))).willReturn(responseDto);
+        given(commentService.createComment(anyString(), any(CommentCreateCommand.class))).willReturn(responseDto);
 
         // when & then
         mockMvc.perform(post("/api/admin/comments")
