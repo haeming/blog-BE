@@ -91,7 +91,6 @@ public class PostService {
     @Transactional
     public void deletePost (Long id){
         Post post = getPostOrThrow(id);
-
         deleteAllImages(post);
         post.softDelete();
     }

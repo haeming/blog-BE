@@ -50,10 +50,8 @@ public class Comment {
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     // 기본생성자
     protected Comment(){}
@@ -144,5 +142,9 @@ public class Comment {
 
     public static Comment createByUser(Post post, Comment parent, String nickname, String password, String content) {
         return new Comment(post, null, parent, nickname, password, content, false);
+    }
+
+    public void softDelete(){
+        deletedAt = LocalDateTime.now();
     }
 }
