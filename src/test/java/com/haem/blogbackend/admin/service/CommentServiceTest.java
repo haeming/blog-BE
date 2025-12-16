@@ -3,6 +3,7 @@ package com.haem.blogbackend.admin.service;
 import com.haem.blogbackend.admin.repository.AdminRepository;
 import com.haem.blogbackend.admin.repository.CommentRepository;
 import com.haem.blogbackend.admin.repository.PostRepository;
+import com.haem.blogbackend.admin.service.dto.CommentCreateCommand;
 import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Comment;
 import com.haem.blogbackend.domain.Post;
@@ -43,10 +44,11 @@ class CommentServiceTest {
         // given
         String accountName = "admin";
         Long postId = 1L;
-        AdminCommentCreateRequestDto requestDto = AdminCommentCreateRequestDto.builder()
-                .postId(postId)
-                .content("test comment")
-                .build();
+        CommentCreateCommand command = new CommentCreateCommand(
+                postId,
+                null,
+                "test comment"
+        );
 
         Admin admin = new Admin(accountName, "password");
         Post post = mock(Post.class);
@@ -57,7 +59,7 @@ class CommentServiceTest {
         when(commentRepository.save(any(Comment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        CommentResponseDto responseDto = commentService.createComment(accountName, requestDto);
+        CommentResponseDto responseDto = commentService.createComment(accountName, command);
 
         // then
         assertThat(responseDto.getContent()).isEqualTo("test comment");
