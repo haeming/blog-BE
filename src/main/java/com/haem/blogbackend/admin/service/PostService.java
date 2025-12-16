@@ -91,7 +91,6 @@ public class PostService {
     @Transactional
     public void deletePost (Long id){
         Post post = getPostOrThrow(id);
-
         deleteAllImages(post);
         post.softDelete();
     }
@@ -100,7 +99,6 @@ public class PostService {
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
         Post post = getPostOrThrow(id);
         updatePostIfValid(post, requestDto);
-        post.touchUpdate();
         return PostResponseDto.from(post);
     }
 

@@ -59,6 +59,20 @@ public class CommentService {
         return CommentResponseDto.from(comment);
     }
 
+    @Transactional
+    public void deleteComment(Long id){
+        Comment comment = getCommentOrThrow(id);
+        comment.softDelete();
+    }
+
+    private Comment getCommentOrThrow(Long commentId){
+        return entityFinder.findByIdOrThrow(
+                commentId,
+                commentRepository,
+                () -> new CommentNotFoundException(commentId)
+        );
+    }
+
     private Post getPostOrThrow(Long postId) {
         return entityFinder.findByIdOrThrow(
                 postId,
