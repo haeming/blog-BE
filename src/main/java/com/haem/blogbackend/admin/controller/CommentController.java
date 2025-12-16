@@ -1,9 +1,9 @@
 package com.haem.blogbackend.admin.controller;
 
-import com.haem.blogbackend.admin.service.CommentService;
 import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
-import com.haem.blogbackend.domain.Comment;
+import com.haem.blogbackend.admin.service.CommentService;
+import com.haem.blogbackend.admin.service.dto.CommentCreateCommand;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +35,12 @@ public class CommentController {
             @AuthenticationPrincipal UserDetails admin,
             @Valid @RequestBody AdminCommentCreateRequestDto requestDto
             ){
-        return commentService.createComment(admin.getUsername(), requestDto);
+        CommentCreateCommand command = new CommentCreateCommand(
+                requestDto.getPostId(),
+                requestDto.getParentId(),
+                requestDto.getContent()
+        );
+        return commentService.createComment(admin.getUsername(), command);
     }
 
     @DeleteMapping("/{id}")
