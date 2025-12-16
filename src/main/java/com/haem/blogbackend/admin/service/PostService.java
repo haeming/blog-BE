@@ -100,7 +100,6 @@ public class PostService {
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
         Post post = getPostOrThrow(id);
         updatePostIfValid(post, requestDto);
-        post.touchUpdate();
         return PostResponseDto.from(post);
     }
 
