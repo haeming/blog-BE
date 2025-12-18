@@ -55,6 +55,8 @@ public class CommentService {
         Admin admin = getAdminOrThrow(accountName);
         Comment parent = findParentCommentOrNull(command.parentId());
 
+        validateParentBelongsToPost(parent, command.postId());
+
         Comment comment = Comment.createByAdmin(post, admin, parent, command.content());
         commentRepository.save(comment);
         return CommentResponseDto.from(comment);
@@ -100,4 +102,15 @@ public class CommentService {
                 () -> new CommentNotFoundException(parentId)
         );
     }
+
+    private void validateParentBelongsToPost(Comment parent, Long postId) {
+        if (parent == null) {
+            return;
+        }
+        Long parentPostId = parent.getPost().getId();
+        if (!parentPostId.equals(postId)) {
+            throw new IllegalArgumentException("부모 댓글이 다른 게시글에 속해 있습니다.");
+        }
+    }
+
 }
