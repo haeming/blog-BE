@@ -2,10 +2,7 @@ package com.haem.blogbackend.admin.service;
 
 import com.haem.blogbackend.admin.component.EntityFinder;
 import com.haem.blogbackend.admin.component.ImageProcessor;
-import com.haem.blogbackend.admin.repository.AdminRepository;
-import com.haem.blogbackend.admin.repository.CategoryRepository;
-import com.haem.blogbackend.admin.repository.ImageRepository;
-import com.haem.blogbackend.admin.repository.PostRepository;
+import com.haem.blogbackend.admin.repository.*;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
@@ -39,6 +36,7 @@ public class PostService {
     private final ImageRepository imageRepository;
     private final ImageProcessor imageProcessor;
     private final EntityFinder entityFinder;
+    private final CommentRepository commentRepository;
 
     public PostService(
             PostRepository postRepository,
@@ -46,13 +44,15 @@ public class PostService {
             CategoryRepository categoryRepository,
             ImageRepository imageRepository,
             ImageProcessor imageProcessor,
-            EntityFinder entityFinder){
+            EntityFinder entityFinder,
+            CommentRepository commentRepository){
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.categoryRepository = categoryRepository;
         this.imageRepository = imageRepository;
         this.imageProcessor = imageProcessor;
         this.entityFinder = entityFinder;
+        this.commentRepository = commentRepository;
     }
 
     public long getPostCount(){
@@ -92,6 +92,7 @@ public class PostService {
     public void deletePost (Long id){
         Post post = getPostOrThrow(id);
         deleteAllImages(post);
+        commentRepository.softDeleteByPostId(id);
         post.softDelete();
     }
 

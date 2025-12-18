@@ -24,10 +24,10 @@ public class Comment {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
-    @Column(name = "nickname", nullable = false, length = 100)
+    @Column(name = "nickname", nullable = true, length = 100)
     private String nickname;
 
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(name = "password", nullable = true, length = 100)
     private String password;
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
