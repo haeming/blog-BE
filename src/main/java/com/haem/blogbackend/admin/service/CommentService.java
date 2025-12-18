@@ -39,11 +39,11 @@ public class CommentService {
     }
 
     public long getCommentCount (){
-        return commentRepository.count();
+        return commentRepository.countByDeletedAtIsNull();
     }
 
     public List<CommentResponseDto> getCommentsByPostId(Long postId){
-        List<Comment> comments = commentRepository.findByPostId(postId);
+        List<Comment> comments = commentRepository.findByPostIdAndDeletedAtIsNull(postId);
         return comments.stream()
                 .map(CommentResponseDto::from)
                 .toList();
