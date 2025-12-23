@@ -56,7 +56,7 @@ public class PostService {
     }
 
     public long getPostCount(){
-        return postRepository.count();
+        return postRepository.countByDeletedAtIsNull();
     }
 
     public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
