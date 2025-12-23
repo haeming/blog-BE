@@ -117,6 +117,10 @@ public class Post {
         this.images = images;
     }
 
+    public void touchUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void softDelete(){
         deletedAt = LocalDateTime.now();
     }

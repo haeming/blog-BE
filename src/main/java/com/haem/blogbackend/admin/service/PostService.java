@@ -56,7 +56,7 @@ public class PostService {
     }
 
     public long getPostCount(){
-        return postRepository.count();
+        return postRepository.countByDeletedAtIsNull();
     }
 
     public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
@@ -92,14 +92,15 @@ public class PostService {
     public void deletePost (Long id){
         Post post = getPostOrThrow(id);
         deleteAllImages(post);
-        commentRepository.softDeleteByPostId(id);
         post.softDelete();
+        commentRepository.softDeleteByPostId(id);
     }
 
     @Transactional
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
         Post post = getPostOrThrow(id);
         updatePostIfValid(post, requestDto);
+        post.touchUpdate();
         return PostResponseDto.from(post);
     }
 
