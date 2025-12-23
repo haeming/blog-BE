@@ -92,8 +92,8 @@ public class PostService {
     public void deletePost (Long id){
         Post post = getPostOrThrow(id);
         deleteAllImages(post);
-        commentRepository.softDeleteByPostId(id);
         post.softDelete();
+        commentRepository.softDeleteByPostId(id);
     }
 
     @Transactional
