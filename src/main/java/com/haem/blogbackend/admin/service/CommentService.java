@@ -39,11 +39,11 @@ public class CommentService {
     }
 
     public long getCommentCount (){
-        return commentRepository.count();
+        return commentRepository.countByDeletedAtIsNull();
     }
 
     public List<CommentResponseDto> getCommentsByPostId(Long postId){
-        List<Comment> comments = commentRepository.findByPostId(postId);
+        List<Comment> comments = commentRepository.findByPostIdAndDeletedAtIsNull(postId);
         return comments.stream()
                 .map(CommentResponseDto::from)
                 .toList();
@@ -54,6 +54,8 @@ public class CommentService {
         Post post = getPostOrThrow(command.postId());
         Admin admin = getAdminOrThrow(accountName);
         Comment parent = findParentCommentOrNull(command.parentId());
+
+        validateParentBelongsToPost(parent, command.postId());
 
         Comment comment = Comment.createByAdmin(post, admin, parent, command.content());
         commentRepository.save(comment);
@@ -100,4 +102,15 @@ public class CommentService {
                 () -> new CommentNotFoundException(parentId)
         );
     }
+
+    private void validateParentBelongsToPost(Comment parent, Long postId) {
+        if (parent == null) {
+            return;
+        }
+        Long parentPostId = parent.getPost().getId();
+        if (!parentPostId.equals(postId)) {
+            throw new IllegalArgumentException("부모 댓글이 다른 게시글에 속해 있습니다.");
+        }
+    }
+
 }

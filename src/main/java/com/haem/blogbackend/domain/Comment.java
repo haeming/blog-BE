@@ -1,5 +1,6 @@
 package com.haem.blogbackend.domain;
 
+import com.haem.blogbackend.common.enums.CommentAuthorType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,10 +25,10 @@ public class Comment {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
-    @Column(name = "nickname", nullable = false, length = 100)
+    @Column(name = "nickname", nullable = true, length = 100)
     private String nickname;
 
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(name = "password", nullable = true, length = 100)
     private String password;
 
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
@@ -44,6 +45,17 @@ public class Comment {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "author_type", nullable = false)
+    private CommentAuthorType authorType;
+
+    @PrePersist
+    private void prePersist() {
+        if (authorType == null) {
+            authorType = (admin != null) ? CommentAuthorType.ADMIN : CommentAuthorType.GUEST;
+        }
+    }
 
     // 기본생성자
     protected Comment(){}
@@ -121,11 +133,15 @@ public class Comment {
     }
 
     public static Comment createByAdmin(Post post, Admin admin, Comment parent, String content) {
-        return new Comment(post, admin, parent, null, null, content, false);
+        Comment c = new Comment(post, admin, parent, null, null, content, false);
+        c.authorType = CommentAuthorType.ADMIN;
+        return c;
     }
 
-    public static Comment createByUser(Post post, Comment parent, String nickname, String password, String content) {
-        return new Comment(post, null, parent, nickname, password, content, false);
+    public static Comment createByGuest(Post post, Comment parent, String nickname, String password, String content) {
+        Comment c = new Comment(post, null, parent, nickname, password, content, false);
+        c.authorType = CommentAuthorType.GUEST;
+        return c;
     }
 
     public void softDelete(){
