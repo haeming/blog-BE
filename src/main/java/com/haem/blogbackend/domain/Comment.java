@@ -50,6 +50,13 @@ public class Comment {
     @Column(name = "author_type", nullable = false)
     private CommentAuthorType authorType;
 
+    @PrePersist
+    private void prePersist() {
+        if (authorType == null) {
+            authorType = (admin != null) ? CommentAuthorType.ADMIN : CommentAuthorType.GUEST;
+        }
+    }
+
     // 기본생성자
     protected Comment(){}
 
