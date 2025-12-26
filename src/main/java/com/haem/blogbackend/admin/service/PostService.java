@@ -22,10 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -34,7 +36,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final AdminRepository adminRepository;
     private final CategoryRepository categoryRepository;
-    private final ImageRepository imageRepository;
     private final ImageProcessor imageProcessor;
     private final EntityFinder entityFinder;
     private final CommentRepository commentRepository;
@@ -43,14 +44,12 @@ public class PostService {
             PostRepository postRepository,
             AdminRepository adminRepository,
             CategoryRepository categoryRepository,
-            ImageRepository imageRepository,
             ImageProcessor imageProcessor,
             EntityFinder entityFinder,
             CommentRepository commentRepository){
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.categoryRepository = categoryRepository;
-        this.imageRepository = imageRepository;
         this.imageProcessor = imageProcessor;
         this.entityFinder = entityFinder;
         this.commentRepository = commentRepository;

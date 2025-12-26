@@ -1,21 +1,18 @@
 package com.haem.blogbackend.admin.component;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.haem.blogbackend.admin.component.FileManagement;
 import com.haem.blogbackend.common.component.ImageValidator;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.enums.ImageExtension;
 import com.haem.blogbackend.common.exception.base.FileStorageException;
 import com.haem.blogbackend.common.exception.base.InvalidFileException;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 @Slf4j
 @Component
