@@ -22,9 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional(readOnly = true)
@@ -82,8 +83,8 @@ public class PostService {
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
 
-        extractImagesFromContent(post, requestDto.getContent());
         saveFiles(post, files);
+        syncImagesByContent(post, requestDto.getContent());
 
         return PostResponseDto.from(post);
     }
@@ -99,7 +100,14 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
         Post post = getPostOrThrow(id);
+        String beforeContent = post.getContent();
         post.updateIfPresent(requestDto.getTitle(), requestDto.getContent());
+
+        String afterContent = post.getContent();
+        if (!afterContent.equals(beforeContent)) {
+            syncImagesByContent(post, afterContent);
+        }
+
         return PostResponseDto.from(post);
     }
     
@@ -123,14 +131,56 @@ public class PostService {
         );
     }
 
-    private void extractImagesFromContent(Post post, String content){
+    // url 추출
+    private Set<String> extractImageUrlsFromContent(String content){
+        Set<String> urls = new HashSet<>();
+        if(content == null || content.isBlank()){
+            return urls;
+        }
+
         Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(content);
         while (matcher.find()) {
-            String path = matcher.group().replace("(", "").replace(")", "");
-            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
-            imageRepository.save(image);
+            String url = matcher.group().replace("(", "").replace(")", "");
+            urls.add(url);
+        }
+        return urls;
+    }
+//    private void extractImagesFromContent(Post post, String content){
+//        Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(content);
+//        while (matcher.find()) {
+//            String path = matcher.group().replace("(", "").replace(")", "");
+//            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
+//            imageRepository.save(image);
+//        }
+//    }
+
+    private void syncImagesByContent(Post post, String content) {
+        Set<String> newUrls = extractImageUrlsFromContent(content);
+
+        // 기존 이미지 url -> Image 매핑
+        Map<String, Image> existingMap = post.getImages().stream()
+                .collect(Collectors.toMap(Image::getImageUrl, img -> img, (a, b) -> a));
+
+        // 1) 삭제
+        for (Image img : new ArrayList<>(post.getImages())) {
+            if (!newUrls.contains(img.getImageUrl())) {
+                imageProcessor.deleteImage(img); // 파일 삭제 + DB 삭제
+                post.removeImage(img);           // 컬렉션에서도 제거(정합성)
+            }
+        }
+
+        // 2) 추가
+        for (String url : newUrls) {
+            if (!existingMap.containsKey(url)) {
+                String originalName = Paths.get(url).getFileName().toString();
+                Image image = new Image(post, url, originalName);
+
+                post.addImage(image);
+                imageRepository.save(image); // 현재 ImageProcessor가 save 시 repo.save를 쓰므로 여기서도 명시적으로 save
+            }
         }
     }
+
 
     private void saveFiles(Post post, MultipartFile[] files) {
         if (files != null) {
@@ -141,17 +191,9 @@ public class PostService {
     }
 
     private void deleteAllImages(Post post) {
-        for (Image image : post.getImages()) {
+        for (Image image : new ArrayList<>(post.getImages())) {
             imageProcessor.deleteImage(image);
-        }
-    }
-
-    private void updatePostIfValid(Post post, PostUpdateInfoRequestDto requestDto){
-        if(requestDto.getTitle() != null && !requestDto.getTitle().isBlank()){
-            post.setTitle(requestDto.getTitle());
-        }
-        if(requestDto.getContent() != null && !requestDto.getContent().isBlank()){
-            post.setContent(requestDto.getContent());
+            post.removeImage(image);
         }
     }
 }
