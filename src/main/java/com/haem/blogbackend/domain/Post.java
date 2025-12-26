@@ -42,7 +42,7 @@ public class Post {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(name = "updated_at", updatable = false, insertable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "created_at", updatable = false, insertable = false)
@@ -116,6 +116,38 @@ public class Post {
     public void setImages(List<Image> images){
         this.images = images;
     }
+
+    public void updateIfPresent(String title, String content) {
+        boolean changed = false;
+
+        if (title != null && !title.isBlank() && !title.equals(this.title)) {
+            this.title = title;
+            changed = true;
+        }
+
+        if (content != null && !content.isBlank() && !content.equals(this.content)) {
+            this.content = content;
+            changed = true;
+        }
+
+        if (changed) {
+            touchUpdate();
+        }
+    }
+
+    public void updateInfoStrict(String title, String content) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("제목 입력은 필수입니다.");
+        }
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("내용을 입력해 주세요.");
+        }
+
+        this.title = title;
+        this.content = content;
+        touchUpdate();
+    }
+
 
     public void touchUpdate(){
         this.updatedAt = LocalDateTime.now();

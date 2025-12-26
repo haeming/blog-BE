@@ -99,11 +99,9 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
         Post post = getPostOrThrow(id);
-        updatePostIfValid(post, requestDto);
-        post.touchUpdate();
+        post.updateIfPresent(requestDto.getTitle(), requestDto.getContent());
         return PostResponseDto.from(post);
     }
-
     
     private Admin getAdminOrThrow(String accountName){
         return entityFinder.findByStringKeyOrThrow(
