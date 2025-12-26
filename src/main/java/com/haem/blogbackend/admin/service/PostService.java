@@ -2,6 +2,10 @@ package com.haem.blogbackend.admin.service;
 
 import com.haem.blogbackend.admin.component.EntityFinder;
 import com.haem.blogbackend.admin.component.ImageProcessor;
+import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
+import com.haem.blogbackend.admin.dto.response.PostResponseDto;
+import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.admin.repository.*;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
@@ -10,10 +14,6 @@ import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
-import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.admin.dto.response.PostResponseDto;
-import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -157,42 +157,44 @@ public class PostService {
     private void syncImagesByContent(Post post, String content) {
         Set<String> newUrls = extractImageUrlsFromContent(content);
 
-        // 기존 이미지 url -> Image 매핑
-        Map<String, Image> existingMap = post.getImages().stream()
-                .collect(Collectors.toMap(Image::getImageUrl, img -> img, (a, b) -> a));
+        Set<String> existingUrls = new HashSet<>();
+        for (Image img : post.getImages()) {
+            existingUrls.add(img.getImageUrl());
+        }
 
         // 1) 삭제
         for (Image img : new ArrayList<>(post.getImages())) {
             if (!newUrls.contains(img.getImageUrl())) {
-                imageProcessor.deleteImage(img); // 파일 삭제 + DB 삭제
-                post.removeImage(img);           // 컬렉션에서도 제거(정합성)
+                imageProcessor.deleteFileByUrl(img.getImageUrl());
+                post.removeImage(img);
             }
         }
 
         // 2) 추가
         for (String url : newUrls) {
-            if (!existingMap.containsKey(url)) {
+            if (!existingUrls.contains(url)) {
                 String originalName = Paths.get(url).getFileName().toString();
-                Image image = new Image(post, url, originalName);
-
-                post.addImage(image);
-                imageRepository.save(image); // 현재 ImageProcessor가 save 시 repo.save를 쓰므로 여기서도 명시적으로 save
+                post.addImage(new Image(post, url, originalName));
             }
         }
     }
-
 
     private void saveFiles(Post post, MultipartFile[] files) {
-        if (files != null) {
-            for (MultipartFile file : files) {
-                imageProcessor.saveImage(post, file, BasePath.POST);
-            }
+        if (files == null) return;
+
+        for (MultipartFile file : files) {
+            String url = imageProcessor.uploadImage(file, BasePath.POST);
+            String originalName = (file.getOriginalFilename() != null) ? file.getOriginalFilename()
+                    : Paths.get(url).getFileName().toString();
+
+            post.addImage(new Image(post, url, originalName));
         }
     }
+
 
     private void deleteAllImages(Post post) {
         for (Image image : new ArrayList<>(post.getImages())) {
-            imageProcessor.deleteImage(image);
+            imageProcessor.deleteFileByUrl(image.getImageUrl());
             post.removeImage(image);
         }
     }
