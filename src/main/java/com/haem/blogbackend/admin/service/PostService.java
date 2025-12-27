@@ -2,6 +2,10 @@ package com.haem.blogbackend.admin.service;
 
 import com.haem.blogbackend.admin.component.EntityFinder;
 import com.haem.blogbackend.admin.component.ImageProcessor;
+import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
+import com.haem.blogbackend.admin.dto.response.PostResponseDto;
+import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
 import com.haem.blogbackend.admin.repository.*;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
@@ -10,10 +14,6 @@ import com.haem.blogbackend.domain.Admin;
 import com.haem.blogbackend.domain.Category;
 import com.haem.blogbackend.domain.Image;
 import com.haem.blogbackend.domain.Post;
-import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
-import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
-import com.haem.blogbackend.admin.dto.response.PostResponseDto;
-import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +36,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final AdminRepository adminRepository;
     private final CategoryRepository categoryRepository;
-    private final ImageRepository imageRepository;
     private final ImageProcessor imageProcessor;
     private final EntityFinder entityFinder;
     private final CommentRepository commentRepository;
@@ -42,14 +44,12 @@ public class PostService {
             PostRepository postRepository,
             AdminRepository adminRepository,
             CategoryRepository categoryRepository,
-            ImageRepository imageRepository,
             ImageProcessor imageProcessor,
             EntityFinder entityFinder,
             CommentRepository commentRepository){
         this.postRepository = postRepository;
         this.adminRepository = adminRepository;
         this.categoryRepository = categoryRepository;
-        this.imageRepository = imageRepository;
         this.imageProcessor = imageProcessor;
         this.entityFinder = entityFinder;
         this.commentRepository = commentRepository;
@@ -82,8 +82,8 @@ public class PostService {
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
 
-        extractImagesFromContent(post, requestDto.getContent());
         saveFiles(post, files);
+        syncImagesByContent(post, requestDto.getContent());
 
         return PostResponseDto.from(post);
     }
@@ -99,11 +99,16 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePostInfo(Long id, PostUpdateInfoRequestDto requestDto){
         Post post = getPostOrThrow(id);
-        updatePostIfValid(post, requestDto);
-        post.touchUpdate();
+        String beforeContent = post.getContent();
+        post.updateIfPresent(requestDto.getTitle(), requestDto.getContent());
+
+        String afterContent = post.getContent();
+        if (!afterContent.equals(beforeContent)) {
+            syncImagesByContent(post, afterContent);
+        }
+
         return PostResponseDto.from(post);
     }
-
     
     private Admin getAdminOrThrow(String accountName){
         return entityFinder.findByStringKeyOrThrow(
@@ -125,35 +130,71 @@ public class PostService {
         );
     }
 
-    private void extractImagesFromContent(Post post, String content){
+    // url 추출
+    private Set<String> extractImageUrlsFromContent(String content){
+        Set<String> urls = new HashSet<>();
+        if(content == null || content.isBlank()){
+            return urls;
+        }
+
         Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(content);
         while (matcher.find()) {
-            String path = matcher.group().replace("(", "").replace(")", "");
-            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
-            imageRepository.save(image);
+            String url = matcher.group().replace("(", "").replace(")", "");
+            urls.add(url);
         }
+        return urls;
     }
+//    private void extractImagesFromContent(Post post, String content){
+//        Matcher matcher = Pattern.compile("\\(/uploadFiles[^)]+\\)").matcher(content);
+//        while (matcher.find()) {
+//            String path = matcher.group().replace("(", "").replace(")", "");
+//            Image image = new Image(post, path, Paths.get(path).getFileName().toString());
+//            imageRepository.save(image);
+//        }
+//    }
 
-    private void saveFiles(Post post, MultipartFile[] files) {
-        if (files != null) {
-            for (MultipartFile file : files) {
-                imageProcessor.saveImage(post, file, BasePath.POST);
+    private void syncImagesByContent(Post post, String content) {
+        Set<String> newUrls = extractImageUrlsFromContent(content);
+
+        Set<String> existingUrls = new HashSet<>();
+        for (Image img : post.getImages()) {
+            existingUrls.add(img.getImageUrl());
+        }
+
+        // 1) 삭제
+        for (Image img : new ArrayList<>(post.getImages())) {
+            if (!newUrls.contains(img.getImageUrl())) {
+                imageProcessor.deleteFileByUrl(img.getImageUrl());
+                post.removeImage(img);
+            }
+        }
+
+        // 2) 추가
+        for (String url : newUrls) {
+            if (!existingUrls.contains(url)) {
+                String originalName = Paths.get(url).getFileName().toString();
+                post.addImage(new Image(post, url, originalName));
             }
         }
     }
 
-    private void deleteAllImages(Post post) {
-        for (Image image : post.getImages()) {
-            imageProcessor.deleteImage(image);
+    private void saveFiles(Post post, MultipartFile[] files) {
+        if (files == null) return;
+
+        for (MultipartFile file : files) {
+            String url = imageProcessor.uploadImage(file, BasePath.POST);
+            String originalName = (file.getOriginalFilename() != null) ? file.getOriginalFilename()
+                    : Paths.get(url).getFileName().toString();
+
+            post.addImage(new Image(post, url, originalName));
         }
     }
 
-    private void updatePostIfValid(Post post, PostUpdateInfoRequestDto requestDto){
-        if(requestDto.getTitle() != null && !requestDto.getTitle().isBlank()){
-            post.setTitle(requestDto.getTitle());
-        }
-        if(requestDto.getContent() != null && !requestDto.getContent().isBlank()){
-            post.setContent(requestDto.getContent());
+
+    private void deleteAllImages(Post post) {
+        for (Image image : new ArrayList<>(post.getImages())) {
+            imageProcessor.deleteFileByUrl(image.getImageUrl());
+            post.removeImage(image);
         }
     }
 }
