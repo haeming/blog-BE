@@ -1,9 +1,9 @@
-package com.haem.blogbackend.admin.repository;
+package com.haem.blogbackend.domain.comment.repository;
 
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.haem.blogbackend.domain.Comment;
+import com.haem.blogbackend.domain.comment.entity.Comment;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 

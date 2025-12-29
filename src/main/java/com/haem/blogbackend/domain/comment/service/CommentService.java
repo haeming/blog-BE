@@ -1,17 +1,17 @@
-package com.haem.blogbackend.admin.service;
+package com.haem.blogbackend.domain.comment.service;
 
 import com.haem.blogbackend.admin.component.EntityFinder;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
-import com.haem.blogbackend.admin.repository.AdminRepository;
-import com.haem.blogbackend.admin.repository.CommentRepository;
-import com.haem.blogbackend.admin.repository.PostRepository;
-import com.haem.blogbackend.admin.service.dto.CommentCreateCommand;
+import com.haem.blogbackend.domain.admin.repository.AdminRepository;
+import com.haem.blogbackend.domain.comment.repository.CommentRepository;
+import com.haem.blogbackend.domain.post.repository.PostRepository;
+import com.haem.blogbackend.domain.comment.service.dto.CommentCreateCommand;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.notfound.CommentNotFoundException;
 import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
-import com.haem.blogbackend.domain.Admin;
-import com.haem.blogbackend.domain.Comment;
-import com.haem.blogbackend.domain.Post;
+import com.haem.blogbackend.domain.admin.entity.Admin;
+import com.haem.blogbackend.domain.comment.entity.Comment;
+import com.haem.blogbackend.domain.post.entity.Post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

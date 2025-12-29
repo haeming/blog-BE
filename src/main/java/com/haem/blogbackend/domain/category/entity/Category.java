@@ -1,9 +1,10 @@
-package com.haem.blogbackend.domain;
+package com.haem.blogbackend.domain.category.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.haem.blogbackend.domain.post.entity.Post;
 import jakarta.persistence.*;
 
 @Entity

@@ -1,6 +1,6 @@
 package com.haem.blogbackend.admin.dto.request;
 
-import com.haem.blogbackend.domain.Post;
+import com.haem.blogbackend.domain.post.entity.Post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.haem.blogbackend.admin.service;
+package com.haem.blogbackend.domain.category.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,12 +13,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.haem.blogbackend.admin.component.DirectoryManagement;
 import com.haem.blogbackend.admin.component.FileManagement;
-import com.haem.blogbackend.admin.repository.CategoryRepository;
-import com.haem.blogbackend.admin.repository.PostRepository;
+import com.haem.blogbackend.domain.category.repository.CategoryRepository;
+import com.haem.blogbackend.domain.post.repository.PostRepository;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.base.FileStorageException;
 import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
-import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.domain.category.entity.Category;
 import com.haem.blogbackend.admin.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.admin.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.admin.dto.response.CategoryResponseDto;

@@ -2,8 +2,8 @@ package com.haem.blogbackend.admin.controller;
 
 import com.haem.blogbackend.admin.dto.request.AdminCommentCreateRequestDto;
 import com.haem.blogbackend.admin.dto.response.CommentResponseDto;
-import com.haem.blogbackend.admin.service.CommentService;
-import com.haem.blogbackend.admin.service.dto.CommentCreateCommand;
+import com.haem.blogbackend.domain.comment.service.CommentService;
+import com.haem.blogbackend.domain.comment.service.dto.CommentCreateCommand;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

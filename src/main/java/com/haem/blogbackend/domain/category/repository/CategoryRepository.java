@@ -1,11 +1,11 @@
-package com.haem.blogbackend.admin.repository;
+package com.haem.blogbackend.domain.category.repository;
 
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.domain.category.entity.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 

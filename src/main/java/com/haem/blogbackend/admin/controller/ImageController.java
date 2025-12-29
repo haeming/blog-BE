@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.haem.blogbackend.admin.service.ImageService;
+import com.haem.blogbackend.domain.image.service.ImageService;
 
 @RestController
 @RequestMapping("/api/admin/images")

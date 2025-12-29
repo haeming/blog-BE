@@ -1,6 +1,8 @@
-package com.haem.blogbackend.domain;
+package com.haem.blogbackend.domain.comment.entity;
 
 import com.haem.blogbackend.common.enums.CommentAuthorType;
+import com.haem.blogbackend.domain.post.entity.Post;
+import com.haem.blogbackend.domain.admin.entity.Admin;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

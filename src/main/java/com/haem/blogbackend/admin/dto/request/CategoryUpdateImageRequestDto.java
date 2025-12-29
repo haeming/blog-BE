@@ -1,6 +1,6 @@
 package com.haem.blogbackend.admin.dto.request;
 
-import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.domain.category.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
 

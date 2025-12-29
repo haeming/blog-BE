@@ -2,7 +2,7 @@ package com.haem.blogbackend.admin.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.haem.blogbackend.domain.Post;
+import com.haem.blogbackend.domain.post.entity.Post;
 
 import lombok.Getter;
 

@@ -1,10 +1,10 @@
-package com.haem.blogbackend.admin.service;
+package com.haem.blogbackend.domain.admin.service;
 
 import com.haem.blogbackend.admin.component.JwtProvider;
-import com.haem.blogbackend.admin.repository.AdminRepository;
+import com.haem.blogbackend.domain.admin.repository.AdminRepository;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.token.ExpiredTokenException;
-import com.haem.blogbackend.domain.Admin;
+import com.haem.blogbackend.domain.admin.entity.Admin;
 import com.haem.blogbackend.admin.dto.request.AdminLoginRequestDto;
 import com.haem.blogbackend.admin.dto.response.AdminLoginResponseDto;
 import org.springframework.security.crypto.password.PasswordEncoder;

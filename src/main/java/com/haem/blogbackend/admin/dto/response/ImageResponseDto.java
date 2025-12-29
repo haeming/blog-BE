@@ -1,6 +1,6 @@
 package com.haem.blogbackend.admin.dto.response;
 
-import com.haem.blogbackend.domain.Image;
+import com.haem.blogbackend.domain.image.entity.Image;
 
 import lombok.Builder;
 import lombok.Getter;
