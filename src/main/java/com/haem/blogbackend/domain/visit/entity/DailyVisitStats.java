@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "daily_visit_stats")
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DailyVisitStats {
 
     @Id
@@ -26,6 +24,39 @@ public class DailyVisitStats {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    // 기본 생성자 (JPA 전용)
+    protected DailyVisitStats() {
+    }
+
+    // 생성자
+    private DailyVisitStats(LocalDate visitDate, long uniqueVisitors) {
+        this.visitDate = visitDate;
+        this.uniqueVisitors = uniqueVisitors;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // ---------- Getter ----------
+
+    public LocalDate getVisitDate() {
+        return visitDate;
+    }
+
+    public long getUniqueVisitors() {
+        return uniqueVisitors;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    // ---------- Factory Method ----------
+
+    public static DailyVisitStats create(LocalDate visitDate, long uniqueVisitors) {
+        return new DailyVisitStats(visitDate, uniqueVisitors);
+    }
+
+    // ---------- Business Method ----------
 
     public void updateCount(long count) {
         this.uniqueVisitors = count;
