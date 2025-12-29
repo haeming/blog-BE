@@ -34,16 +34,48 @@ public class DailyVisit {
     @Column(name = "user_agent")
     private String userAgent;
 
+    // 기본 생성자
+    protected DailyVisit() {
+    }
+
+    // 생성자
+    private DailyVisit(LocalDate visitDate, String ipHash, String userAgent) {
+        this.visitDate = visitDate;
+        this.ipHash = ipHash;
+        this.userAgent = userAgent;
+    }
+
+    // 생명주기 콜백
     @PrePersist
-    void onCreate() {
+    protected void onCreate() {
         this.firstSeenAt = LocalDateTime.now();
     }
 
-    public static DailyVisit of(LocalDate date, String ipHash, String ua) {
-        DailyVisit v = new DailyVisit();
-        v.visitDate = date;
-        v.ipHash = ipHash;
-        v.userAgent = ua;
-        return v;
+    // ---------- Getter ----------
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getVisitDate() {
+        return visitDate;
+    }
+
+    public String getIpHash() {
+        return ipHash;
+    }
+
+    public LocalDateTime getFirstSeenAt() {
+        return firstSeenAt;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    // ---------- Factory Method ----------
+
+    public static DailyVisit create(LocalDate visitDate, String ipHash, String userAgent) {
+        return new DailyVisit(visitDate, ipHash, userAgent);
     }
 }
