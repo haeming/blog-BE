@@ -1,9 +1,6 @@
 package com.haem.blogbackend.domain.visit.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,8 +11,6 @@ import java.time.LocalDateTime;
                 @UniqueConstraint(columnNames = {"visit_date", "ip_hash"})
         }
 )
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DailyVisit {
 
     @Id
