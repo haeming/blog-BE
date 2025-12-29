@@ -1,7 +1,8 @@
-package com.haem.blogbackend.domain;
+package com.haem.blogbackend.domain.image.entity;
 
 import java.time.LocalDateTime;
 
+import com.haem.blogbackend.domain.post.entity.Post;
 import jakarta.persistence.*;
 
 @Entity

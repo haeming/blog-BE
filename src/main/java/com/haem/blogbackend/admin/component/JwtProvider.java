@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.haem.blogbackend.domain.Admin;
+import com.haem.blogbackend.domain.admin.entity.Admin;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,9 +1,12 @@
-package com.haem.blogbackend.domain;
+package com.haem.blogbackend.domain.post.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.haem.blogbackend.domain.admin.entity.Admin;
+import com.haem.blogbackend.domain.category.entity.Category;
+import com.haem.blogbackend.domain.image.entity.Image;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;

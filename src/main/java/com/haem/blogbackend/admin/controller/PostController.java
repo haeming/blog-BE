@@ -21,7 +21,7 @@ import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.admin.dto.response.PostResponseDto;
 import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.admin.service.PostService;
+import com.haem.blogbackend.domain.post.service.PostService;
 
 import jakarta.validation.Valid;
 

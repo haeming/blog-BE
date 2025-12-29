@@ -1,4 +1,4 @@
-package com.haem.blogbackend.admin.service;
+package com.haem.blogbackend.domain.post.service;
 
 import com.haem.blogbackend.admin.component.EntityFinder;
 import com.haem.blogbackend.admin.component.ImageProcessor;
@@ -6,14 +6,17 @@ import com.haem.blogbackend.admin.dto.request.PostCreateRequestDto;
 import com.haem.blogbackend.admin.dto.request.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.admin.dto.response.PostResponseDto;
 import com.haem.blogbackend.admin.dto.response.PostSummaryResponseDto;
-import com.haem.blogbackend.admin.repository.*;
 import com.haem.blogbackend.common.enums.BasePath;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.notfound.PostNotFoundException;
-import com.haem.blogbackend.domain.Admin;
-import com.haem.blogbackend.domain.Category;
-import com.haem.blogbackend.domain.Image;
-import com.haem.blogbackend.domain.Post;
+import com.haem.blogbackend.domain.admin.entity.Admin;
+import com.haem.blogbackend.domain.category.entity.Category;
+import com.haem.blogbackend.domain.comment.repository.CommentRepository;
+import com.haem.blogbackend.domain.image.entity.Image;
+import com.haem.blogbackend.domain.post.entity.Post;
+import com.haem.blogbackend.domain.admin.repository.AdminRepository;
+import com.haem.blogbackend.domain.category.repository.CategoryRepository;
+import com.haem.blogbackend.domain.post.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

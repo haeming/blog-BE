@@ -1,4 +1,4 @@
-package com.haem.blogbackend.domain;
+package com.haem.blogbackend.domain.admin.entity;
 
 import java.time.LocalDateTime;
 

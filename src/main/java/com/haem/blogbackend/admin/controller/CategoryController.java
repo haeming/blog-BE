@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.haem.blogbackend.admin.dto.request.CategoryCreateRequestDto;
 import com.haem.blogbackend.admin.dto.request.CategoryUpdateNameRequestDto;
 import com.haem.blogbackend.admin.dto.response.CategoryResponseDto;
-import com.haem.blogbackend.admin.service.CategoryService;
+import com.haem.blogbackend.domain.category.service.CategoryService;
 
 import jakarta.validation.Valid;
 

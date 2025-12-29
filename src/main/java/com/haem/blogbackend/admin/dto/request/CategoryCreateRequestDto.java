@@ -1,6 +1,6 @@
 package com.haem.blogbackend.admin.dto.request;
 
-import com.haem.blogbackend.domain.Category;
+import com.haem.blogbackend.domain.category.entity.Category;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;

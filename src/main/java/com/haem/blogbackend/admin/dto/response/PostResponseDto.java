@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.haem.blogbackend.domain.Post;
+import com.haem.blogbackend.domain.post.entity.Post;
 
 import lombok.Getter;
 

@@ -1,8 +1,8 @@
 package com.haem.blogbackend.admin.controller;
 
-import com.haem.blogbackend.admin.service.AdminService;
+import com.haem.blogbackend.domain.admin.service.AdminService;
 import com.haem.blogbackend.common.exception.token.InvalidTokenException;
-import com.haem.blogbackend.domain.Admin;
+import com.haem.blogbackend.domain.admin.entity.Admin;
 import com.haem.blogbackend.admin.dto.request.AdminLoginRequestDto;
 import com.haem.blogbackend.admin.dto.response.AdminLoginResponseDto;
 import com.haem.blogbackend.admin.dto.response.TokenVerifyResponseDto;

@@ -1,4 +1,4 @@
-package com.haem.blogbackend.admin.service;
+package com.haem.blogbackend.domain.image.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
