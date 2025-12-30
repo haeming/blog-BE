@@ -6,6 +6,8 @@ import com.haem.blogbackend.domain.visit.repository.DailyVisitStatsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 
 @Service
@@ -37,5 +39,29 @@ public class VisitService {
         return dailyVisitStatsRepository.findById(date)
                 .map(DailyVisitStats::getUniqueVisitors)
                 .orElse(0L);
+    }
+
+    @Transactional
+    public void trackVisit(LocalDate date, String rawIp, String userAgent) {
+        String ipHash = sha256(rawIp);
+
+        int inserted = dailyVisitRepository.insertIgnore(date, ipHash, userAgent);
+
+        // 신규 방문(오늘 해당 ipHash 첫 방문)일 때만 집계 갱신
+        if (inserted > 0) {
+            aggregateToday(date);
+        }
+    }
+
+    private String sha256(String value) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] dig = md.digest(value.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(dig.length * 2);
+            for (byte b : dig) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (Exception e) {
+            throw new IllegalStateException("ip hash failed", e);
+        }
     }
 }
