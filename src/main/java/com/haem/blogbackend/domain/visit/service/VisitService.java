@@ -18,6 +18,7 @@ public class VisitService {
         this.dailyVisitStatsRepository = dailyVisitStatsRepository;
     }
 
+    // 신규 방문시 호출 (집계 갱신)
     @Transactional
     public void aggregateToday(LocalDate date){
         long count = dailyVisitRepository.countByVisitDate(date);
@@ -28,5 +29,13 @@ public class VisitService {
 
         stats.updateCount(count);
         dailyVisitStatsRepository.save(stats);
+    }
+
+    // 메인 표시용 조회
+    @Transactional(readOnly = true)
+    public long getTodayUniqueVisitors(LocalDate date) {
+        return dailyVisitStatsRepository.findById(date)
+                .map(DailyVisitStats::getUniqueVisitors)
+                .orElse(0L);
     }
 }
