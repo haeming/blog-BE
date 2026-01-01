@@ -2,7 +2,6 @@ package com.haem.blogbackend.common.web.controller;
 
 import com.haem.blogbackend.domain.visit.service.VisitService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

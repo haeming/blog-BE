@@ -20,9 +20,9 @@ public class VisitService {
         this.dailyVisitStatsRepository = dailyVisitStatsRepository;
     }
 
-    // 신규 방문시 호출 (집계 갱신)
+    // 배치/복구 전용
     @Transactional
-    public void aggregateToday(LocalDate date){
+    public void recalculateDailyStats(LocalDate date) {
         long count = dailyVisitRepository.countByVisitDate(date);
 
         DailyVisitStats stats = dailyVisitStatsRepository
