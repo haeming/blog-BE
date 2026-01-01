@@ -49,7 +49,12 @@ public class VisitService {
 
         // 신규 방문(오늘 해당 ipHash 첫 방문)일 때만 집계 갱신
         if (inserted > 0) {
-            aggregateToday(date);
+            DailyVisitStats stats = dailyVisitStatsRepository
+                    .findById(date)
+                    .orElseGet(() -> DailyVisitStats.create(date, 0));
+
+            stats.updateCount(stats.getUniqueVisitors() + 1);
+            dailyVisitStatsRepository.save(stats);
         }
     }
 
