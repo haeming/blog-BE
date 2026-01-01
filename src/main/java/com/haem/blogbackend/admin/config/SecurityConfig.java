@@ -38,9 +38,11 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/admin/login").permitAll()
+                    .requestMatchers("/api/visits/**").permitAll()
+                    .requestMatchers("/error").permitAll()
+                    .requestMatchers("/api/admin/login").permitAll()
                     .requestMatchers("/uploadFiles/**").permitAll()
-                .anyRequest().authenticated()
+                    .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(visitTrackingFilter, JwtAuthenticationFilter.class);

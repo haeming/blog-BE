@@ -25,6 +25,7 @@ public class VisitController {
 
     @PostMapping("/ping")
     public void ping(HttpServletRequest request) {
+        System.out.println("VISIT PING CALLED");
         LocalDate today = LocalDate.now();
         String ip = extractClientIp(request);
         String ua = request.getHeader("User-Agent");

@@ -35,6 +35,12 @@ public class VisitTrackingFilter extends OncePerRequestFilter {
         if (uri.startsWith("/actuator")) return true;
         if (uri.startsWith("/favicon.ico")) return true;
 
+        // 방문 집계 ping API는 제외 (집계는 Controller에서만)
+        if (uri.startsWith("/api/visits")) return true;
+
+        // 에러 디스패치도 제외 (무한 루프/오염 방지)
+        if (uri.equals("/error")) return true;
+
         // 정적 파일 확장자 제외 (필요 시 확장)
         if (uri.matches(".*\\.(css|js|map|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf)$")) return true;
 

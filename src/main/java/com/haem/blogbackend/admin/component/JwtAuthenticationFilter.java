@@ -44,6 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
         
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+
+        // 프리플라이트는 무조건 제외
+        if ("OPTIONS".equalsIgnoreCase(method)) return true;
+
+        // admin API만 JWT 적용 (관리자 영역만 보호)
+        return !uri.startsWith("/api/admin/");
+    }
+
     private String resolveToken(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
         if(bearerToken != null && bearerToken.startsWith("Bearer ")){
