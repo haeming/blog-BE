@@ -3,6 +3,7 @@ package com.haem.blogbackend.admin.config;
 import java.util.List;
 
 import com.haem.blogbackend.admin.component.JwtAuthenticationFilter;
+import com.haem.blogbackend.common.web.filter.VisitTrackingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -21,9 +22,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final VisitTrackingFilter visitTrackingFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, VisitTrackingFilter visitTrackingFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.visitTrackingFilter = visitTrackingFilter;
     }
 
     @Bean
@@ -35,11 +38,15 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/admin/login").permitAll()
+                    .requestMatchers("/api/visits/**").permitAll()
+                    .requestMatchers("/error").permitAll()
+                    .requestMatchers("/api/admin/login").permitAll()
                     .requestMatchers("/uploadFiles/**").permitAll()
-                .anyRequest().authenticated()
+                    .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(visitTrackingFilter, JwtAuthenticationFilter.class);
+
 
         return http.build();
     }
