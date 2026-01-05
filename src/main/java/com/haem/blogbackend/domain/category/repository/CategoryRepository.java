@@ -15,16 +15,14 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     select new com.haem.blogbackend.admin.dto.response.CategoryPostCountResponse(
         c.id,
         c.categoryName,
-        c.imageUrl,
-        c.originalName,
         count(p.id)
     )
     from Category c
-    left join Post p on p.category = c
-    group by c.id, c.categoryName, c.imageUrl, c.originalName
+    left join c.posts p
+    group by c.id, c.categoryName
     order by c.id asc
 """)
-    List<CategoryPostCountResponse> findCategoryPostCountsNative();
+    List<CategoryPostCountResponse> findCategoryPostCounts();
 
     Optional<Category> findByCategoryName(String categoryName);
 
