@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import com.haem.blogbackend.admin.component.EntityFinder;
+import com.haem.blogbackend.admin.dto.response.CategoryPostCountResponseDto;
+import com.haem.blogbackend.domain.category.dto.CategoryPostCountView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +53,10 @@ public class CategoryService {
 
     public long getCategoryCount(){
         return categoryRepository.count();
+    }
+
+    public List<CategoryPostCountView> getCategoryPostCounts() {
+        return categoryRepository.findCategoryPostCounts();
     }
 
     @Transactional

@@ -1,7 +1,8 @@
-package com.haem.blogbackend.admin.component;
+package com.haem.blogbackend.admin.security.filter;
 
 import java.io.IOException;
 
+import com.haem.blogbackend.admin.security.jwt.JwtProvider;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

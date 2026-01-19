@@ -1,8 +1,8 @@
-package com.haem.blogbackend.admin.config;
+package com.haem.blogbackend.admin.security.config;
 
 import java.util.List;
 
-import com.haem.blogbackend.admin.component.JwtAuthenticationFilter;
+import com.haem.blogbackend.admin.security.filter.JwtAuthenticationFilter;
 import com.haem.blogbackend.common.web.filter.VisitTrackingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

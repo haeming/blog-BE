@@ -1,6 +1,6 @@
 package com.haem.blogbackend.domain.admin.service;
 
-import com.haem.blogbackend.admin.component.JwtProvider;
+import com.haem.blogbackend.admin.security.jwt.JwtProvider;
 import com.haem.blogbackend.domain.admin.repository.AdminRepository;
 import com.haem.blogbackend.common.exception.notfound.AdminNotFoundException;
 import com.haem.blogbackend.common.exception.token.ExpiredTokenException;
