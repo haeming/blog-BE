@@ -1,13 +1,13 @@
-package com.haem.blogbackend.admin.dto.response;
+package com.haem.blogbackend.domain.category.dto;
 
-public class CategoryPostCountResponse {
+public class CategoryPostCountView {
     private final Long categoryId;
     private final String categoryName;
     private final long postCount;
 
-    public CategoryPostCountResponse(Long categoryId,
-                                     String categoryName,
-                                     long postCount) {
+    public CategoryPostCountView(Long categoryId,
+                                 String categoryName,
+                                 long postCount) {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.postCount = postCount;

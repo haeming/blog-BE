@@ -1,4 +1,4 @@
-package com.haem.blogbackend.admin.component;
+package com.haem.blogbackend.admin.security.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;

@@ -3,6 +3,7 @@ package com.haem.blogbackend.admin.controller;
 import java.io.IOException;
 import java.util.List;
 
+import com.haem.blogbackend.admin.dto.response.CategoryPostCountResponseDto;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -46,6 +47,15 @@ public CategoryController(CategoryService categoryService) {
     public long getPostCountByCategoryId(@PathVariable("categoryId") Long categoryId){
         long count = categoryService.getPostCountByCategoryId(categoryId);
         return count;
+    }
+
+    // 집계 조회는 View → Response 변환을 컨트롤러에서 수행
+    @GetMapping("/post-counts")
+    public List<CategoryPostCountResponseDto> getCategoryPostCounts() {
+        return categoryService.getCategoryPostCounts()
+                .stream()
+                .map(CategoryPostCountResponseDto::from)
+                .toList();
     }
 
     @PostMapping
