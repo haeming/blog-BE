@@ -1,31 +1,28 @@
 package com.haem.blogbackend.domain.category.service;
 
+import com.haem.blogbackend.admin.component.DirectoryManagement;
+import com.haem.blogbackend.admin.component.EntityFinder;
+import com.haem.blogbackend.admin.component.FileManagement;
+import com.haem.blogbackend.admin.dto.request.CategoryCreateRequestDto;
+import com.haem.blogbackend.admin.dto.request.CategoryUpdateNameRequestDto;
+import com.haem.blogbackend.admin.dto.response.CategoryResponseDto;
+import com.haem.blogbackend.common.enums.BasePath;
+import com.haem.blogbackend.common.exception.base.FileStorageException;
+import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
+import com.haem.blogbackend.domain.category.dto.CategoryPostCountView;
+import com.haem.blogbackend.domain.category.entity.Category;
+import com.haem.blogbackend.domain.category.repository.CategoryRepository;
+import com.haem.blogbackend.domain.post.repository.PostRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import com.haem.blogbackend.admin.component.EntityFinder;
-import com.haem.blogbackend.admin.dto.response.CategoryPostCountResponseDto;
-import com.haem.blogbackend.domain.category.dto.CategoryPostCountView;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.haem.blogbackend.admin.component.DirectoryManagement;
-import com.haem.blogbackend.admin.component.FileManagement;
-import com.haem.blogbackend.domain.category.repository.CategoryRepository;
-import com.haem.blogbackend.domain.post.repository.PostRepository;
-import com.haem.blogbackend.common.enums.BasePath;
-import com.haem.blogbackend.common.exception.base.FileStorageException;
-import com.haem.blogbackend.common.exception.notfound.CategoryNotFoundException;
-import com.haem.blogbackend.domain.category.entity.Category;
-import com.haem.blogbackend.admin.dto.request.CategoryCreateRequestDto;
-import com.haem.blogbackend.admin.dto.request.CategoryUpdateNameRequestDto;
-import com.haem.blogbackend.admin.dto.response.CategoryResponseDto;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Transactional(readOnly = true)
