@@ -89,10 +89,15 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto updateCategoryImage(Long id, MultipartFile file) {
         Category category = getCategoryOrThrow(id);
+
+        // 이미지 파일 수정 없으면 그대로 반환
+        if (file == null || file.isEmpty()) {
+            return CategoryResponseDto.from(category);
+        }
+
         prepareCategoryImageUpdate(category, file);
 
         UploadResult uploadResult = uploadImageFile(file);
-
         category.updateImage(uploadResult.imageUrl, uploadResult.originalName);
         return CategoryResponseDto.from(category);
     }
@@ -117,14 +122,15 @@ public class CategoryService {
     }
 
     private UploadResult uploadImageFile(MultipartFile file){
+        // 이미지 없으면 null로 반환
         if(file == null || file.isEmpty()){
-            return null;
+            return new UploadResult(null, null);
         }
 
         try (InputStream inputStream = file.getInputStream()) {
             String originalName = file.getOriginalFilename();
             String imageUrl = fileManagement.uploadFile(inputStream, originalName, BasePath.CATEGORY);
-            return new UploadResult(originalName, imageUrl);
+            return new UploadResult(imageUrl, originalName);
         } catch (IOException e) {
             log.error("이미지 업로드 실패", e);
             throw new FileStorageException("이미지 업로드 중 오류가 발생했습니다.", e);

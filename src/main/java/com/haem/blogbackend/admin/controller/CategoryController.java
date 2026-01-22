@@ -62,7 +62,7 @@ public CategoryController(CategoryService categoryService) {
     public CategoryResponseDto createCategory(
             @Valid @RequestPart("data") CategoryCreateRequestDto requestDto,
             @RequestPart(value = "file", required = false) MultipartFile file
-    )throws IOException{
+    ){
         CategoryResponseDto responseDto = categoryService.createCategory(requestDto, file);
         return responseDto;
     }
