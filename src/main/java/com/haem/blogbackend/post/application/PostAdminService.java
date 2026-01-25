@@ -80,6 +80,13 @@ public class PostAdminService {
         return PostDetailResult.from(post);
     }
 
+    // 휴지통/복구가 필요할 때만 추가
+    public PostDetailResult getAdminPostIncludingDeleted(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
+        return PostDetailResult.from(post);
+    }
+
     @Transactional
     public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) {
         Admin admin = getAdminOrThrow(accountName);
