@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.haem.blogbackend.image.api.dto.ImageResponseDto;
+import com.haem.blogbackend.post.application.dto.PostDetailResult;
 import com.haem.blogbackend.post.domain.Post;
 
 import lombok.Getter;
@@ -46,6 +47,26 @@ public class PostResponseDto {
                 post.getCategory() != null ? post.getCategory().getCategoryName() : null,
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
+                images
+        );
+    }
+
+    public static PostResponseDto from(PostDetailResult result) {
+        List<ImageResponseDto> images =
+                result.images() == null
+                        ? new ArrayList<>()
+                        : result.images().stream()
+                        .map(ImageResponseDto::from)
+                        .toList();
+
+        return new PostResponseDto(
+                result.id(),
+                result.title(),
+                result.content(),
+                result.categoryId(),
+                result.categoryName(),
+                result.createdAt(),
+                result.updatedAt(),
                 images
         );
     }

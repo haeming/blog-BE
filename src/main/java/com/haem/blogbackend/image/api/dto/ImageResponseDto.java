@@ -2,6 +2,7 @@ package com.haem.blogbackend.image.api.dto;
 
 import com.haem.blogbackend.image.domain.Image;
 
+import com.haem.blogbackend.post.application.dto.PostDetailResult;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,6 +24,14 @@ public class ImageResponseDto {
                 .id(image.getId())
                 .imageUrl(image.getImageUrl())
                 .originalName(image.getOriginalName())
+                .build();
+    }
+
+    public static ImageResponseDto from(PostDetailResult.ImageItem item) {
+        return ImageResponseDto.builder()
+                .id(null)
+                .imageUrl(item.url())
+                .originalName(item.originalName())
                 .build();
     }
 }
