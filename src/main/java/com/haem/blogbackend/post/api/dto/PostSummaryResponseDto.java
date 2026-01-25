@@ -2,6 +2,7 @@ package com.haem.blogbackend.post.api.dto;
 
 import java.time.LocalDateTime;
 
+import com.haem.blogbackend.post.application.dto.PostSummaryResult;
 import com.haem.blogbackend.post.domain.Post;
 
 import lombok.Getter;
@@ -32,6 +33,17 @@ public class PostSummaryResponseDto {
                 categoryName,
                 post.getCreatedAt(),
                 post.getUpdatedAt()
+        );
+    }
+
+    public static PostSummaryResponseDto from(PostSummaryResult result){
+        return new PostSummaryResponseDto(
+                result.id(),
+                result.title(),
+                result.content(),
+                result.categoryName(),
+                result.createdAt(),
+                result.updatedAt()
         );
     }
 }

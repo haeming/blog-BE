@@ -5,9 +5,10 @@ import com.haem.blogbackend.image.domain.ImageProcessor;
 import com.haem.blogbackend.post.api.dto.PostCreateRequestDto;
 import com.haem.blogbackend.post.api.dto.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.post.api.dto.PostResponseDto;
-import com.haem.blogbackend.post.api.dto.PostSummaryResponseDto;
 import com.haem.blogbackend.global.common.enums.BasePath;
 import com.haem.blogbackend.auth.domain.AdminNotFoundException;
+import com.haem.blogbackend.post.application.dto.PostDetailResult;
+import com.haem.blogbackend.post.application.dto.PostSummaryResult;
 import com.haem.blogbackend.post.domain.PostNotFoundException;
 import com.haem.blogbackend.auth.domain.Admin;
 import com.haem.blogbackend.category.domain.Category;
@@ -35,7 +36,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Transactional(readOnly = true)
 @Service
-public class PostService {
+public class PostAdminService {
     private final PostRepository postRepository;
     private final AdminRepository adminRepository;
     private final CategoryRepository categoryRepository;
@@ -43,7 +44,7 @@ public class PostService {
     private final EntityFinder entityFinder;
     private final CommentRepository commentRepository;
 
-    public PostService(
+    public PostAdminService(
             PostRepository postRepository,
             AdminRepository adminRepository,
             CategoryRepository categoryRepository,
@@ -62,20 +63,27 @@ public class PostService {
         return postRepository.countByDeletedAtIsNull();
     }
 
-    public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
+    public Page<PostSummaryResult> getPosts(Pageable pageable){
         return postRepository.findByDeletedAtIsNull(pageable)
                 .map(post -> {
                     String categoryName = Optional.ofNullable(post.getCategory())
                             .map(Category::getCategoryName)
                             .orElse("미분류");
-                    return PostSummaryResponseDto.from(post, categoryName);
+                    return PostSummaryResult.from(post, categoryName);
                 });
     }
 
-    public PostResponseDto getPost (Long id){
+    public PostDetailResult getPost (Long id){
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
-        return PostResponseDto.from(post);
+        return PostDetailResult.from(post);
+    }
+
+    // 휴지통/복구가 필요할 때만 추가
+    public PostDetailResult getAdminPostIncludingDeleted(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
+        return PostDetailResult.from(post);
     }
 
     @Transactional
