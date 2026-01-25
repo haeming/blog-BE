@@ -2,6 +2,7 @@ package com.haem.blogbackend.post.api;
 
 import java.io.IOException;
 
+import com.haem.blogbackend.post.application.dto.PostSummaryResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,35 +22,33 @@ import com.haem.blogbackend.post.api.dto.PostCreateRequestDto;
 import com.haem.blogbackend.post.api.dto.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.post.api.dto.PostResponseDto;
 import com.haem.blogbackend.post.api.dto.PostSummaryResponseDto;
-import com.haem.blogbackend.post.application.PostService;
+import com.haem.blogbackend.post.application.PostAdminService;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/admin/posts")
-public class PostController {
-    private final PostService postService;
+public class PostAdminController {
+    private final PostAdminService postAdminService;
 
-    public PostController(PostService postService) {
-        this.postService = postService;
+    public PostAdminController(PostAdminService postAdminService) {
+        this.postAdminService = postAdminService;
     }
 
     @GetMapping
     public Page<PostSummaryResponseDto> getPosts(Pageable pageable){
-        Page<PostSummaryResponseDto> postSummaryResponseDtoList = postService.getPosts(pageable);
-        return postSummaryResponseDtoList;
+        return postAdminService.getPosts(pageable)
+                .map(PostSummaryResponseDto::from);
     }
 
     @GetMapping("/count")
     public Long getPostCount(){
-        long count = postService.getPostCount();
-        return count;
+        return postAdminService.getPostCount();
     }
 
     @GetMapping("/{id}")
     public PostResponseDto getPost(@PathVariable("id") Long id){
-        PostResponseDto responseDto = postService.getPost(id);
-        return responseDto;
+        return PostResponseDto.from(postAdminService.getPost(id));
     }
 
     @PostMapping
@@ -59,13 +58,12 @@ public class PostController {
             @RequestPart(value = "file", required=false) MultipartFile[] files
     ) throws IOException {
         String accountName = user.getUsername();
-        PostResponseDto postResponseDto = postService.createPost(accountName, requestDto, files);
-        return postResponseDto;
+        return postAdminService.createPost(accountName, requestDto, files);
     }
 
     @DeleteMapping("/{id}")
     public void deletePost(@PathVariable("id") Long id){
-        postService.deletePost(id);
+        postAdminService.deletePost(id);
     }
 
     @PatchMapping("/{id}/info")
@@ -73,7 +71,6 @@ public class PostController {
             @PathVariable("id") Long id,
             @Valid @RequestBody PostUpdateInfoRequestDto requestDto
     ){
-        PostResponseDto responseDto = postService.updatePostInfo(id, requestDto);
-        return responseDto;
+        return postAdminService.updatePostInfo(id, requestDto);
     }
 }
