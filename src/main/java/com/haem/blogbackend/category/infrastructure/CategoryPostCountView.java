@@ -3,7 +3,7 @@ package com.haem.blogbackend.category.infrastructure;
 public class CategoryPostCountView {
     private final Long categoryId;
     private final String categoryName;
-    private final long postCount;
+    private final Long postCount;
 
     public CategoryPostCountView(Long categoryId,
                                  String categoryName,

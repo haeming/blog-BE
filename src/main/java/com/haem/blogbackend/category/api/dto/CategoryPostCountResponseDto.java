@@ -1,11 +1,13 @@
 package com.haem.blogbackend.category.api.dto;
 
 import com.haem.blogbackend.category.infrastructure.CategoryPostCountView;
+import lombok.Builder;
 
+@Builder
 public class CategoryPostCountResponseDto {
     private final Long id;
     private final String name;
-    private final long postCount;
+    private final Long postCount;
 
     public CategoryPostCountResponseDto(Long id, String name, long postCount) {
         this.id = id;
@@ -14,11 +16,11 @@ public class CategoryPostCountResponseDto {
     }
 
     public static CategoryPostCountResponseDto from(CategoryPostCountView view){
-        return new CategoryPostCountResponseDto(
-                view.getCategoryId(),
-                view.getCategoryName(),
-                view.getPostCount()
-        );
+        return CategoryPostCountResponseDto.builder()
+                .id(view.getCategoryId())
+                .name(view.getCategoryName())
+                .postCount(view.getPostCount())
+                .build();
     }
     public Long getId() {
         return id;
@@ -26,7 +28,7 @@ public class CategoryPostCountResponseDto {
     public String getName() {
         return name;
     }
-    public long getPostCount() {
+    public Long getPostCount() {
         return postCount;
     }
 }

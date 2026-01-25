@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("""
-    select new com.haem.blogbackend.domain.category.dto.CategoryPostCountView(
+    select new com.haem.blogbackend.category.infrastructure.CategoryPostCountView(
         c.id,
         c.categoryName,
         count(p.id)
