@@ -5,7 +5,6 @@ import com.haem.blogbackend.image.domain.ImageProcessor;
 import com.haem.blogbackend.post.api.dto.PostCreateRequestDto;
 import com.haem.blogbackend.post.api.dto.PostUpdateInfoRequestDto;
 import com.haem.blogbackend.post.api.dto.PostResponseDto;
-import com.haem.blogbackend.post.api.dto.PostSummaryResponseDto;
 import com.haem.blogbackend.global.common.enums.BasePath;
 import com.haem.blogbackend.auth.domain.AdminNotFoundException;
 import com.haem.blogbackend.post.application.dto.PostDetailResult;
