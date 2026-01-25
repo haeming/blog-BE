@@ -1,5 +1,6 @@
 package com.haem.blogbackend.post.domain;
 
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // admin / 삭제된 글 조회 관리 (삭제 포함 or 삭제만)
     Page<Post> findByDeletedAtIsNotNull(Pageable pageable);     // 휴지통 목록
-    Optional<Post> findById(Long id);                           // (삭제 포함) 단건 조회
 }

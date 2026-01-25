@@ -3,7 +3,6 @@ package com.haem.blogbackend.post.api;
 import com.haem.blogbackend.post.api.dto.PostResponseDto;
 import com.haem.blogbackend.post.api.dto.PostSummaryResponseDto;
 import com.haem.blogbackend.post.application.PostPublicService;
-import com.haem.blogbackend.post.domain.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
