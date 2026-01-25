@@ -1,6 +1,5 @@
 package com.haem.blogbackend.post.domain;
 
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

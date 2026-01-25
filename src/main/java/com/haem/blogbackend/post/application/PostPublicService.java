@@ -21,7 +21,7 @@ import java.util.Optional;
 public class PostPublicService {
     private final PostRepository postRepository;
 
-    public PostPublicService(PostRepository postRepository, EntityFinder entityFinder) {
+    public PostPublicService(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
 
