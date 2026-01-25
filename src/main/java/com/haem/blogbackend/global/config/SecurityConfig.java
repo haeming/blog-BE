@@ -6,6 +6,7 @@ import com.haem.blogbackend.auth.infrastructure.JwtAuthenticationFilter;
 import com.haem.blogbackend.visit.infrastructure.VisitTrackingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -42,6 +43,12 @@ public class SecurityConfig {
                     .requestMatchers("/error").permitAll()
                     .requestMatchers("/api/admin/login").permitAll()
                     .requestMatchers("/uploadFiles/**").permitAll()
+
+                    // guest get 접근 허용
+                    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
                     .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
