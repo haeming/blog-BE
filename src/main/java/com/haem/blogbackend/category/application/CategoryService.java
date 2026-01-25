@@ -107,7 +107,7 @@ public class CategoryService {
     }
 
     public long getPostCountByCategoryId(Long categoryId){
-        return postRepository.countByCategoryId(categoryId);
+        return postRepository.countByCategoryIdAndDeletedAtIsNull(categoryId);
     }
 
     private Category getCategoryOrThrow(Long categoryId){
