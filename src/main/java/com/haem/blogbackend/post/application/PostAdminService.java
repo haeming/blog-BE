@@ -89,7 +89,10 @@ public class PostAdminService {
     @Transactional
     public PostResponseDto createPost(String accountName, PostCreateRequestDto requestDto, MultipartFile[] files) {
         Admin admin = getAdminOrThrow(accountName);
-        Category category = getCategoryOrThrow(requestDto.getCategoryId());
+
+        Long categoryId = requestDto.getCategoryId();
+        Category category = (categoryId == null) ? null : getCategoryOrThrow(categoryId);
+
         Post post = Post.create(category, admin, requestDto.getTitle(), requestDto.getContent());
         postRepository.save(post);
 
@@ -113,6 +116,21 @@ public class PostAdminService {
         String beforeContent = post.getContent();
         post.updateIfPresent(requestDto.getTitle(), requestDto.getContent());
 
+        Long categoryId = requestDto.getCategoryId();
+
+        if (categoryId == null) { // null 허용 -> 미분류
+            if (post.getCategory() != null) {
+                post.setCategory(null);
+                post.touchUpdate();
+            }
+        } else {
+            Category category = getCategoryOrThrow(categoryId); // categoryId가 있을 때만 조회
+            if (post.getCategory() == null || !category.getId().equals(post.getCategory().getId())) {
+                post.setCategory(category);
+                post.touchUpdate();
+            }
+        }
+
         String afterContent = post.getContent();
         if (!afterContent.equals(beforeContent)) {
             syncImagesByContent(post, afterContent);
@@ -130,7 +148,11 @@ public class PostAdminService {
     }
 
     private Category getCategoryOrThrow(Long categoryId){
-        return entityFinder.findByIdOrNull(categoryId,categoryRepository);
+        return entityFinder.findByIdOrThrow(
+                categoryId,
+                categoryRepository,
+                () -> new IllegalArgumentException("category not found: " + categoryId)
+        );
     }
 
     private Post getPostOrThrow(Long postId){
