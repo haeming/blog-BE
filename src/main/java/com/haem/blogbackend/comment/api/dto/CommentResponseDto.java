@@ -2,6 +2,7 @@ package com.haem.blogbackend.comment.api.dto;
 
 import java.time.LocalDateTime;
 
+import com.haem.blogbackend.comment.application.dto.CommentResult;
 import com.haem.blogbackend.comment.domain.Comment;
 
 import lombok.Builder;
@@ -41,6 +42,19 @@ public class CommentResponseDto {
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .updatedAt(comment.getUpdatedAt())
+                .build();
+    }
+
+    public static CommentResponseDto from(CommentResult result) {
+        return CommentResponseDto.builder()
+                .id(result.id())
+                .postId(result.postId())
+                .adminId(result.adminId())
+                .parentId(result.parentId())
+                .nickname(result.nickname())
+                .content(result.content())
+                .createdAt(result.createdAt())
+                .updatedAt(result.updatedAt())
                 .build();
     }
 }
