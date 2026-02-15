@@ -1,16 +1,13 @@
 package com.haem.blogbackend.comment.application;
 
+import com.haem.blogbackend.comment.domain.*;
 import com.haem.blogbackend.global.util.EntityFinder;
-import com.haem.blogbackend.comment.api.dto.CommentResponseDto;
-import com.haem.blogbackend.comment.domain.CommentRepository;
-import com.haem.blogbackend.comment.domain.CommentCreateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentResult;
 import com.haem.blogbackend.auth.domain.AdminRepository;
 import com.haem.blogbackend.post.domain.PostRepository;
 import com.haem.blogbackend.auth.domain.AdminNotFoundException;
-import com.haem.blogbackend.comment.domain.CommentNotFoundException;
 import com.haem.blogbackend.post.domain.PostNotFoundException;
 import com.haem.blogbackend.auth.domain.Admin;
-import com.haem.blogbackend.comment.domain.Comment;
 import com.haem.blogbackend.post.domain.Post;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,13 +18,13 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 @Service
-public class CommentService {
+public class CommentAdminService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final AdminRepository adminRepository;
     private final EntityFinder entityFinder;
 
-    public CommentService(
+    public CommentAdminService(
             CommentRepository commentRepository,
             PostRepository postRepository,
             AdminRepository adminRepository,
@@ -42,15 +39,15 @@ public class CommentService {
         return commentRepository.countByDeletedAtIsNull();
     }
 
-    public List<CommentResponseDto> getCommentsByPostId(Long postId){
+    public List<CommentResult> getCommentsByPostId(Long postId){
         List<Comment> comments = commentRepository.findByPostIdAndDeletedAtIsNull(postId);
         return comments.stream()
-                .map(CommentResponseDto::from)
+                .map(CommentResult::from)
                 .toList();
     }
 
     @Transactional
-    public CommentResponseDto createComment(String accountName, CommentCreateCommand command){
+    public CommentResult createComment(String accountName, CommentCreateCommand command){
         Post post = getPostOrThrow(command.postId());
         Admin admin = getAdminOrThrow(accountName);
         Comment parent = findParentCommentOrNull(command.parentId());
@@ -59,7 +56,21 @@ public class CommentService {
 
         Comment comment = Comment.createByAdmin(post, admin, parent, command.content());
         commentRepository.save(comment);
-        return CommentResponseDto.from(comment);
+        return CommentResult.from(comment);
+    }
+
+    @Transactional
+    public CommentResult updateComment(Long id, String accountName, CommentUpdateCommand command) {
+        Comment comment = getCommentOrThrow(id);
+        Admin admin = getAdminOrThrow(accountName);
+
+        // 작성자 검증
+        if (!comment.getAdmin().getId().equals(admin.getId())) {
+            throw new IllegalArgumentException("본인의 댓글만 수정할 수 있습니다.");
+        }
+
+        comment.setContent(command.content());
+        return CommentResult.from(comment);
     }
 
     @Transactional
@@ -87,7 +98,7 @@ public class CommentService {
     private Admin getAdminOrThrow(String accountName) {
         return entityFinder.findByStringKeyOrThrow(
                 accountName,
-                adminRepository::findByAccountName, // Function<String, Optional<Admin>> 형태로 전달
+                adminRepository::findByAccountName,
                 () -> new AdminNotFoundException(accountName)
         );
     }
@@ -112,5 +123,4 @@ public class CommentService {
             throw new IllegalArgumentException("부모 댓글이 다른 게시글에 속해 있습니다.");
         }
     }
-
 }
