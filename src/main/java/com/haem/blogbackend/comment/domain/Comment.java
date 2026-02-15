@@ -134,6 +134,10 @@ public class Comment {
         this.password = password;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     public static Comment createByAdmin(Post post, Admin admin, Comment parent, String content) {
         Comment c = new Comment(post, admin, parent, null, null, content, false);
         c.authorType = CommentAuthorType.ADMIN;
