@@ -2,6 +2,7 @@ package com.haem.blogbackend.category.api.dto;
 
 import java.time.LocalDateTime;
 
+import com.haem.blogbackend.category.application.dto.CategorySummaryResult;
 import com.haem.blogbackend.category.domain.Category;
 
 import lombok.Getter;
@@ -29,6 +30,16 @@ public class CategoryResponseDto {
             category.getImageUrl(),
             category.getOriginalName(),
             category.getCreatedAt()
+        );
+    }
+
+    public static CategoryResponseDto from(CategorySummaryResult result){
+        return new CategoryResponseDto(
+                result.id(),
+                result.categoryName(),
+                result.imageUrl(),
+                result.originalName(),
+                result.createdAt()
         );
     }
 }
