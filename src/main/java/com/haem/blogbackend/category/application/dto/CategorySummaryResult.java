@@ -11,6 +11,16 @@ public record CategorySummaryResult(
         String originalName,
         LocalDateTime createdAt
 ) {
+    public static CategorySummaryResult uncategorized() {
+        return new CategorySummaryResult(
+                null,
+                "미분류",
+                null,
+                null,
+                null
+        );
+    }
+
     public static CategorySummaryResult from(Category category) {
         return new CategorySummaryResult(
                 category.getId(),

@@ -3,6 +3,8 @@ package com.haem.blogbackend.category.api;
 import com.haem.blogbackend.category.api.dto.CategoryPostCountResponseDto;
 import com.haem.blogbackend.category.api.dto.CategoryResponseDto;
 import com.haem.blogbackend.category.application.CategoryPublicService;
+import com.haem.blogbackend.category.application.dto.CategoryPostCountResult;
+import com.haem.blogbackend.category.application.dto.CategorySummaryResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,10 @@ public class CategoryPublicController {
 
     @GetMapping
     public List<CategoryResponseDto> getCategories() {
-        return categoryPublicService.getCategories();
+        List<CategorySummaryResult> results = categoryPublicService.getCategories();
+        return results.stream()
+                .map(CategoryResponseDto::from)
+                .toList();
     }
 
     @GetMapping("/{categoryId}/post-count")
@@ -31,8 +36,8 @@ public class CategoryPublicController {
 
     @GetMapping("/post-counts")
     public List<CategoryPostCountResponseDto> getCategoryPostCounts() {
-        return categoryPublicService.getCategoryPostCounts()
-                .stream()
+        List<CategoryPostCountResult> results = categoryPublicService.getCategoryPostCounts();
+        return results.stream()
                 .map(CategoryPostCountResponseDto::from)
                 .toList();
     }
