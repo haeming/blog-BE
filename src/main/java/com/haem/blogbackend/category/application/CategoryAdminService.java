@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @Transactional(readOnly = true)
 @Service
-public class CategoryService {
+public class CategoryAdminService {
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
     private final FileManagement fileManagement;
@@ -35,7 +35,7 @@ public class CategoryService {
     private final EntityFinder entityFinder;
     private record UploadResult(String originalName, String imageUrl) {}
 
-    public CategoryService(
+    public CategoryAdminService(
             CategoryRepository categoryRepository,
             PostRepository postRepository,
             FileManagement fileManagement,
