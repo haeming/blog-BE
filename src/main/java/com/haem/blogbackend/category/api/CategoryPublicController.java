@@ -34,6 +34,12 @@ public class CategoryPublicController {
         return categoryPublicService.getPostCountByCategoryId(categoryId);
     }
 
+    @GetMapping("/post/{postId}")
+    public CategoryResponseDto getCategoryByPostId(@PathVariable("postId") Long postId) {
+        CategorySummaryResult result = categoryPublicService.getCategoryByPostId(postId);
+        return CategoryResponseDto.from(result);
+    }
+
     @GetMapping("/post-counts")
     public List<CategoryPostCountResponseDto> getCategoryPostCounts() {
         List<CategoryPostCountResult> results = categoryPublicService.getCategoryPostCounts();
