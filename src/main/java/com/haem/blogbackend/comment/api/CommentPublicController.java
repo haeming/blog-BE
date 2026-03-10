@@ -2,10 +2,10 @@ package com.haem.blogbackend.comment.api;
 
 import com.haem.blogbackend.comment.api.dto.*;
 import com.haem.blogbackend.comment.application.CommentPublicService;
-import com.haem.blogbackend.comment.application.dto.CommentCreateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicCreateCommand;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
 import com.haem.blogbackend.comment.application.dto.CommentSummaryResult;
-import com.haem.blogbackend.comment.application.dto.CommentUpdateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicUpdateCommand;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +32,7 @@ public class CommentPublicController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentResponseDto createComment(@RequestBody PublicCommentCreateRequestDto request) {
-        CommentCreateCommand command = new CommentCreateCommand(
+        CommentPublicCreateCommand command = new CommentPublicCreateCommand(
                 request.getPostId(),
                 request.getParentId(),
                 request.getNickname(),
@@ -59,7 +59,7 @@ public class CommentPublicController {
             @PathVariable Long id,
             @RequestBody PublicCommentUpdateRequestDto request
     ) {
-        CommentUpdateCommand command = new CommentUpdateCommand(
+        CommentPublicUpdateCommand command = new CommentPublicUpdateCommand(
                 request.getPassword(),
                 request.getContent()
         );

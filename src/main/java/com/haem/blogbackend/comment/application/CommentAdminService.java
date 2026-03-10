@@ -1,7 +1,9 @@
 package com.haem.blogbackend.comment.application;
 
-import com.haem.blogbackend.comment.application.dto.CommentCreateCommand;
-import com.haem.blogbackend.comment.application.dto.CommentUpdateCommand;
+import com.haem.blogbackend.comment.api.dto.CommentAdminCreateCommand;
+import com.haem.blogbackend.comment.api.dto.CommentAdminUpdateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicCreateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicUpdateCommand;
 import com.haem.blogbackend.comment.domain.*;
 import com.haem.blogbackend.global.util.EntityFinder;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
@@ -49,7 +51,7 @@ public class CommentAdminService {
     }
 
     @Transactional
-    public CommentResult createComment(String accountName, CommentCreateCommand command){
+    public CommentResult createComment(String accountName, CommentAdminCreateCommand command){
         Post post = getPostOrThrow(command.postId());
         Admin admin = getAdminOrThrow(accountName);
         Comment parent = findParentCommentOrNull(command.parentId());
@@ -62,7 +64,7 @@ public class CommentAdminService {
     }
 
     @Transactional
-    public CommentResult updateComment(Long id, String accountName, CommentUpdateCommand command) {
+    public CommentResult updateComment(Long id, String accountName, CommentAdminUpdateCommand command) {
         Comment comment = getCommentOrThrow(id);
         Admin admin = getAdminOrThrow(accountName);
 

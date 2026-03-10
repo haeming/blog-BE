@@ -1,9 +1,9 @@
 package com.haem.blogbackend.comment.application;
 
-import com.haem.blogbackend.comment.application.dto.CommentCreateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicCreateCommand;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
 import com.haem.blogbackend.comment.application.dto.CommentSummaryResult;
-import com.haem.blogbackend.comment.application.dto.CommentUpdateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicUpdateCommand;
 import com.haem.blogbackend.comment.domain.Comment;
 import com.haem.blogbackend.comment.domain.CommentNotFoundException;
 import com.haem.blogbackend.comment.domain.CommentPasswordMismatchException;
@@ -44,7 +44,7 @@ public class CommentPublicService {
     }
 
     @Transactional
-    public CommentResult createComment(CommentCreateCommand command) {
+    public CommentResult createComment(CommentPublicCreateCommand command) {
         Post post = getPostOrThrow(command.postId());
         Comment parent = resolveParent(command.parentId());
 
@@ -61,7 +61,7 @@ public class CommentPublicService {
     }
 
     @Transactional
-    public CommentResult updateComment(Long commentId, CommentUpdateCommand command) {
+    public CommentResult updateComment(Long commentId, CommentPublicUpdateCommand command) {
         Comment comment = getCommentOrThrow(commentId);
         validatePassword(comment, command.password());
         comment.setContent(command.content());

@@ -1,12 +1,8 @@
 package com.haem.blogbackend.comment.api;
 
-import com.haem.blogbackend.comment.api.dto.AdminCommentCreateRequestDto;
-import com.haem.blogbackend.comment.api.dto.AdminCommentUpdateRequestDto;
-import com.haem.blogbackend.comment.api.dto.CommentResponseDto;
+import com.haem.blogbackend.comment.api.dto.*;
 import com.haem.blogbackend.comment.application.CommentAdminService;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
-import com.haem.blogbackend.comment.application.dto.CommentUpdateCommand;
-import com.haem.blogbackend.comment.application.dto.CommentCreateCommand;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +37,7 @@ public class CommentAdminController {
             @AuthenticationPrincipal UserDetails admin,
             @Valid @RequestBody AdminCommentCreateRequestDto requestDto
     ) {
-        CommentCreateCommand command = new CommentCreateCommand(
+        CommentAdminCreateCommand command = new CommentAdminCreateCommand(
                 requestDto.getPostId(),
                 requestDto.getParentId(),
                 requestDto.getContent()
@@ -61,7 +57,7 @@ public class CommentAdminController {
             @AuthenticationPrincipal UserDetails admin,
             @Valid @RequestBody AdminCommentUpdateRequestDto requestDto
     ) {
-        CommentUpdateCommand command = new CommentUpdateCommand(requestDto.getContent());
+        CommentAdminUpdateCommand command = new CommentAdminUpdateCommand(requestDto.getContent());
         CommentResult result = commentAdminService.updateComment(id, admin.getUsername(), command);
         return CommentResponseDto.from(result);
     }
