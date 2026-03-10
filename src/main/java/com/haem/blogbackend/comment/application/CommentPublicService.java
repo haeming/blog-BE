@@ -1,9 +1,9 @@
 package com.haem.blogbackend.comment.application;
 
 import com.haem.blogbackend.comment.application.dto.CommentPublicCreateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentPublicUpdateCommand;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
 import com.haem.blogbackend.comment.application.dto.CommentSummaryResult;
-import com.haem.blogbackend.comment.application.dto.CommentPublicUpdateCommand;
 import com.haem.blogbackend.comment.domain.Comment;
 import com.haem.blogbackend.comment.domain.CommentNotFoundException;
 import com.haem.blogbackend.comment.domain.CommentPasswordMismatchException;
@@ -13,6 +13,7 @@ import com.haem.blogbackend.post.domain.Post;
 import com.haem.blogbackend.post.domain.PostNotFoundException;
 import com.haem.blogbackend.post.domain.PostRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +27,18 @@ public class CommentPublicService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final EntityFinder entityFinder;
+    private final PasswordEncoder passwordEncoder;
 
     public CommentPublicService(
             CommentRepository commentRepository,
             PostRepository postRepository,
-            EntityFinder entityFinder
+            EntityFinder entityFinder,
+            PasswordEncoder passwordEncoder
     ) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.entityFinder = entityFinder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<CommentSummaryResult> getCommentsByPostId(Long postId) {
@@ -47,14 +51,14 @@ public class CommentPublicService {
     public CommentResult createComment(CommentPublicCreateCommand command) {
         Post post = getPostOrThrow(command.postId());
         Comment parent = resolveParent(command.parentId());
+        String encodedPassword = passwordEncoder.encode(command.password());
 
         Comment saved = commentRepository.save(
-                Comment.createByGuest(post, parent, command.nickname(), command.password(), command.content())
+                Comment.createByGuest(post, parent, command.nickname(), encodedPassword, command.content())
         );
         return CommentResult.from(saved);
     }
 
-    // 비밀번호 검증
     public void verifyPassword(Long commentId, String password) {
         Comment comment = getCommentOrThrow(commentId);
         validatePassword(comment, password);
@@ -95,7 +99,7 @@ public class CommentPublicService {
     }
 
     private void validatePassword(Comment comment, String password) {
-        if (!password.equals(comment.getPassword())) {
+        if (!passwordEncoder.matches(password, comment.getPassword())) {
             throw new CommentPasswordMismatchException();
         }
     }
