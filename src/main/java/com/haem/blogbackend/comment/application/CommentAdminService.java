@@ -1,14 +1,18 @@
 package com.haem.blogbackend.comment.application;
 
-import com.haem.blogbackend.comment.domain.*;
-import com.haem.blogbackend.global.util.EntityFinder;
-import com.haem.blogbackend.comment.application.dto.CommentResult;
-import com.haem.blogbackend.auth.domain.AdminRepository;
-import com.haem.blogbackend.post.domain.PostRepository;
-import com.haem.blogbackend.auth.domain.AdminNotFoundException;
-import com.haem.blogbackend.post.domain.PostNotFoundException;
 import com.haem.blogbackend.auth.domain.Admin;
+import com.haem.blogbackend.auth.domain.AdminNotFoundException;
+import com.haem.blogbackend.auth.domain.AdminRepository;
+import com.haem.blogbackend.comment.api.dto.CommentAdminCreateCommand;
+import com.haem.blogbackend.comment.api.dto.CommentAdminUpdateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentResult;
+import com.haem.blogbackend.comment.domain.Comment;
+import com.haem.blogbackend.comment.domain.CommentNotFoundException;
+import com.haem.blogbackend.comment.domain.CommentRepository;
+import com.haem.blogbackend.global.util.EntityFinder;
 import com.haem.blogbackend.post.domain.Post;
+import com.haem.blogbackend.post.domain.PostNotFoundException;
+import com.haem.blogbackend.post.domain.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +51,7 @@ public class CommentAdminService {
     }
 
     @Transactional
-    public CommentResult createComment(String accountName, CommentCreateCommand command){
+    public CommentResult createComment(String accountName, CommentAdminCreateCommand command){
         Post post = getPostOrThrow(command.postId());
         Admin admin = getAdminOrThrow(accountName);
         Comment parent = findParentCommentOrNull(command.parentId());
@@ -60,7 +64,7 @@ public class CommentAdminService {
     }
 
     @Transactional
-    public CommentResult updateComment(Long id, String accountName, CommentUpdateCommand command) {
+    public CommentResult updateComment(Long id, String accountName, CommentAdminUpdateCommand command) {
         Comment comment = getCommentOrThrow(id);
         Admin admin = getAdminOrThrow(accountName);
 
