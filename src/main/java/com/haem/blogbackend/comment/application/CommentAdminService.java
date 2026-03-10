@@ -1,5 +1,7 @@
 package com.haem.blogbackend.comment.application;
 
+import com.haem.blogbackend.comment.application.dto.CommentCreateCommand;
+import com.haem.blogbackend.comment.application.dto.CommentUpdateCommand;
 import com.haem.blogbackend.comment.domain.*;
 import com.haem.blogbackend.global.util.EntityFinder;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
