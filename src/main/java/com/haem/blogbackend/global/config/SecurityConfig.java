@@ -48,7 +48,7 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/comments/**").permitAll()
+                    .requestMatchers("/api/comments/**").permitAll() // guest 댓글 CRUD 위함
                     .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
