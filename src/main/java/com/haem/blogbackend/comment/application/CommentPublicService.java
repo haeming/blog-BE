@@ -51,6 +51,7 @@ public class CommentPublicService {
     public CommentResult createComment(CommentPublicCreateCommand command) {
         Post post = getPostOrThrow(command.postId());
         Comment parent = resolveParent(command.parentId());
+        validateParentBelongsToPost(parent, command.postId());
         String encodedPassword = passwordEncoder.encode(command.password());
 
         Comment saved = commentRepository.save(
@@ -96,6 +97,17 @@ public class CommentPublicService {
         if (parentId == null) return null;
         return commentRepository.findByIdAndDeletedAtIsNull(parentId)
                 .orElseThrow(() -> new CommentNotFoundException(parentId));
+    }
+
+    private void validateParentBelongsToPost(Comment parent, Long postId) {
+        if (parent == null) {
+            return;
+        }
+
+        Long parentPostId = parent.getPost().getId();
+        if (!parentPostId.equals(postId)) {
+            throw new IllegalArgumentException("부모 댓글이 다른 게시글에 속해 있습니다.");
+        }
     }
 
     private void validatePassword(Comment comment, String password) {
