@@ -1,2 +1,0 @@
-ALTER TABLE comment
-    ADD COLUMN IF NOT EXISTS ip_address VARCHAR(45);
