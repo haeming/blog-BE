@@ -44,11 +44,11 @@ public class SecurityConfig {
                     .requestMatchers("/api/admin/login").permitAll()
                     .requestMatchers("/uploadFiles/**").permitAll()
 
-                    // guest get 접근 허용
+                    // public get 접근 허용
                     .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-                    .requestMatchers("/api/comments/**").permitAll() // guest 댓글 CRUD 위함
+                    .requestMatchers("/api/comments/**").permitAll() // public 댓글 CRUD 위함
                     .anyRequest().authenticated()
             )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

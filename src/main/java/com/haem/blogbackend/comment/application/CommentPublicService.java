@@ -68,7 +68,7 @@ public class CommentPublicService {
         String encodedPassword = passwordEncoder.encode(command.password());
 
         Comment saved = commentRepository.save(
-                Comment.createByGuest(post, parent, command.nickname(), encodedPassword, sanitizedContent, command.ipAddress())
+                Comment.createByPublic(post, parent, command.nickname(), encodedPassword, sanitizedContent, command.ipAddress())
         );
         return CommentResult.from(saved);
     }
