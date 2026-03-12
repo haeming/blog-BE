@@ -7,5 +7,6 @@ public record CommentPublicCreateCommand(
         Long parentId,
         String nickname,
         String password,
-        String content
+        String content,
+        String ipAddress
 ) implements CommentCreateCommand {}

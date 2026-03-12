@@ -11,6 +11,8 @@ import com.haem.blogbackend.comment.application.dto.CommentPublicCreateCommand;
 import com.haem.blogbackend.comment.application.dto.CommentPublicUpdateCommand;
 import com.haem.blogbackend.comment.application.dto.CommentResult;
 import com.haem.blogbackend.comment.application.dto.CommentSummaryResult;
+import com.haem.blogbackend.global.util.ClientIpResolver;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,9 +32,11 @@ import java.util.List;
 @RequestMapping("/api/comments")
 public class CommentPublicController {
     private final CommentPublicService commentPublicService;
+    private final ClientIpResolver clientIpResolver;
 
-    public CommentPublicController(CommentPublicService commentPublicService) {
+    public CommentPublicController(CommentPublicService commentPublicService, ClientIpResolver clientIpResolver) {
         this.commentPublicService = commentPublicService;
+        this.clientIpResolver = clientIpResolver;
     }
 
     @GetMapping
@@ -45,13 +49,17 @@ public class CommentPublicController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentResponseDto createComment(@Valid @RequestBody PublicCommentCreateRequestDto request) {
+    public CommentResponseDto createComment(
+            @Valid @RequestBody PublicCommentCreateRequestDto request,
+            HttpServletRequest httpServletRequest
+    ) {
         CommentPublicCreateCommand command = new CommentPublicCreateCommand(
                 request.getPostId(),
                 request.getParentId(),
                 request.getNickname(),
                 request.getPassword(),
-                request.getContent()
+                request.getContent(),
+                clientIpResolver.resolve(httpServletRequest)
         );
         CommentResult result = commentPublicService.createComment(command);
         return CommentResponseDto.from(result);
