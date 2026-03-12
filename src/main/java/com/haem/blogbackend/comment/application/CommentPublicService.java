@@ -61,10 +61,9 @@ public class CommentPublicService {
         Post post = getPostOrThrow(command.postId());
         Comment parent = resolveParent(command.parentId());
         validateParentBelongsToPost(parent, command.postId());
-        String encodedPassword = passwordEncoder.encode(command.password());
-
         commentRateLimitService.validate(command.ipAddress());
         commentValidator.validateProfanity(command.content());
+        String encodedPassword = passwordEncoder.encode(command.password());
         String sanitizedContent = commentContentSanitizer.sanitize(command.content());
 
         Comment saved = commentRepository.save(
