@@ -36,6 +36,9 @@ public class Comment {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Column(name = "ip_address", length = 45)
+    private String ipAddress;
+
     @Column(name = "is_pinned", nullable = false)
     private boolean isPinned;
 
@@ -62,13 +65,14 @@ public class Comment {
     // 기본생성자
     protected Comment(){}
 
-    public Comment(Post post, Admin admin, Comment parent, String nickname, String password, String content, Boolean isPinned){
+    public Comment(Post post, Admin admin, Comment parent, String nickname, String password, String content, String ipAddress, Boolean isPinned){
         this.post = post;
         this.admin = admin;
         this.parent = parent;
         this.nickname = nickname;
         this.password = password;
         this.content = content;
+        this.ipAddress = ipAddress;
         this.isPinned = isPinned;
     }
 
@@ -100,6 +104,10 @@ public class Comment {
 
     public String getContent(){
         return content;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
     }
 
     public Boolean getIsPinned(){
@@ -139,13 +147,13 @@ public class Comment {
     }
 
     public static Comment createByAdmin(Post post, Admin admin, Comment parent, String content) {
-        Comment c = new Comment(post, admin, parent, null, null, content, false);
+        Comment c = new Comment(post, admin, parent, null, null, content, null, false);
         c.authorType = CommentAuthorType.ADMIN;
         return c;
     }
 
-    public static Comment createByGuest(Post post, Comment parent, String nickname, String password, String content) {
-        Comment c = new Comment(post, null, parent, nickname, password, content, false);
+    public static Comment createByGuest(Post post, Comment parent, String nickname, String password, String content, String ipAddress) {
+        Comment c = new Comment(post, null, parent, nickname, password, content, ipAddress, false);
         c.authorType = CommentAuthorType.GUEST;
         return c;
     }

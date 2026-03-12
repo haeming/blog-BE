@@ -28,17 +28,26 @@ public class CommentPublicService {
     private final PostRepository postRepository;
     private final EntityFinder entityFinder;
     private final PasswordEncoder passwordEncoder;
+    private final CommentContentSanitizer commentContentSanitizer;
+    private final CommentValidator commentValidator;
+    private final CommentRateLimitService commentRateLimitService;
 
     public CommentPublicService(
             CommentRepository commentRepository,
             PostRepository postRepository,
             EntityFinder entityFinder,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            CommentContentSanitizer commentContentSanitizer,
+            CommentValidator commentValidator,
+            CommentRateLimitService commentRateLimitService
     ) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.entityFinder = entityFinder;
         this.passwordEncoder = passwordEncoder;
+        this.commentContentSanitizer = commentContentSanitizer;
+        this.commentValidator = commentValidator;
+        this.commentRateLimitService = commentRateLimitService;
     }
 
     public List<CommentSummaryResult> getCommentsByPostId(Long postId) {
@@ -54,8 +63,12 @@ public class CommentPublicService {
         validateParentBelongsToPost(parent, command.postId());
         String encodedPassword = passwordEncoder.encode(command.password());
 
+        commentRateLimitService.validate(command.ipAddress());
+        commentValidator.validateProfanity(command.content());
+        String sanitizedContent = commentContentSanitizer.sanitize(command.content());
+
         Comment saved = commentRepository.save(
-                Comment.createByGuest(post, parent, command.nickname(), encodedPassword, command.content())
+                Comment.createByGuest(post, parent, command.nickname(), encodedPassword, sanitizedContent, command.ipAddress())
         );
         return CommentResult.from(saved);
     }
