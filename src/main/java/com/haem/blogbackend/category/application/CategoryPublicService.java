@@ -2,10 +2,16 @@ package com.haem.blogbackend.category.application;
 
 import com.haem.blogbackend.category.application.dto.CategoryPostCountResult;
 import com.haem.blogbackend.category.application.dto.CategorySummaryResult;
+import com.haem.blogbackend.category.domain.Category;
+import com.haem.blogbackend.category.domain.CategoryNotFoundException;
 import com.haem.blogbackend.category.domain.CategoryRepository;
+import com.haem.blogbackend.global.util.EntityFinder;
+import com.haem.blogbackend.post.application.dto.PostSummaryResult;
 import com.haem.blogbackend.post.domain.PostRepository;
 import com.haem.blogbackend.post.domain.PostNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +23,12 @@ import java.util.List;
 public class CategoryPublicService {
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
+    private final EntityFinder entityFinder;
 
-    public CategoryPublicService(CategoryRepository categoryRepository, PostRepository postRepository) {
+    public CategoryPublicService(CategoryRepository categoryRepository, PostRepository postRepository, EntityFinder entityFinder) {
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
+        this.entityFinder = entityFinder;
     }
 
     public List<CategorySummaryResult> getCategories() {
@@ -50,5 +58,19 @@ public class CategoryPublicService {
                 .stream()
                 .map(CategoryPostCountResult::from)
                 .toList();
+    }
+
+    public Page<PostSummaryResult> getPostsByCategoryId(Long categoryId, Pageable pageable) {
+        Category category = getCategoryOrThrow(categoryId);
+        return postRepository.findByCategoryIdAndDeletedAtIsNull(categoryId, pageable)
+                .map(post -> PostSummaryResult.from(post, category.getCategoryName()));
+    }
+
+    private Category getCategoryOrThrow(Long categoryId) {
+        return entityFinder.findByIdOrThrow(
+                categoryId,
+                categoryRepository,
+                () -> new CategoryNotFoundException(categoryId)
+        );
     }
 }
