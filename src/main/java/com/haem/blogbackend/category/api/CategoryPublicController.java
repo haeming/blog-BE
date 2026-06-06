@@ -5,6 +5,9 @@ import com.haem.blogbackend.category.api.dto.CategoryResponseDto;
 import com.haem.blogbackend.category.application.CategoryPublicService;
 import com.haem.blogbackend.category.application.dto.CategoryPostCountResult;
 import com.haem.blogbackend.category.application.dto.CategorySummaryResult;
+import com.haem.blogbackend.post.api.dto.PostSummaryResponseDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,5 +49,11 @@ public class CategoryPublicController {
         return results.stream()
                 .map(CategoryPostCountResponseDto::from)
                 .toList();
+    }
+
+    @GetMapping("/{categoryId}/posts")
+    public Page<PostSummaryResponseDto> getPostsByCategoryId(@PathVariable("categoryId") Long categoryId, Pageable pageable) {
+        return categoryPublicService.getPostsByCategoryId(categoryId, pageable)
+                .map(PostSummaryResponseDto::from);
     }
 }
