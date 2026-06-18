@@ -58,7 +58,7 @@ public class Comment {
     @PrePersist
     private void prePersist() {
         if (authorType == null) {
-            authorType = (admin != null) ? CommentAuthorType.ADMIN : CommentAuthorType.GUEST;
+            authorType = (admin != null) ? CommentAuthorType.ADMIN : CommentAuthorType.PUBLIC;
         }
     }
 
@@ -152,9 +152,9 @@ public class Comment {
         return c;
     }
 
-    public static Comment createByGuest(Post post, Comment parent, String nickname, String password, String content, String ipAddress) {
+    public static Comment createByPublic(Post post, Comment parent, String nickname, String password, String content, String ipAddress) {
         Comment c = new Comment(post, null, parent, nickname, password, content, ipAddress, false);
-        c.authorType = CommentAuthorType.GUEST;
+        c.authorType = CommentAuthorType.PUBLIC;
         return c;
     }
 
