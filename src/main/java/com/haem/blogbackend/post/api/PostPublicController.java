@@ -1,5 +1,6 @@
 package com.haem.blogbackend.post.api;
 
+import com.haem.blogbackend.post.api.dto.PostAdjacentResponseDto;
 import com.haem.blogbackend.post.api.dto.PostResponseDto;
 import com.haem.blogbackend.post.api.dto.PostSummaryResponseDto;
 import com.haem.blogbackend.post.application.PostPublicService;
@@ -28,5 +29,10 @@ public class PostPublicController {
     @GetMapping("/{id}")
     public PostResponseDto getPost(@PathVariable("id") Long id) {
         return PostResponseDto.from(postPublicService.getPublicPost(id));
+    }
+
+    @GetMapping("/{id}/adjacent")
+    public PostAdjacentResponseDto getAdjacentPosts(@PathVariable("id") Long id) {
+        return PostAdjacentResponseDto.from(postPublicService.getAdjacentPosts(id));
     }
 }

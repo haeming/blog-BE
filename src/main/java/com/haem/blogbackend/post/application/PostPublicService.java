@@ -2,6 +2,8 @@ package com.haem.blogbackend.post.application;
 
 import com.haem.blogbackend.category.domain.Category;
 import com.haem.blogbackend.global.util.EntityFinder;
+import com.haem.blogbackend.post.application.dto.AdjacentPostResult;
+import com.haem.blogbackend.post.application.dto.PostAdjacentResult;
 import com.haem.blogbackend.post.application.dto.PostDetailResult;
 import com.haem.blogbackend.post.application.dto.PostSummaryResult;
 import com.haem.blogbackend.post.domain.Post;
@@ -39,5 +41,22 @@ public class PostPublicService {
         Post post = postRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new PostNotFoundException(id));
         return PostDetailResult.from(post);
+    }
+
+    public PostAdjacentResult getAdjacentPosts(Long id) {
+        Post post = postRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
+
+        AdjacentPostResult prev = postRepository
+                .findFirstByCreatedAtBeforeAndDeletedAtIsNullOrderByCreatedAtDesc(post.getCreatedAt())
+                .map(AdjacentPostResult::from)
+                .orElse(null);
+
+        AdjacentPostResult next = postRepository
+                .findFirstByCreatedAtAfterAndDeletedAtIsNullOrderByCreatedAtAsc(post.getCreatedAt())
+                .map(AdjacentPostResult::from)
+                .orElse(null);
+
+        return new PostAdjacentResult(prev, next);
     }
 }
