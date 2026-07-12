@@ -14,10 +14,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByDeletedAtIsNull(Pageable pageable);
     Optional<Post> findByIdAndDeletedAtIsNull(Long id);
 
-    // 제목/본문 검색
+    // 제목/본문 검색 (keyword는 LIKE 와일드카드가 이스케이프된 상태로 전달되어야 함)
     @Query("SELECT p FROM Post p WHERE p.deletedAt IS NULL AND " +
-            "(LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "(LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) ESCAPE '\\' " +
+            "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) ESCAPE '\\')")
     Page<Post> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     // 이전/다음 글

@@ -30,7 +30,7 @@ public class PostPublicService {
     public Page<PostSummaryResult> getPublicPosts(String keyword, Pageable pageable){
         Page<Post> posts = (keyword == null || keyword.isBlank())
                 ? postRepository.findByDeletedAtIsNull(pageable)
-                : postRepository.searchByKeyword(keyword.trim(), pageable);
+                : postRepository.searchByKeyword(escapeLikeKeyword(keyword.trim()), pageable);
 
         return posts.map(post -> {
             String categoryName = Optional.ofNullable(post.getCategory())
@@ -38,6 +38,14 @@ public class PostPublicService {
                     .orElse("미분류");
             return PostSummaryResult.from(post, categoryName);
         });
+    }
+
+    // LIKE 절의 와일드카드(%, _)를 리터럴로 취급하기 위한 이스케이프
+    private static String escapeLikeKeyword(String keyword) {
+        return keyword
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
     }
 
     public PostDetailResult getPublicPost(Long id) {
