@@ -27,14 +27,17 @@ public class PostPublicService {
         this.postRepository = postRepository;
     }
 
-    public Page<PostSummaryResult> getPublicPosts(Pageable pageable){
-        return postRepository.findByDeletedAtIsNull(pageable)
-                .map(post -> {
-                    String categoryName = Optional.ofNullable(post.getCategory())
-                            .map(Category::getCategoryName)
-                            .orElse("미분류");
-                    return PostSummaryResult.from(post, categoryName);
-                });
+    public Page<PostSummaryResult> getPublicPosts(String keyword, Pageable pageable){
+        Page<Post> posts = (keyword == null || keyword.isBlank())
+                ? postRepository.findByDeletedAtIsNull(pageable)
+                : postRepository.searchByKeyword(keyword.trim(), pageable);
+
+        return posts.map(post -> {
+            String categoryName = Optional.ofNullable(post.getCategory())
+                    .map(Category::getCategoryName)
+                    .orElse("미분류");
+            return PostSummaryResult.from(post, categoryName);
+        });
     }
 
     public PostDetailResult getPublicPost(Long id) {

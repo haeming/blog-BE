@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -21,8 +22,10 @@ public class PostPublicController {
     }
 
     @GetMapping
-    public Page<PostSummaryResponseDto> getPosts(Pageable pageable) {
-        return postPublicService.getPublicPosts(pageable)
+    public Page<PostSummaryResponseDto> getPosts(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            Pageable pageable) {
+        return postPublicService.getPublicPosts(keyword, pageable)
                 .map(PostSummaryResponseDto::from);
     }
 
