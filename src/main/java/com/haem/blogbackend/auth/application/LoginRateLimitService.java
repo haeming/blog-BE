@@ -20,24 +20,33 @@ public class LoginRateLimitService {
     public void checkAllowed(String ipAddress) {
         LocalDateTime threshold = LocalDateTime.now().minusSeconds(WINDOW_SECONDS);
 
-        Deque<LocalDateTime> requestTimes = requestHistoryByIp.computeIfAbsent(ipAddress, key -> new ArrayDeque<>());
+        requestHistoryByIp.compute(ipAddress, (key, requestTimes) -> {
+            Deque<LocalDateTime> times = requestTimes != null ? requestTimes : new ArrayDeque<>();
+            prune(times, threshold);
 
-        synchronized (requestTimes) {
-            while (!requestTimes.isEmpty() && requestTimes.peekFirst().isBefore(threshold)) {
-                requestTimes.pollFirst();
-            }
-
-            if (requestTimes.size() >= MAX_REQUEST_COUNT) {
+            if (times.size() >= MAX_REQUEST_COUNT) {
                 throw new LoginRateLimitExceededException();
             }
-        }
+
+            // 빈 기록은 Map에 남기지 않는다
+            return times.isEmpty() ? null : times;
+        });
     }
 
     public void recordFailure(String ipAddress) {
-        Deque<LocalDateTime> requestTimes = requestHistoryByIp.computeIfAbsent(ipAddress, key -> new ArrayDeque<>());
+        LocalDateTime threshold = LocalDateTime.now().minusSeconds(WINDOW_SECONDS);
 
-        synchronized (requestTimes) {
-            requestTimes.addLast(LocalDateTime.now());
+        requestHistoryByIp.compute(ipAddress, (key, requestTimes) -> {
+            Deque<LocalDateTime> times = requestTimes != null ? requestTimes : new ArrayDeque<>();
+            prune(times, threshold);
+            times.addLast(LocalDateTime.now());
+            return times;
+        });
+    }
+
+    private void prune(Deque<LocalDateTime> requestTimes, LocalDateTime threshold) {
+        while (!requestTimes.isEmpty() && requestTimes.peekFirst().isBefore(threshold)) {
+            requestTimes.pollFirst();
         }
     }
 }

@@ -2,8 +2,8 @@ package com.haem.blogbackend.global.error;
 
 import com.haem.blogbackend.global.error.exception.base.BadRequestException;
 import com.haem.blogbackend.global.error.exception.base.InvalidFileException;
-import com.haem.blogbackend.global.error.exception.base.TokenException;
 import com.haem.blogbackend.global.error.exception.base.TooManyRequestsException;
+import com.haem.blogbackend.global.error.exception.base.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,9 +31,9 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(TokenException.class)
-    public ErrorResponse handleTokenException(TokenException e) {
-        log.warn("TokenException 발생 {}", e.getMessage());
+    @ExceptionHandler(UnauthorizedException.class)
+    public ErrorResponse handleUnauthorized(UnauthorizedException e) {
+        log.warn("인증 실패 {}", e.getMessage());
         return ErrorResponse.of(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
