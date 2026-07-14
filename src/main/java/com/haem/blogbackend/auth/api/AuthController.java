@@ -6,20 +6,24 @@ import com.haem.blogbackend.auth.domain.Admin;
 import com.haem.blogbackend.auth.api.dto.AdminLoginRequestDto;
 import com.haem.blogbackend.auth.api.dto.AdminLoginResponseDto;
 import com.haem.blogbackend.auth.api.dto.TokenVerifyResponseDto;
+import com.haem.blogbackend.global.util.ClientIpResolver;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
 public class AuthController {
     private final AuthService authService;
+    private final ClientIpResolver clientIpResolver;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, ClientIpResolver clientIpResolver) {
         this.authService = authService;
+        this.clientIpResolver = clientIpResolver;
     }
 
     @PostMapping("/login")
-    public AdminLoginResponseDto adminLogin(@RequestBody AdminLoginRequestDto requestDto){
-        return authService.adminLogin(requestDto);
+    public AdminLoginResponseDto adminLogin(@RequestBody AdminLoginRequestDto requestDto, HttpServletRequest request){
+        return authService.adminLogin(requestDto, clientIpResolver.resolve(request));
     }
 
     @GetMapping("/check-token")
