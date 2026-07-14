@@ -4,6 +4,7 @@ import com.haem.blogbackend.auth.infrastructure.JwtProvider;
 import com.haem.blogbackend.auth.domain.AdminRepository;
 import com.haem.blogbackend.auth.domain.AdminNotFoundException;
 import com.haem.blogbackend.auth.domain.ExpiredTokenException;
+import com.haem.blogbackend.auth.domain.InvalidCredentialsException;
 import com.haem.blogbackend.auth.domain.Admin;
 import com.haem.blogbackend.auth.api.dto.AdminLoginRequestDto;
 import com.haem.blogbackend.auth.api.dto.AdminLoginResponseDto;
@@ -15,14 +16,17 @@ public class AuthService {
     private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final LoginRateLimitService loginRateLimitService;
 
-    public AuthService(AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AuthService(AdminRepository adminRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider, LoginRateLimitService loginRateLimitService) {
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtProvider = jwtProvider;
+        this.loginRateLimitService = loginRateLimitService;
     }
 
-    public AdminLoginResponseDto adminLogin(AdminLoginRequestDto requestDto){
+    public AdminLoginResponseDto adminLogin(AdminLoginRequestDto requestDto, String ipAddress){
+        loginRateLimitService.validate(ipAddress);
         Admin admin = getVerifiedAdmin(requestDto);
         String token = jwtProvider.generateToken(admin);
 
@@ -35,9 +39,10 @@ public class AuthService {
     }
 
     private Admin getVerifiedAdmin(AdminLoginRequestDto requestDto){
-        Admin admin = getAdminOrThrow(requestDto.getAccountName());
+        Admin admin = adminRepository.findByAccountName(requestDto.getAccountName())
+                .orElseThrow(InvalidCredentialsException::new);
         if(!passwordEncoder.matches(requestDto.getPassword(), admin.getPassword())){
-            throw new IllegalArgumentException("아이디 혹은 비밀번호가 일치하지 않습니다.");
+            throw new InvalidCredentialsException();
         }
         return admin;
     }
