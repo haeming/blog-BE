@@ -1,5 +1,6 @@
 package com.haem.blogbackend.visit.infrastructure;
 
+import com.haem.blogbackend.global.util.ClientIpResolver;
 import com.haem.blogbackend.visit.application.VisitService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,9 +15,11 @@ import java.time.LocalDate;
 @Component
 public class VisitTrackingFilter extends OncePerRequestFilter {
     private final VisitService visitService;
+    private final ClientIpResolver clientIpResolver;
 
-    public VisitTrackingFilter(VisitService visitService) {
+    public VisitTrackingFilter(VisitService visitService, ClientIpResolver clientIpResolver) {
         this.visitService = visitService;
+        this.clientIpResolver = clientIpResolver;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class VisitTrackingFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         try {
-            String clientIp = resolveClientIp(request);
+            String clientIp = clientIpResolver.resolve(request);
             String userAgent = request.getHeader("User-Agent");
 
             // 개인정보 보호: ip 자체를 저장하지 않고, 서비스에서 해시 처리/저장한다고 가정
@@ -68,22 +71,6 @@ public class VisitTrackingFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String resolveClientIp(HttpServletRequest request) {
-        // 프록시/로드밸런서 환경 고려: X-Forwarded-For 우선
-        String xff = request.getHeader("X-Forwarded-For");
-        if (xff != null && !xff.isBlank()) {
-            // XFF는 "client, proxy1, proxy2" 형태일 수 있음 → 첫 번째가 원 IP인 경우가 일반적
-            return xff.split(",")[0].trim();
-        }
-
-        String realIp = request.getHeader("X-Real-IP");
-        if (realIp != null && !realIp.isBlank()) {
-            return realIp.trim();
-        }
-
-        return request.getRemoteAddr();
     }
 
 }
