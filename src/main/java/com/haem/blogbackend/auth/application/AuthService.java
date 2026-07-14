@@ -26,10 +26,17 @@ public class AuthService {
     }
 
     public AdminLoginResponseDto adminLogin(AdminLoginRequestDto requestDto, String ipAddress){
-        loginRateLimitService.validate(ipAddress);
-        Admin admin = getVerifiedAdmin(requestDto);
-        String token = jwtProvider.generateToken(admin);
+        loginRateLimitService.checkAllowed(ipAddress);
 
+        Admin admin;
+        try {
+            admin = getVerifiedAdmin(requestDto);
+        } catch (InvalidCredentialsException e) {
+            loginRateLimitService.recordFailure(ipAddress);
+            throw e;
+        }
+
+        String token = jwtProvider.generateToken(admin);
         return AdminLoginResponseDto.from(admin, token);
     }
 

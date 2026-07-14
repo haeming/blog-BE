@@ -3,6 +3,7 @@ package com.haem.blogbackend.global.error;
 import com.haem.blogbackend.global.error.exception.base.BadRequestException;
 import com.haem.blogbackend.global.error.exception.base.InvalidFileException;
 import com.haem.blogbackend.global.error.exception.base.TokenException;
+import com.haem.blogbackend.global.error.exception.base.TooManyRequestsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleTokenException(TokenException e) {
         log.warn("TokenException 발생 {}", e.getMessage());
         return ErrorResponse.of(e.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ErrorResponse handleTooManyRequests(TooManyRequestsException e) {
+        return ErrorResponse.of(e.getMessage(), HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

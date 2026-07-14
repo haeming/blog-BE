@@ -17,9 +17,8 @@ public class LoginRateLimitService {
 
     private final Map<String, Deque<LocalDateTime>> requestHistoryByIp = new ConcurrentHashMap<>();
 
-    public void validate(String ipAddress) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime threshold = now.minusSeconds(WINDOW_SECONDS);
+    public void checkAllowed(String ipAddress) {
+        LocalDateTime threshold = LocalDateTime.now().minusSeconds(WINDOW_SECONDS);
 
         Deque<LocalDateTime> requestTimes = requestHistoryByIp.computeIfAbsent(ipAddress, key -> new ArrayDeque<>());
 
@@ -31,8 +30,14 @@ public class LoginRateLimitService {
             if (requestTimes.size() >= MAX_REQUEST_COUNT) {
                 throw new LoginRateLimitExceededException();
             }
+        }
+    }
 
-            requestTimes.addLast(now);
+    public void recordFailure(String ipAddress) {
+        Deque<LocalDateTime> requestTimes = requestHistoryByIp.computeIfAbsent(ipAddress, key -> new ArrayDeque<>());
+
+        synchronized (requestTimes) {
+            requestTimes.addLast(LocalDateTime.now());
         }
     }
 }
